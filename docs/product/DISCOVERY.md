@@ -1,6 +1,14 @@
-# Definizione guidata del prodotto
+# Registro dei requisiti e delle decisioni
 
-Stato: questionario progressivo. Le voci aperte non sono decisioni dell'utente. Le risposte vengono registrate mantenendo separati requisiti confermati, proposte e ipotesi.
+Aggiornamento: revisione 3 del 2026-10-15. Le risposte storiche restano conservate; i chiarimenti D44–D56 governano l'impostazione attuale. La [specifica](SPECIFICATION.md) descrive la piattaforma online generica e la [roadmap](ROADMAP.md) ordina le consegne.
+
+## Chiarimento del perimetro
+
+Il prodotto richiesto parte dalle esigenze commerciali del cliente, usa la chat come ingresso principale e integra modellazione prodotto, stampo, cella e simulazione dal granulo al nastro. Tutti i moduli devono integrare AI e componenti open source. La modellazione serve allo studio tecnico-economico e del processo; la piattaforma non è centrata sulla progettazione esecutiva CAD.
+
+Le decisioni su dimensioni, finitura, materiali candidati, agganci, elettronica, IP e durata iniziale di cinque anni appartengono al caso dimostrativo. Il guscio è un caso opzionale: non impone forma, dati o valori iniziali ai nuovi progetti. Quantità liberamente configurabile, distinzione prezzo/costo e confronto tra risorse esistenti/da acquistare restano requisiti generali.
+
+Le sezioni seguenti conservano il percorso storico. Le voci aperte non sono decisioni dell'utente e le proposte rimangono tali.
 
 ## Decisioni iniziali confermate
 
@@ -61,7 +69,7 @@ Stato: questionario progressivo. Le voci aperte non sono decisioni dell'utente. 
 
 ## Prossimo approfondimento
 
-Posizionamento degli ingombri interni e supporti; dimensioni/forma del connettore e del cavo; sportello e guarnizioni; posizione dello sfiato; potenza dissipata e condizioni ambientali; geometria, forze e verifica a 1.000 cicli degli agganci. Le dimensioni reali e i dati dei materiali restano prerequisiti delle simulazioni pertinenti.
+Priorità attuale: implementare un brief commerciale generico con chat, proprietà contestuali e persistenza server. I dati di ogni pezzo, stampo o cella saranno raccolti nel relativo progetto. Per il caso opzionale del guscio rimangono aperti supporti interni, connettore/cavo, guarnizioni, dissipazione e verifica degli agganci; non bloccano lo sviluppo generale.
 
 ## Argomenti da affrontare in ordine
 
@@ -138,5 +146,18 @@ Le domande verranno presentate in piccoli gruppi. Le scelte successive dipendera
 | D41 | UX professionale da software di modellazione, aspetto moderno e modello centrale | Richiesto | Feedback demo 01 |
 | D42 | Creazione da dialogo, caricamento file 3D e acquisizione da foto | Richiesto per il prodotto completo | Feedback demo 01 |
 | D43 | Percorso esplicito dalla creazione del pezzo alla progettazione dello stampo | Richiesto | Feedback demo 01 |
+| D44 | Uso online come modalità preferita del prodotto | Confermato | Chiarimento dopo demo 02 |
+| D45 | Prodotti generici, con descrizione flessibile; guscio solo dimostrativo | Confermato | Chiarimento dopo demo 02 |
+| D46 | Piattaforma di fattibilità e processo, non centrata sulla progettazione CAD esecutiva | Confermato | Chiarimento dopo demo 02 |
+| D47 | Priorità a cliente, mercato, quantità, prezzo e informazioni commerciali | Confermato | Chiarimento dopo demo 02 |
+| D48 | Moduli integrati di prodotto, stampo e cella produttiva | Confermato | Chiarimento dopo demo 02 |
+| D49 | Cella con pressa/stampo, robot cartesiano e nastro; orientamenti pezzo tracciati | Confermato | Chiarimento dopo demo 02 |
+| D50 | Processo completo dal granulo, con essiccazione eventuale, a pezzo sul nastro | Confermato | Chiarimento dopo demo 02 |
+| D51 | Animazione temporale con dettagli grafici e parametri di tutte le fasi | Confermato | Chiarimento dopo demo 02 |
+| D52 | Modellare il posizionamento dei raffreddamenti nello stampo | Confermato | Chiarimento dopo demo 02 |
+| D53 | Chat come via principale; campi dettagliati contestuali in secondo piano | Confermato | Chiarimento dopo demo 02 |
+| D54 | AI open source in tutti i moduli e stack grafico/funzionale open source | Confermato | Chiarimento dopo demo 02 |
+| D55 | Dettaglio funzionale sufficientemente preciso, senza esigere ogni componente esecutivo | Confermato | Chiarimento dopo demo 02 |
+| D56 | GetcraftAI come riferimento per l'esperienza | Richiesto; servizio non verificato | Feedback e chiarimento dopo demo 02 |
 
-La possibilità di usare uno stack gratuito/open source è da valutare; non è stato fissato un budget per servizi AI o infrastruttura. La demo 02 implementa comandi locali sul guscio, viewer OBJ/STL e foto di riferimento. Agente AI, STEP e ricostruzione automatica sono moduli successivi, come precisato in ARCHITECTURE.md.
+Il requisito open source è esplicito con D54; budget di hosting/hardware, provider, dominio e modello AI restano da definire. La demo 02 non implementa il sistema completo. Stato verificabile in [IMPLEMENTATION_STATUS.md](IMPLEMENTATION_STATUS.md), architettura prevista in [ARCHITECTURE.md](ARCHITECTURE.md).

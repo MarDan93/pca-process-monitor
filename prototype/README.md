@@ -1,5 +1,7 @@
 # Mould Studio — workspace di modellazione e brief
 
+Prova storica demo 02. La [specifica della piattaforma, revisione 3](../docs/product/README.md) definisce il prodotto online generico, con ingresso commerciale e chat principale. Le funzioni descritte qui appartengono alla demo e non costituiscono l'implementazione della nuova specifica. Il formato v4 e i requisiti originali sono conservati nell'[archivio](../docs/product/archive/DEMO_02_SPECIFICATION.md).
+
 Implementazione navigabile in italiano per raccolta dei requisiti e anteprima parametrica dei gusci. La grafica usa Three.js 0.180.0, fissato nel lockfile e servito localmente, senza CDN o chiamate AI. Non implementa ancora calcoli economici, analisi STEP, CAD dello stampo, simulazioni di processo o PCA/PLS.
 
 La seconda demo mette il modello al centro, con albero dei componenti e pannello contestuale da descrizione, file 3D o foto. `description.js` estrae comandi locali limitati a quote/spessore/raggio/materiale/finitura; non usa un modello linguistico. La proposta viene controllata geometricamente prima di applicarla e può essere annullata. `mesh-import.js` visualizza OBJ/STL con unità esplicite e ingombri, senza dedurre volume, materiale o solidità; i file non sono caricati su servizi esterni. Le foto sono riferimenti locali, senza ricostruzione automatica.

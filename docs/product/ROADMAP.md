@@ -1,97 +1,69 @@
-# Roadmap del prodotto — versione iniziale
+# Roadmap della piattaforma — revisione 3
 
-Stato: avvio della definizione. I requisiti confermati derivano dalla conversazione; le proposte sono da validare con l'utente. Le fasi non costituiscono una stima di tempi o costi.
+Data: 2026-10-15. La priorità recepisce il chiarimento: piattaforma online di fattibilità e simulazione dell'intero processo, con ingresso commerciale e conversazione trasversale. La demo di gusci è un esperimento precedente. Le fasi descrivono risultati e dipendenze, senza promettere durate non stimate.
 
-## Obiettivo
+Riferimenti: [specifica](SPECIFICATION.md), [architettura](ARCHITECTURE.md), [simulazione](SIMULATION.md), [backlog e accettazione](BACKLOG.md), [stato reale](IMPLEMENTATION_STATUS.md).
 
-Accompagnare la progettazione per lo stampaggio a iniezione dal brief cliente alla proposta tecnico-economica, al concept dello stampo, alla configurazione di pressa e ausiliari, alla simulazione e all'ottimizzazione su dati reali. Ridurre il lavoro ripetitivo rendendo verificabili alternative, dati, ipotesi e decisioni. La verifica tecnica rimane parte del percorso.
+## Percorso del prodotto
 
-## Requisiti confermati
+Cliente/mercato/domanda → prodotto e vincoli → alternative di stampo/cella → processo dal granulo al nastro → capacità e costo → dati reali e ottimizzazione. Revisioni e scenari consentono di tornare sulle scelte a partire dai risultati.
 
-- Partenza da requisiti cliente tecnici, estetici, produttivi e commerciali.
-- Analisi del pezzo 3D e, in prospettiva, reverse engineering a partire da geometria ricostruita e misure.
-- Volumi annui, durata della commessa, costo obiettivo e budget devono influire su stampo, pressa e automazione.
-- Proposta assistita di stampo: divisione, cavità, alimentazione, raffreddamento, materiali, estrazione e componenti.
-- Simulazione temporale di plastificazione e ciclo di stampaggio, con stato dei componenti e animazione di stampo, pezzo e robot.
-- Analisi e ottimizzazione con dati reali forniti dall'utente, PCA per esplorazione e PLS per previsione delle caratteristiche misurate.
-- Integrazione AI e UX professionale orientata alla semplicità; dettagli tecnici consultabili.
-- Nessun dato, CAD o caso produttivo reale disponibile all'avvio.
-- Utente principale della prima versione: progettista di stampi.
-- Primo caso: pezzo complesso con sottosquadri e carrelli; dettagli dei cinematismi da precisare.
-- Confronto di presse del parco esistente e di presse da scegliere/acquistare fin dalla prima versione.
-- Primo pezzo: guscio estetico per dispositivo elettronico da interno, 120 × 80 × 35 mm indicativi, con fissaggi e sottosquadri.
-- Ingresso geometria: STEP oppure creazione parametrica guidata.
-- Alternative materiale: ABS, PC/ABS, PP, PE e copolimeri; gradi e proprietà da definire.
-- Prima consegna: concept stampo 3D, confronto costi e compatibilità pressa.
-- Quantità annua libera scelta dall'utente; durata iniziale commessa 5 anni modificabile; costo industriale da ricavare dal confronto prima di fissare un obiettivo.
-- Guscio con finitura lucida e requisiti estetici elevati, fissaggio tramite soli agganci a scatto, confronto degli spessori 1,5 / 2 / 2,5 mm.
-- Due gusci, con ingombro complessivo 120 × 80 × 35 mm, altezze iniziali 50% / 50%, sei agganci smontabili con attrezzo. Faccia frontale e pareti laterali sono estetiche.
-- Tre agganci per lato lungo, obiettivo di 1.000 cicli di montaggio/smontaggio e raggio esterno iniziale 8 mm.
-- Quattro schede, sportello sigillato per il connettore, obiettivo IP65 e involucro chiuso con sfiato protetto di compensazione della pressione. Raffreddamento e tenute da verificare.
-- Schede 40 × 25 × 8 mm inclusi componenti, disposte due per due su un livello. Obiettivo IP65 anche con cavo collegato.
+La chat è disponibile in ogni modulo e opera sugli stessi dati delle proprietà. Software e modelli scelti per il percorso principale devono rispettare il requisito open source. Tutte le fasi includono provenienza, unità, dati mancanti e annullamento/versioni pertinenti.
 
-## Percorso dell'utente
+## P0 — Specifica e criteri del sistema
 
-Brief cliente → pezzo e materiale → requisiti e vincoli → alternative stampo/pressa → confronto economico → concept e verifiche → simulazione → dati di produzione → analisi e ottimizzazione → piano di prove e report.
+**Consegna:** requisiti generici, flussi commerciali, mappa dei moduli, contratto delle dipendenze, livelli di simulazione e scenari di accettazione. **Stato:** documentazione di questa revisione; non equivale all'implementazione.
 
-## Fase 0 — Specifica della prima versione
+Il caso elettronico resta opzionale. Non sono fissati come default globali forma, materiale, spessore, agganci, grado IP o durata della commessa.
 
-Definire utente principale, caso di riferimento, parco presse, output, priorità e criteri di accettazione. Chiarire prezzo di vendita, costo industriale obiettivo, costo dello stampo e modalità di ammortamento. Stabilire quali input sono obbligatori e quali possono essere assunti con indicazione esplicita.
+## P1 — Applicazione web e brief cliente conversazionale
 
-Consegna: specifica concordata, glossario e registro delle decisioni. Uscita: per ogni funzione iniziale sono chiari input, risultato e verifica.
+**Consegna:** progetti vuoti, salvataggio server, allegati e revisioni; home Cliente e mercato; chat con primo modello open source integrato e proprietà contestuali. Raccolta domanda/unità commerciale, mercato, costi/prezzi/budget, produzione e vincoli. Correzioni e dati mancanti sono visibili.
 
-## Fase 1 — UX navigabile del percorso completo
+**Dipendenze:** selezione e prova di un modello con licenza adatta, servizi applicativi e archivio. L'ambiente di sviluppo può eseguire lo stack prima della scelta dell'hosting.
 
-Progettare viste per brief, pezzo, alternative, pressa, simulazione e dati. Mettere in evidenza origine dei risultati, informazioni mancanti e affidabilità. Permettere revisione delle proposte AI, confronto delle alternative, salvataggio delle configurazioni e consultazione dei dettagli.
+**Uscita:** A01–A05 e A14 di [BACKLOG.md](BACKLOG.md). Due richieste commerciali su prodotti diversi rimangono indipendenti; riapertura e modifica da chat/proprietà convergono sugli stessi dati. Il sistema non genera valori di simulazione per campi mancanti.
 
-Consegna: prototipo interattivo su un caso dimostrativo. Uscita: l'utente completa il percorso e comprende risultati e assunzioni; i valori illustrativi sono identificati come tali.
+Questa è la prossima tranche di implementazione. Prima del rilascio esterno, indirizzo HTTPS, persistenza e accessi saranno verificati su una distribuzione concreta; il pacchetto offline non è il canale finale del prodotto.
 
-## Fase 2 — Base applicativa e contratto dei dati
+## P2 — Prodotto generico e strumenti geometrici
 
-Introdurre progetti, versioni di brief e configurazioni, unità di misura, materiali, presse, ausiliari, costi e requisiti. Gestire sia macchine possedute sia candidati da acquistare, distinguendo costi operativi e investimento aggiuntivo. Importare CSV/Excel con anteprima e mappatura. Collegare segnali temporali e misure finali a ciclo, lotto, pezzo, stampo e macchina. Registrare provenienza e qualità dei dati.
+**Consegna:** importazione STEP e mesh, scala/riferimenti, componenti e requisiti estensibili. Misure e operazioni CAD supportate sono richiamabili da chat o proprietà. Foto/quote vengono conservate come riferimenti per ricostruzione assistita; generazione da immagini è un'attività separata con verifica metrica.
 
-Consegna: dati e progetti persistenti. Uscita: importazione, correzione, salvataggio e riapertura preservano associazioni e unità.
+**Dipendenze:** P1 e prova del kernel su geometrie differenti. **Uscita:** A06–A07; scenari S01 e S02. Una flangia, una staffa e un involucro non vengono ricondotti forzatamente al template guscio. Le operazioni non supportate mantengono i requisiti senza produrre un risultato fittizio.
 
-## Fase 3 — Prima proposta tecnico-economica utilizzabile
+## P3 — Alternative di stampo e cella funzionale
 
-Confrontare configurazioni preliminari di cavità, ciclo, pressa e automazione. Calcolare capacità di pezzi conformi rispetto a ore disponibili, disponibilità, scarti e domanda. Esplicitare costi del materiale, macchina, personale, energia, manutenzione, investimenti e ammortamento evitando doppi conteggi. Analizzare sensibilità a domanda, tempo ciclo e scarti. L'agente propone alternative e usa strumenti di calcolo per confrontarle.
+**Consegna:** cavità e loro orientamenti, divisione/estrazione, ingombri stampo; pressa, robot cartesiano, organo di presa, nastro e ausiliari con riferimenti e corse reali. Proposte iniziali di circuiti di raffreddamento e controllo geometrico disponibile. Risorse esistenti e da acquistare sono confrontabili.
 
-Consegna: report esportabile con alternative, vincoli, costi, ipotesi e informazioni mancanti; concept semplificato chiaramente indicato come preliminare. Uscita: formule riproducibili su casi di riferimento e nessuna proposta che ignori un vincolo noto.
+**Dipendenze:** P2 e dati di almeno un asset per categoria nel caso di prova, eventualmente illustrativi e marcati. **Uscita:** A08–A10; scenario S03. Una modifica del layout evidenzia conseguenze su accesso, posa e dati da ricalcolare. La prima proposta non richiede il dettaglio esecutivo di ogni componente commerciale.
 
-## Fase 4 — Geometria e concept stampo
+## P4 — Prima simulazione completa L0 e confronto economico
 
-Importare STEP, verificare unità e integrità, misurare ingombro, volume e proprietà utili. Introdurre verifiche di spessori, sformi, sottosquadri e direzione di estrazione. Il primo caso deve includere carrelli: rappresentare direzioni, corse, sequenza di rientro, spazio disponibile e possibili interferenze. Generare concept parametrico per la famiglia di pezzi scelta. Verificare ingombri e compatibilità con la pressa. Animare apertura, movimento dei carrelli, espulsione e presa robot; distinguere animazione e verifica delle collisioni.
+**Consegna:** flusso materiale/condizionamento configurato, rifornimento, ciclo pressa/stampo, presa/trasferimento/deposito e nastro, con eventi, risorse e sovrapposizioni. Animazione 3D sincronizzata ai parametri; tempi dichiarati o ricavati da movimenti, con origine esplicita. Capacità per articolo e costo per unità commerciale derivano dallo scenario e dalle ipotesi economiche.
 
-Consegna: concept 3D e analisi geometriche tracciabili. Uscita: misure confrontate con geometrie note e limiti del concept espliciti. Un concept non equivale a disegni esecutivi completi dello stampo.
+**Dipendenze:** P1–P3; ricetta e stati iniziali sufficienti. **Uscita:** A11–A13 e A15; scenari S03–S06. Il flusso è completo dal materiale in ingresso al pezzo sul nastro; il livello L0 non viene presentato come previsione fisica dettagliata di fusione, riempimento o deformazione.
 
-## Fase 5 — Simulazione temporale verificata
+Questa è la prima consegna integrata di studio tecnico-economico e ciclo animato. P1 è già utilizzabile per il brief; P4 chiude il primo percorso di simulazione semplificata.
 
-Implementare modelli con ipotesi documentate per plastificazione, bilanci termici, raffreddamento e tempi del ciclo. Usare proprietà del materiale con fonte e campo di validità. Collegare timeline e stato simulato ai componenti 3D. Introdurre solutori dettagliati di riempimento, ritiro e deformazione secondo priorità e risorse. Verificare ogni modello prima di usare i suoi risultati per raccomandazioni.
+## P5 — Modelli L1 di materiale, plastificazione e raffreddamento
 
-Consegna: simulazione riproducibile sul caso di riferimento. Uscita: risultati confrontati con riferimenti pertinenti, stabilità numerica e campo di applicazione dichiarato. Dati simulati e misure reali conservano provenienza distinta.
+**Consegna:** bilanci e correlazioni pertinenti per inventari/condizionamento, plastificazione e termica, con proprietà del grado e risorse. Confronto di circuiti e criteri di estrazione. Grafici e parametri sono collegati ai fenomeni effettivamente modellati.
 
-## Fase 6 — Analisi e ottimizzazione su dati reali
+**Dipendenze:** P4 e casi tecnici/dati per verificare ogni modello. **Uscita:** scenario S07 e criteri di confronto specifici definiti prima dell'implementazione. Fonti, campo di validità, errori e tempi di calcolo documentati. Le analisi dettagliate L2 entrano per fenomeno quando esiste una necessità e un solutore verificabile.
 
-Verificare e integrare PCA, aggiungere PLS, definire preprocessing e caratteristiche estratte dai segnali. Validare su gruppi di dati separati per lotto o campagna evitando contaminazioni. Visualizzare copertura delle condizioni, prestazioni e incertezza dove supportata. Cercare configurazioni entro vincoli tecnici e condizioni supportate dai dati; proporre esperimenti per ampliare la copertura. Conservare versione del modello e dataset associato.
+## P6 — Analisi e ottimizzazione su dati reali
 
-Consegna: analisi, previsioni e confronto di configurazioni con piano di verifica. Uscita: dati reali sufficienti e validazione documentata. Dati dimostrativi permettono sviluppo e verifica del flusso software, senza dimostrare accuratezza in produzione.
+**Consegna:** importazione dati di processo/misure qualità, associazione ciclo/lotto/articolo, preprocessing e modelli PCA/PLS versionati. Ottimizzazione vincolata con evidenza della copertura e piano di prova. Gli scenari simulati restano distinti dai dati misurati.
 
-## Fase 7 — Prodotto utilizzabile
+**Dipendenze:** dati reali pertinenti e correzione/verifica della libreria PCA di base. **Uscita:** A15 e scenari di dataset separati per campagne, con confronto rispetto a baseline e criteri concordati sul target.
 
-Verificare il percorso completo, gestione degli errori, recupero dei progetti, accessi, trattamento dei file e credenziali AI secondo il contesto concordato. Preparare guida, installazione/deployment e casi di accettazione. Validare con utenti del ruolo scelto e un caso reale quando disponibile.
+## P7 — Verifica e rilascio online
 
-Consegna: applicazione rilasciabile con capacità e limiti definiti. Uscita: criteri concordati superati e output comprensibili, esportabili e tecnicamente revisionabili.
+**Consegna:** percorso completo verificato, salvataggi/ripristino, gestione lavori, accessi, deployment ripetibile, guida e report esportabili. Hardware/hosting sono dimensionati in base a misure e carichi concordati.
 
-## Architettura proposta, da confermare
+**Uscita:** criteri applicabili del backlog superati; capacità disponibili, preliminari e non supportate sono comprensibili. Verifica su casi diversi e almeno un caso reale quando disponibile. Una prima installazione di prova può precedere P7; non implica completamento di tutti i moduli.
 
-Prototipo attuale: interfaccia web in moduli JavaScript e Three.js 0.180.0, dipendenza fissata nel lockfile e servita localmente. Per il prodotto completo: backend Python con API, strumenti CAD e calcoli separati, archivio persistente e job asincroni per elaborazioni lunghe. L'eventuale passaggio a React/TypeScript resta da valutare. Un coordinatore AI userà strumenti specializzati con input/output strutturati. Più agenti saranno introdotti se migliorano un compito misurabile. Nessun fornitore AI è ancora scelto.
+## Trattamento delle decisioni aperte
 
-## Base esistente
-
-La base di partenza contiene una libreria PCA, diagnostica, grafici e un notebook per Colab, senza suite implementata per la libreria. Il progetto ora aggiunge il prototipo web e test per geometria e browser; il workflow tecnico-economico resta da implementare. Durante onboarding è stato rilevato che lo spike sintetico continuo aumenta Q senza superare il limite Q: verificare e correggere la normalizzazione delle statistiche prima di usarle per raccomandazioni.
-
-## Prossimo passo
-
-La demo 02 porta il modello al centro di un workspace CAD: albero dei componenti, pannello contestuale e tre ingressi da descrizione, file e foto. Implementa comandi parametrici locali con proposta/annullamento, viewer OBJ/STL con unità esplicite e foto come riferimento. Conserva brief, geometria dei gusci R8, varianti, export OBJ/JSON e parco presse. Ventuno test automatici e i controlli browser sono passati il 2026-10-15, compreso il bundle offline.
-
-Proseguire con persistenza di modelli/allegati e revisioni, kernel CAD per STEP e operazioni parametriche, poi agente conversazionale collegato agli stessi comandi. La ricostruzione da foto dovrà usare quote note e viste multiple, con geometria revisionabile. In seguito: stampabilità, concept stampo e compatibilità pressa/costi, simulazioni e ottimizzazione. I dettagli interni del guscio, le tenute e i dati termici restano da definire. Riepilogo in REFERENCE_CASE.md; confini e opzioni open source in [ARCHITECTURE.md](ARCHITECTURE.md).
+Provider/dominio, numero di utenti, hardware AI e livello fisico per i primi casi vengono definiti quando cambiano una scelta concreta. Non servono altre domande sulle dimensioni del guscio per iniziare P1. Dettagli di ciascun prodotto, materiale, stampo e impianto sono informazioni dei singoli progetti.

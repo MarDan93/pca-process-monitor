@@ -1,68 +1,66 @@
-# Primo flusso UX — bozza di lavoro
+# Esperienza della piattaforma online
 
-Destinatario confermato: progettista di stampi. Caso: due gusci estetici per elettronica da interno, assieme 120 × 80 × 35 mm, altezze iniziali uguali e raggio esterno R8. Sei agganci, tre per lato lungo, smontabili con attrezzo, obiettivo 1.000 cicli. Faccia frontale e laterali lucide con requisiti estetici elevati. Ingresso STEP o creazione parametrica guidata. Confronto presse esistenti e da acquistare. Prima consegna: concept stampo 3D, confronto costi e compatibilità pressa.
+Specifica UX, revisione 3 del 2026-10-15. Il progettista parte dalla richiesta del cliente e costruisce scenari tecnico-economici di produzione. La geometria è una delle viste del progetto; la home iniziale mette in primo piano commessa, domanda, mercato e obiettivi.
 
-Il prototipo /prototype implementa raccolta brief, pezzo/materiale, varianti di spessore, anteprima 3D parametrica del pezzo, presse candidate e riepilogo con export JSON/OBJ. Le alternative 1,5 / 2 / 2,5 mm restano distinte dallo spessore finale. Sono disponibili volume geometrico, rotazione, viste standard, esploso e trasparenza; non sono risultati di simulazione fisica. Le altre viste descritte sotto restano in progettazione.
+## Avvio di un progetto
 
-## Principio
+La home offre «Nuovo studio» e progetti esistenti. Esempi dimostrativi sono un'opzione separata. Un nuovo studio non contiene un guscio, una quantità o un materiale già scelti.
 
-Revisione dopo la demo 01: l'utente richiede un ambiente di modellazione professionale e moderno, con il modello al centro e ingressi da dialogo, file e foto. La demo 02 introduce albero, viewport e pannello contestuale, comandi parametrici locali, viewer OBJ/STL e foto come riferimento. Il percorso successivo è visibile nel workspace; agenti e ricostruzione automatica sono da sviluppare. Vedere [architettura](ARCHITECTURE.md) per i confini fra immagine, mesh e CAD.
+La prima domanda è aperta: «Che cosa chiede il cliente e quale decisione vuoi preparare?». È possibile rispondere a testo e allegare documenti, foto o file geometrici. L'assistente struttura il brief e pone poche domande mirate all'informazione che cambia la fattibilità: mercato/uso, quantità e unità commerciale, consegne e obiettivo economico.
 
-Il progetto conserva un brief strutturato che può essere compilato direttamente o tramite conversazione con l'agente. La conversazione non è l'unico luogo in cui restano i requisiti: campi, fonti, ipotesi e revisioni devono essere consultabili e modificabili. L'agente pone domande contestuali, iniziando da ciò che cambia le scelte di stampo e pressa.
+Esempio illustrativo: «Il cliente vuole produrre staffe per elettrodomestici, 600.000 pezzi l'anno, obiettivo 0,40 euro, usando se possibile le presse esistenti». Il sistema registra quanto fornito e lascia aperti grado materiale, geometria, qualità, calendario e significato del costo. Non assume le caratteristiche di un contenitore elettronico.
 
-## Struttura dello spazio di lavoro
+## Uno spazio condiviso
 
-- Navigazione per progetto e fase: brief, pezzo, alternative, stampo/pressa, simulazione, dati/ottimizzazione, report.
-- Area centrale per geometria 3D, tabelle di confronto o grafici secondo la fase.
-- Pannello contestuale con proprietà selezionate, criticità, dati mancanti e contributo dell'agente.
-- Riepilogo persistente di versione del progetto, stato delle verifiche e informazioni ancora necessarie.
+- Testata: commessa, scenario/revisione, salvataggio server e stato dei lavori.
+- Navigazione: Cliente e mercato; Prodotto; Stampo; Cella; Processo; Confronto e dati.
+- Conversazione principale persistente con contesto del modulo o dell'oggetto selezionato.
+- Area dei risultati: scheda commerciale, prodotto/stampo/cella 3D, timeline, grafici o confronto secondo il compito.
+- Proprietà contestuali apribili per modificare valori, fonti, unità e vincoli; non una lunga procedura obbligatoria di moduli.
+- Stato visibile: dati mancanti, ipotesi, risultati disponibili, verifiche eseguite e risultati da ricalcolare.
 
-Non affidare significato al solo colore: accompagnare stati e criticità con etichette e spiegazioni. Mostrare unità e provenienza accanto ai valori tecnici ed economici.
+Il tono visivo è professionale, leggibile e moderno. Colore e animazione aiutano la lettura ma ogni stato ha anche un'etichetta. Il pannello di dettaglio non deve ridurre la conversazione a una funzione marginale.
 
-## 1. Avvio e brief cliente
+## Percorso principale
 
-L'utente crea il progetto e descrive richiesta e funzione del prodotto. Il sistema struttura quantità annua, lotti, durata della commessa, qualità, costo industriale obiettivo, prezzo di vendita e budget. Segnala informazioni mancanti e distingue dati forniti, estratti da file e ipotesi.
+| Passaggio | Azione dell'utente nella chat | Risultato visibile |
+| --- | --- | --- |
+| Cliente | Descrive domanda, mercato, prezzo/costo e vincoli | Brief sintetico con campi aggiornati e dati mancanti |
+| Prodotto | Descrive, allega geometria o immagini/misure | Modello o riferimento con scala, proprietà e stato delle analisi |
+| Stampo | Chiede alternative compatibili con domanda e prodotto | Layout cavità, estrazione, raffreddamenti e ragioni del confronto |
+| Cella | Seleziona pressa/robot/nastro o descrive risorse disponibili | Layout e gradi di libertà, pose e compatibilità verificabili |
+| Processo | Definisce ricetta e chiede di vedere dal materiale al deposito | Sequenza, timeline e stati dei componenti/materiale |
+| Confronto | Varia volumi, layout, ciclo o ipotesi | Capacità, costi, criticità e risultati da ricalcolare |
+| Dati reali | Carica dati e definisce target/obiettivi | Esplorazione PCA, previsione PLS e configurazioni da provare |
 
-Risultato visibile: scheda sintetica della richiesta, allegati, requisiti vincolanti e domande aperte. La geometria può essere acquisita secondo la modalità che verrà scelta.
+Il percorso consente di tornare a qualunque modulo mantenendo scenario e contesto. Le dipendenze bloccano soltanto le operazioni che non possono ancora produrre un risultato utilizzabile.
 
-## 2. Analisi del pezzo
+## Tre ingressi per il prodotto
 
-Visualizzare geometria e misure con selezione delle regioni. Collegare spessori, superfici, tolleranze, materiale e sottosquadri alle aree del pezzo quando possibile. Proporre direzioni di estrazione con motivazioni e indicare i movimenti laterali necessari. Non presentare proprietà del materiale dedotte dal solo colore o dalla geometria.
+**Testo:** l'agente ricava requisiti e operazioni supportate. Mostra la differenza rispetto alla revisione precedente, permette correzione/annullamento e conserva il dialogo originale. I campi e la chat usano le stesse operazioni di aggiornamento.
 
-Risultato visibile: elenco delle osservazioni geometriche e delle alternative da approfondire. Valutazioni automatiche mostrano metodo e limiti.
+**File 3D:** il sistema identifica formato, unità, revisione, componenti e integrità disponibile. Unità mancanti vanno chiarite prima delle misure metriche. Una mesh non viene presentata come solido CAD verificato.
 
-## 3. Confronto delle alternative
+**Foto/schizzi:** l'interfaccia chiede quota nota e viste utili alla ricostruzione. Ipotesi e regioni non osservabili sono esplicite. Una forma generata a scopo illustrativo rimane distinguibile dalla geometria che alimenta le analisi.
 
-Confrontare candidati per numero di cavità, alimentazione, carrelli, pressa, ausiliari e automazione. Distinguere macchina disponibile da macchina da acquistare. Mostrare capacità annua di pezzi conformi, costo unitario stimato, investimento, quota di ammortamento, tempo ciclo, requisiti mancanti e criticità.
+## La simulazione come esperienza esplorabile
 
-L'utente può cambiare priorità e ipotesi e osservare come varia il confronto. Ogni stima conserva il dettaglio dei costi, le fonti e la versione. Le alternative non ancora verificabili restano identificabili come preliminari.
+La vista Processo combina cella 3D, flusso materiale e timeline con tracce per essiccatore, alimentazione, vite, pressa/stampo, robot e nastro. Il flusso attraversa risorse reali o semplificate con collegamenti visibili.
 
-## 4. Concept stampo e pressa
+Selezionare una fase evidenzia componenti e pezzi coinvolti e apre tempi, parametri, fonti e risultati. La chat accetta richieste come «Perché il robot aspetta?», «Mostra l'orientamento al deposito», «Confronta un'altra disposizione delle cavità» e «Cosa cambia se il trasporto materiale è più lento?», usando i dati della simulazione.
 
-Mostrare componenti e movimenti: parti fisse/mobili, carrelli, estrazione e robot. Collegare la selezione 3D alle caratteristiche e ai vincoli. Rendere visibili corse, sequenze, ingombri e compatibilità con i candidati pressa. Separare stato delle verifiche geometriche, cinematiche e di processo.
+Controlli: avvio, pausa, passo per evento, riavvolgimento e velocità. Cambiare la velocità di riproduzione non modifica il tempo simulato. Durante il calcolo si mostrano avanzamento, annullamento e motivo di eventuali attese.
 
-Le proposte dell'agente devono poter essere confrontate con la configurazione precedente senza perdere le scelte dell'utente.
+La posa desiderata sul nastro e le rotazioni del robot sono configurabili. Il sistema rende visibile se la posa è raggiungibile con gli assi disponibili; una diversa soluzione richiede un nuovo scenario. Percorsi, piani di separazione e circuiti di raffreddamento possono essere isolati visivamente.
 
-## 5. Simulazione e verifica
+## Dettagli e gestione delle revisioni
 
-Timeline con avvio, pausa, avanzamento per fase e velocità di riproduzione. Stato dei componenti sincronizzato ai risultati realmente calcolati. Grafici con unità, limiti, modello e fonte dei parametri. L'animazione deve distinguere movimenti configurati da campi fisici calcolati.
+Da un valore si accede a unità, fonte e ipotesi; da un risultato alle condizioni che lo hanno prodotto. Cambiare dati non aggiorna silenziosamente una simulazione precedente. L'utente vede «risultato della revisione X, da ricalcolare per Y» e può confrontare entrambi.
 
-Risultato visibile: scenari confrontabili, ipotesi e criticità associate a momento e componente.
+Se un'operazione non è supportata, l'assistente conserva il requisito e spiega quale rappresentazione o dato permette di proseguire. In assenza di motore AI configurato l'applicazione espone la disponibilità reale e mantiene utilizzabili le proprietà; non etichetta un parser come agente AI.
 
-## 6. Dati reali e ottimizzazione
+## Riferimento GetcraftAI
 
-Importazione guidata con anteprima, mappatura, ID ciclo e unità. Collegare misure del pezzo ai cicli e al contesto. Mostrare qualità e copertura del dataset prima dell'addestramento. Per PCA e PLS permettere approfondimento tecnico e una spiegazione orientata alle decisioni. Ogni configurazione proposta conserva obiettivi, vincoli, versione del modello e piano delle prove.
+Riferimento richiesto dall'utente per semplicità di accesso e interazione conversazionale con risultati visivi. La ricerca del sito candidato `https://getcraftai.com` non è stata possibile nell'ambiente: il proxy ha restituito 403. Non sono state verificate funzionalità, stack, licenze o prestazioni del servizio e non vengono usati come requisiti tecnici.
 
-## 7. Consegna
-
-Raccogliere brief, configurazione scelta, confronto delle alternative, concept, costi, ipotesi, verifiche eseguite e questioni tecniche aperte. Formati di export e contenuto della prima consegna da concordare.
-
-## Verifiche UX da definire sul prototipo
-
-- Un progettista ricostruisce il brief e riconosce le ipotesi senza rileggere la conversazione.
-- Comprende perché una pressa o una soluzione con carrelli è proposta o esclusa.
-- Cambia volumi e tariffe e ritrova le conseguenze nei costi e nella capacità.
-- Riconosce differenza fra dati reali, stime, proposte AI e risultati verificati.
-- Confronta revisioni ed esporta un risultato revisionabile.
-
-Queste sono ipotesi di accettazione del prodotto. Il prototipo implementato verifica raccolta e navigazione dei requisiti e geometria semplificata dei gusci. Confronto economico, CAD dello stampo e analisi dei risultati saranno sviluppati nelle fasi successive.
+I criteri verificabili del nostro prodotto sono in [BACKLOG.md](BACKLOG.md). La demo 02 rimane una prova di alcune interazioni geometriche, descritta in [IMPLEMENTATION_STATUS.md](IMPLEMENTATION_STATUS.md).

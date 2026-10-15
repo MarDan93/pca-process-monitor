@@ -1,6 +1,6 @@
-# Caso di riferimento — involucro elettronico
+# Caso opzionale — involucro elettronico
 
-Requisiti concordati al 2026-10-15. I valori descrivono il caso dimostrativo da progettare e verificare; non sono risultati sperimentali.
+Requisiti concordati al 2026-10-15. I valori descrivono un caso dimostrativo da progettare e verificare; non sono risultati sperimentali né default della piattaforma. La [specifica generale](SPECIFICATION.md) ammette prodotti differenti e parte dal brief cliente. Questo caso può essere caricato come esempio e usato nella verifica insieme a geometrie diverse.
 
 | Aspetto | Requisito |
 | --- | --- |
@@ -30,7 +30,7 @@ Requisiti concordati al 2026-10-15. I valori descrivono il caso dimostrativo da 
 
 Brief e requisiti modificabili, varianti di spessore, gusci 3D con profilo arrotondato, rotazione, esploso/assemblato, trasparenza, volume geometrico, export OBJ/JSON, catalogo presse e persistenza nel browser. Sedici test geometrici e controllo funzionale in Chromium passati.
 
-## Prossima consegna tecnica
+## Attività tecniche aperte del caso
 
 Inserire gli ingombri delle schede e progettare supporti, giunzione, agganci, sportello, passaggio cavo e sfiato. Le aperture, gli agganci e l'elettronica non sono ancora modellati. IP65, durata a 1.000 cicli e prestazioni termiche restano da verificare; la geometria preliminare non è un progetto stampo esecutivo.
 

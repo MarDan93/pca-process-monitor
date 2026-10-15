@@ -1,5 +1,7 @@
 # Mould Studio · Demo 02
 
+Questa demo locale precede il chiarimento sul prodotto. La [piattaforma prevista, revisione 3](../docs/product/README.md) partirà dal brief commerciale via chat, sarà online e supporterà prodotti differenti; il guscio qui presente è soltanto un esempio. Il pacchetto sottostante conserva le funzionalità della demo 02.
+
 1. [Scarica il pacchetto ZIP](progettazione-stampi-demo.zip?raw=true).
 2. Estrai il contenuto sul computer.
 3. Apri **Progettazione-stampi.html** con Chrome, Edge, Firefox o Safari aggiornati.

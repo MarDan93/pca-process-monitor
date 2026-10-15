@@ -1,97 +1,99 @@
-# Specifica iniziale — caso e raccolta del brief
+# Specifica della piattaforma — revisione 3
 
-Stato: requisiti confermati fino a D40. Prototipo di raccolta del brief e anteprima parametrica 3D del pezzo implementati; stampo e simulazioni di processo ancora da sviluppare.
+Data: 2026-10-15. Requisiti aggiornati dopo il chiarimento sull'intero sistema. Questo documento descrive il prodotto da costruire. Le funzionalità della demo esistente sono elencate separatamente in [IMPLEMENTATION_STATUS.md](IMPLEMENTATION_STATUS.md).
 
-## Caso di riferimento concordato
+## Scopo e confini
 
-- Utente principale: progettista di stampi.
-- Pezzo: involucro composto da due gusci estetici abbinati, anteriore e posteriore.
-- Destinazione: dispositivo elettronico da interno.
-- Ingombro esterno assemblato: 120 × 80 × 35 mm. Ripartizione iniziale delle altezze 50% / 50%, ossia 17,5 mm per metà, modificabile. Sono requisiti del caso dimostrativo, non misure reali.
-- Acquisizione geometria prevista: importazione STEP oppure costruzione parametrica guidata.
-- Materiali da confrontare: ABS, PC/ABS, PP, PE e copolimeri. Famiglie specifiche, gradi commerciali e proprietà fisiche ancora da definire; i copolimeri non costituiscono una scheda materiale unica.
-- Stampo: deve affrontare sottosquadri e carrelli. Divisione, numero di cavità, corse e azionamenti ancora da definire.
-- Presse: includere sia macchine disponibili sia candidati da acquistare.
-- Prima consegna utilizzabile del prodotto: concept stampo 3D, confronto dei costi e compatibilità pressa, con ipotesi e verifiche revisionabili.
-- Quantità annua: scelta liberamente dall'utente, senza fasce o tetto commerciale predefinito. Quantità assente non è interpretata come domanda infinita.
-- Durata iniziale della commessa: 5 anni, modificabile.
-- Costo industriale iniziale: risultato da ricavare dal confronto. L'utente può poi fissare un obiettivo; un obiettivo assente in modalità esplorativa è ammesso.
-- Finitura lucida con requisiti estetici elevati su faccia frontale e pareti laterali; criteri quantitativi ancora da definire.
-- Sei agganci a scatto, tre per lato lungo, smontabili con attrezzo senza danni, con obiettivo di 1.000 cicli; dimensioni, posizioni precise, accesso dell'attrezzo e forze ancora da definire.
-- Raggio esterno iniziale degli angoli: 8 mm. Il modello parametrico lo applica al profilo in pianta dei gusci.
-- Quattro schede elettroniche disposte due per due su un livello, ciascuna con ingombro 40 × 25 × 8 mm inclusi componenti. Quote di posizionamento e supporti da definire.
-- Apertura per il connettore dietro uno sportello sigillato.
-- Obiettivo IP65. La richiesta iniziale di ventilazione è stata precisata in involucro chiuso con sfiato protetto per compensare la pressione. Potenza dissipata e soluzione di raffreddamento restano da dimensionare.
-- IP65 richiesto anche con cavo collegato; tenuta del passaggio cavo da progettare oltre allo sportello.
-- Spessori candidati: 1,5 / 2 / 2,5 mm. Lo spessore finale non è ancora selezionato.
+Piattaforma online per studiare fattibilità commerciale e tecnica dello stampaggio a iniezione, configurare prodotto, stampo e cella e simulare il percorso dal granulo al pezzo sul nastro. L'utente confronta alternative prima di investire e prepara verifiche tecniche su ipotesi tracciabili. Il ruolo principale già indicato è il progettista di stampi; il brief deve accogliere anche informazioni commerciali e produttive del cliente.
 
-## Dati del brief
+Il progetto può riguardare prodotti differenti. La geometria può essere descritta, importata o ricostruita con assistenza da immagini e misure. La copertura della generazione geometrica cresce per operazioni supportate: accettare un prodotto generico non significa promettere la generazione o la simulazione accurata di qualsiasi forma con qualsiasi dato.
 
-| Gruppo | Dati | Unità / significato |
+La modellazione produce rappresentazioni sufficienti alle decisioni richieste. L'obiettivo comprende orientamenti, corse, ingombri, sequenze, raffreddamenti e parametri; la documentazione esecutiva completa di uno stampo e la programmazione certificata della macchina restano fuori dalla prima versione.
+
+## Requisiti trasversali
+
+- Fruizione dal browser; progetti, allegati e revisioni persistenti sul server. La demo HTML resta un artefatto di sviluppo.
+- Conversazione come ingresso principale in ogni modulo. Proprietà e campi strutturati sono una modalità contestuale di lettura/correzione degli stessi dati.
+- Un nuovo progetto parte dalla richiesta del cliente, senza geometria, materiale, quantità, vita commessa o prezzo impliciti. Esempi e template si caricano su scelta esplicita e mantengono origine dimostrativa.
+- Software, grafica, strumenti di calcolo e integrazione AI basati su componenti open source. Il modello AI e la relativa licenza saranno selezionati esplicitamente; accesso ai pesi e licenza open source non sono sinonimi.
+- Ogni dato distingue valore fornito, estratto, assunto, stimato, simulato o misurato, con fonte, unità, revisione e stato delle verifiche.
+- Un dato assente resta assente. Può impedire una specifica valutazione senza impedire la raccolta del resto del progetto.
+- Le modifiche aggiornano le dipendenze: risultati su revisioni precedenti restano consultabili e sono segnalati come da ricalcolare.
+
+## M01 — Cliente, mercato e fattibilità commerciale
+
+È il punto di ingresso del progetto. La chat raccoglie funzione e mercato del prodotto, destinatari, requisiti applicabili, obiettivi economici e vincoli. Non richiede subito dati che non cambiano la decisione corrente.
+
+| Gruppo | Informazioni da poter descrivere | Uso nei moduli successivi |
 | --- | --- | --- |
-| Identità | Nome progetto, cliente, riferimento articolo/RFQ | Testo |
-| Domanda | Quantità annua, lotto, durata commessa | Pezzi conformi, pezzi/lotto, anni |
-| Economia | Modalità esplorativa/obiettivo fissato, costo industriale obiettivo, prezzo vendita, budget stampo | EUR/pezzo conforme, EUR/pezzo, EUR; voci distinte |
-| Pezzo | Nome, funzione, materiale/alternative, grado | Descrizione; proprietà da associare a fonti prima dei calcoli |
-| Geometria | Lunghezza, larghezza, altezza, varianti di spessore, spessore nominale selezionato | mm; varianti distinte dalla scelta finale |
-| Qualità | Finitura strutturata, superfici estetiche, tolleranze, difetti ammessi | Finitura lucida confermata; criteri di accettazione da approfondire |
-| Estrazione | Fissaggi, sottosquadri, vincoli | Descrizione iniziale; geometria e cinematismi da verificare |
-| Presse | Identità, disponibilità/acquisto, chiusura, passaggio colonne, altezze stampo, corsa apertura, volume iniezione | kN, mm, cm³; dati macchina forniti |
-| Costi pressa | Tariffa oraria, investimento acquisto | EUR/h, EUR; contenuto della tariffa da specificare |
+| Richiesta | Cliente, RFQ, articolo/revisione, funzione, mercato, applicazione, area di vendita | Requisiti tecnici e criteri di accettazione |
+| Domanda | Quantità annue per scenario/anno, lotti, stagionalità, crescita, ricambi, scadenze | Cavità, numero di stampi/celle, capacità e servizio |
+| Unità commerciale | Pezzo, kit o assieme; distinta e quantità di ciascun componente | Conversione della domanda e costi confrontabili |
+| Economia | Prezzo vendita, valuta, costo industriale obiettivo oppure esplorativo, margine richiesto | Alternative ammissibili e sensibilità |
+| Investimenti | Budget separati per stampo, pressa, automazione e ausiliari; titolarità e vita attesa | Acquisto, ammortamento e confronto con risorse esistenti |
+| Produzione | Stabilimento, turni/ore, cambi produzione, disponibilità, scarti e vincoli di capacità | Produzione conforme e lead time |
+| Accettazione | Qualità funzionale/estetica, tolleranze, ambiente, prove e documenti richiesti | Vincoli sul prodotto e verifica finale |
 
-## Contratto iniziale del progetto esportato
+Quantità annua libera, senza tetto commerciale prefissato; assenza di quantità e domanda illimitata non sono equivalenti. Durata e valuta sono dati di progetto. Il prezzo di vendita non sostituisce il costo industriale. Una percentuale di margine deve indicare la base di calcolo.
 
-- `schema_version`: versione 4 per includere profilo arrotondato, disposizione e cicli richiesti degli agganci.
-- `id`, `created_at`, `updated_at`: identità e revisioni temporali del progetto.
-- `dataset_kind`: progetto compilato o esempio UX; le singole voci mantengono anche provenienza propria.
-- `currency`, `units`: valuta e unità di base esplicite.
-- `brief`, `part`, `machines`: gruppi di input; campi numerici mancanti sono `null`.
-- `part.wall_options_mm`: lista di spessori candidati positivi; `part.nominal_wall_mm` conserva separatamente l'eventuale scelta finale.
-- `part.surface_finish` e `part.fastening`: finitura e fissaggio in formato strutturato.
-- `part.opening`, `part.dimension_basis`, `part.front_share_percent`: configurazione geometrica e significato degli ingombri.
-- `part.aesthetic_surfaces`, `part.snap_service`, `part.snap_count`: superfici a vista e requisiti degli agganci.
-- `part.corner_radius_mm`, `part.snap_layout`, `part.snap_cycles`: raggio del profilo, disposizione e vita richiesta degli agganci.
-- Campi opzionali aggiuntivi del formato 4: `electronics_configuration`, `pcb_count`, `external_openings`, `ip_target`, `thermal_strategy`, `connector_strategy`, `ip_in_use`, `pcb_layout`, `pcb_length_mm`, `pcb_width_mm`, `pcb_height_mm`. I requisiti sono distinti dalla verifica ingegneristica; nei progetti precedenti i campi assenti restano da definire.
-- `concept_preview.wall_mm`: spessore visualizzato, distinto dalla selezione dello spessore nominale finale.
-- `sources`: requisiti del caso, valori forniti dall'utente o esempi illustrativi. Nessun valore viene presentato come misura reale solo perché compilato.
-- Export: aggiunge istante di export, capacità del prototipo e `engineering_validation: not_performed`.
+Output: brief strutturato, fonti/allegati, domande mancanti ordinate per impatto, scenari di domanda e obiettivi. Testo originale e informazioni aggiuntive restano conservati: la tabella non limita ciò che il cliente può descrivere. La prima revisione può essere completa dal punto di vista commerciale e ancora incompleta per simulare.
 
-I progetti di versione 1, 2 e 3 vengono aggiornati in memoria conservando dati, note e scelte esistenti. Uno spessore nominale precedente diventa anche candidato; i nuovi requisiti mancanti non sono imposti automaticamente. I vecchi profili privi di raggio restano a spigolo vivo (R0). Il comando di completamento del caso riempie solo i requisiti mancanti, senza sostituire valori validi, incluso R0. Il salvataggio avviene alle successive modifiche; il ripristino dei backup usa la stessa migrazione.
+## M02 — Prodotto
 
-Il formato supporta raccolta dei requisiti e configurazione delle varianti. La struttura per scenari di domanda, versioni, geometrie/allegati, fonti documentali e condizioni produttive sarà estesa insieme alle decisioni successive.
+Descrizione libera e requisiti estensibili per uno o più articoli/componenti: funzione, geometria, dimensioni, materiale/grado, superfici, tolleranze, estetica, assemblaggio e caratteristiche speciali. Le proprietà specifiche appartengono al prodotto o alla feature interessata; non diventano campi obbligatori globali.
 
-## Criteri del primo prototipo
+Ingressi: testo, file CAD/mesh, foto, schizzi e quote. Immagini concettuali possono aiutare l'esplorazione della forma. Una foto richiede scala nota e informazioni aggiuntive per ricostruzione metrica; interni, materiale e tolleranze non vengono inventati.
 
-1. Un progettista può compilare e rivedere brief, pezzo e macchine senza passare da una conversazione obbligatoria.
-2. Ogni campo numerico indica unità e intervallo ammesso; zero resta distinto da dato assente dove ammesso.
-3. Valori non validi non sovrascrivono l'ultimo valore salvato e impediscono export/cambio schermata finché non sono corretti.
-4. Le macchine esistenti e da acquistare restano distinte; nessuna viene dichiarata compatibile prima delle verifiche.
-5. Il progetto sopravvive al reload nel browser; export e stato del salvataggio sono visibili.
-6. L'esempio UX conserva il progetto precedente e rende riconoscibili i valori illustrativi.
-7. Desktop e mobile consentono la compilazione senza scorrimento orizzontale.
-8. I moduli ancora da implementare sono identificati chiaramente.
-9. Le varianti di spessore possono essere aggiunte/rimosse, senza duplicati o valori non positivi, e conservate nel riepilogo e nell'export.
-10. Nessuna variante viene dichiarata ottimale o fisicamente verificata senza il motore e i dati pertinenti.
-11. L'anteprima 3D supporta rotazione, viste standard, esploso di due gusci e trasparenza, con fallback leggibile quando la grafica non è disponibile.
-12. Parametri geometrici impossibili invalidano anteprima ed export, senza esportare una geometria precedente come se fosse aggiornata.
-13. Il download OBJ contiene i componenti separati nella configurazione assemblata; l'esploso è solo una modalità di visualizzazione.
+Output: geometria con sistema di riferimento, requisiti collegati a regioni/feature quando disponibili, osservazioni di stampabilità e dati mancanti. Un modello può essere un solido CAD, una mesh o un riferimento, con capacità di analisi esplicite. Geometrie diverse da un involucro devono mantenere le proprie caratteristiche.
 
-## Primo modello geometrico implementato
+## M03 — Stampo
 
-Gusci a parete uniforme con profilo rettangolare arrotondato, senza sformi o ritiro. Apertura sul retro, su lato corto o assieme di due gusci; per l'assieme sono configurabili altezza totale e ripartizione. Il raggio si applica al profilo perpendicolare all'apertura. Il profilo interno usa il raggio esterno meno lo spessore, limitato a zero. Gli archi sono approssimati con 24 segmenti per quarto di cerchio; il volume è quello della mesh poligonale. Nei test sul caso R8, tutti e tre gli spessori hanno una differenza relativa inferiore allo 0,01% rispetto al volume del profilo con archi ideali. Il caso iniziale confronta 1,5 / 2 / 2,5 mm senza scegliere lo spessore finale.
+Alternative per numero/disposizione delle cavità, piano e direzione di divisione, inserti, materiali, alimentazione, sfiati, carrelli/lifters, estrazione e circuiti di raffreddamento. Stampo monoimpronta, multicavità o famiglia richiedono rappresentazione distinta della produzione per articolo.
 
-La geometria non include ancora agganci, raccordi fuori piano, nervature, battute, sedi per l'attrezzo, canali, estrattori o stampo. I 1.000 cicli sono un requisito non ancora verificato. Aspetto e colore nel visualizzatore sono illustrativi. L'OBJ usa coordinate in millimetri per convenzione documentata; non è un modello STEP o un progetto esecutivo. Il volume non determina massa, peso iniettato o tempo ciclo senza ulteriori modelli e dati.
+Ogni cavità associa prodotto, orientamento, posizione, origine locale e punto/direzione di estrazione. La scelta determina anche accesso del robot e orientamento del pezzo al prelievo. I raffreddamenti conservano percorso 3D, sezioni, connessioni, portata/fluido/temperature e verifiche disponibili rispetto a cavità, inserti, estrattori e strutture.
 
-## Tenuta e dissipazione
+Output: concept modificabile e alternative confrontabili, ingombri, corse, vincoli sulla pressa/cella e stato delle verifiche. La proposta dei raffreddamenti usa geometria e modelli termici dichiarati, come dettagliato in [SIMULATION.md](SIMULATION.md).
 
-IP65 è un obiettivo, non una proprietà ottenuta dal modello 3D. Giunzione dei gusci, sportello, connettore/passaggio cavo e sfiato devono avere una soluzione di tenuta da dimensionare e verificare anche con cavo collegato. Il requisito di 1.000 cicli richiede di definire anche le condizioni di verifica delle tenute dopo le aperture.
+## M04 — Cella: pressa, stampo, robot cartesiano, nastro e ausiliari
 
-Lo sfiato protetto per la pressione non è un sistema di ventilazione per raffreddamento con ricambio d'aria. La valutazione termica a involucro chiuso richiede potenza dissipata, condizioni ambientali, limiti di temperatura, posizione delle schede e proprietà dei materiali. L'anteprima non include schede, sportello, guarnizioni, aperture o sfiato e non prevede ancora temperature.
+Configurazione di macchine già disponibili o candidate da acquistare. Modelli semplificati devono mantenere ingombri funzionali, corse, velocità/accelerazioni, capacità, riferimenti di installazione e punti di interfaccia.
 
-## Criteri di confronto da implementare
+La cella comprende pressa e unità di iniezione, stampo, robot cartesiano, organo di presa, nastro, essiccatore eventuale, alimentazione/trasporto materiale e termoregolazione. Le singole risorse sono opzionali secondo il processo; l'assenza di un essiccatore non implica che un materiale sia lavorabile senza condizionamento.
 
-Per ogni combinazione materiale/grado e spessore considerare resa estetica (segni, risucchi, deformazioni), comportamento dell'aggancio (montaggio, ritenzione, deformazione e smontaggio), producibilità, raffreddamento/tempo ciclo e costo. Proprietà del materiale, geometria locale degli agganci e condizioni di accettazione sono prerequisiti per le relative previsioni. Il prototipo attuale presenta le configurazioni, senza valori fisici o economici inventati.
+Output: layout 3D, montaggio, compatibilità per verifiche disponibili, traiettorie e accessibilità, prese e pose di deposito. Un robot cartesiano non acquisisce gradi di libertà rotativi inesistenti: un ribaltamento richiesto deve trovare un polso/attuatore configurato, una stazione ausiliaria o una diversa soluzione di stampo/layout.
 
-## Decisioni ancora necessarie
+## M05 — Processo temporale dal granulo al nastro
 
-Quote dei supporti interni e disposizione precisa delle quattro schede; dimensioni di connettore e cavo; potenza e ambiente; scenari e lotti del caso; sformi, tolleranze e criteri estetici quantitativi; dimensioni e forze degli agganci, giochi e sedi per l'attrezzo; tenute di gusci/sportello/cavo e sfiato; direzione di estrazione e carrelli; gradi materiale e dati per verifica a 1.000 cicli; alimentazione e raffreddamento dello stampo; dati del parco presse e tariffe; costi e ammortamento; formato del concept stampo e casi di verifica tecnica. Le domande saranno affrontate in piccoli gruppi.
+Materiale in ingresso → essiccazione/condizionamento eventuale → trasporto e tramoggia → alimentazione vite → plastificazione/dosatura → iniezione → mantenimento/raffreddamento → apertura e movimenti stampo → estrazione/prelievo → trasferimento → deposito → avanzamento sul nastro.
+
+La sequenza è un grafo di dipendenze e risorse: attività indipendenti possono sovrapporsi. Essiccazione e alimentazione operano anche su tempi diversi dal singolo ciclo pressa. La simulazione distingue avviamento, stato iniziale dei serbatoi e funzionamento ripetuto.
+
+Ogni fase collega rappresentazione 3D, stato, inizio/fine, parametri, grafici e fonte del calcolo. L'utente può riprodurre, fermare, avanzare per evento e confrontare scenari. Orientamento e identità di ciascun pezzo restano tracciati da cavità a nastro. I livelli di modellazione e relativi criteri sono definiti in [SIMULATION.md](SIMULATION.md).
+
+## M06 — Economia, dati reali e ottimizzazione
+
+Il confronto economico riceve domanda da M01, materiali/geometrie da M02, investimenti da M03/M04 e ciclo/capacità da M05. Restituisce costo per unità commerciale conforme, capacità per articolo, investimento, sensibilità e dati mancanti, evitando doppi conteggi di tariffa, energia, ammortamento e perdite.
+
+PCA esplora variabilità, raggruppamenti e contributi senza attribuire automaticamente causalità. PLS prevede variabili target misurate a partire da condizioni e caratteristiche dichiarate. Dati reali dell'utente, identificativi ciclo/lotto, preprocessing, separazione di addestramento/validazione e copertura delle condizioni sono prerequisiti delle raccomandazioni produttive. L'ottimizzazione conserva vincoli tecnici e piano di prova delle configurazioni proposte.
+
+## Contratto comune fra moduli
+
+| Entità | Contenuto e collegamenti |
+| --- | --- |
+| Progetto e revisioni | Identità, cliente, valuta, unità, scenari e revisione immutabile di input |
+| Brief e requisiti | Domanda, unità commerciale/distinta, mercato, obiettivi, vincoli e origine |
+| Prodotti e feature | Geometria/allegati versionati, riferimenti, materiali e proprietà estensibili |
+| Alternative stampo | Cavità collegate ai prodotti, attuatori, estrazione e circuiti |
+| Cella e risorse | Asset, installazioni, trasformazioni, capacità, disponibilità e tariffe |
+| Ricetta e sequenza | Parametri, unità, limiti, eventi, dipendenze, traiettorie e risorse |
+| Esecuzione simulata | Snapshot degli input, versioni dei modelli, condizioni iniziali, eventi, segnali, pezzi e verifiche |
+| Analisi economica/ML | Scenario o dataset/versione, metodo, risultati, campo di validità e dipendenze |
+| Conversazione e operazioni | Richiesta originale, interpretazione strutturata, modifiche, fonti e annullamento |
+
+Un riferimento fisico o geometrico usa un identificativo stabile; la posizione visualizzata di un oggetto non sostituisce la sua posa nel processo. Il vecchio export `schema_version: 4` descrive la demo e non è il contratto della piattaforma. Dettagli storici in [archive/DEMO_02_SPECIFICATION.md](archive/DEMO_02_SPECIFICATION.md).
+
+## Prima tranche e verifica del prodotto
+
+La prima tranche applicativa è il brief commerciale generico via chat e campi contestuali, con salvataggio online e progetti privi di dati dimostrativi impliciti. La prima tranche di simulazione collega un prodotto importato, uno stampo/cella semplificati e una sequenza parametrica completa. Casi di geometria differenti devono verificare l'estensibilità fin dall'inizio.
+
+Requisiti e stato dell'implementazione sono separati. Criteri osservabili e ordine di sviluppo sono in [BACKLOG.md](BACKLOG.md) e [ROADMAP.md](ROADMAP.md).
