@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="it">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Progettazione stampi · Brief cliente</title>
+  <link rel="stylesheet" href="styles.css">
+  <script type="importmap">{"imports":{"three":"./node_modules/three/build/three.module.js","three/addons/":"./node_modules/three/examples/jsm/"}}</script>
+  <script type="module" src="app.js"></script>
+</head>
+<body>
+  <a class="skip-link" href="#main">Vai al contenuto</a>
+  <div class="workspace">
+    <aside class="sidebar" aria-label="Navigazione progetto">
+      <div class="brand"><span class="brand-symbol" aria-hidden="true">▧</span><div>Progettazione stampi<small>Workspace di progetto</small></div></div>
+      <div class="project-label">PROGETTO CORRENTE</div>
+      <div class="project-name" id="sidebar-project">Nuovo progetto</div>
+      <nav id="navigation" aria-label="Fasi di lavoro">
+        <button data-view="brief" class="nav-button active" aria-current="page"><span>01</span> Brief cliente</button>
+        <button data-view="part" class="nav-button"><span>02</span> Pezzo e materiale</button>
+        <button data-view="concept" class="nav-button"><span>03</span> Anteprima pezzo 3D</button>
+        <button data-view="machines" class="nav-button"><span>04</span> Presse candidate</button>
+        <button data-view="summary" class="nav-button"><span>05</span> Riepilogo requisiti</button>
+      </nav>
+      <div class="nav-divider"></div>
+      <div class="project-label">SVILUPPI SUCCESSIVI</div>
+      <div class="future-module">Concept stampo <span>3D</span></div>
+      <div class="future-module">Simulazione e robot</div>
+      <div class="future-module">Dati e ottimizzazione</div>
+      <div class="sidebar-foot"><span class="status-dot"></span>Prototipo UX locale<small>Requisiti e dati, prima dei calcoli.</small></div>
+    </aside>
+    <div class="main-shell">
+      <header class="topbar">
+        <div class="breadcrumb">Progetti <span>/</span> <strong id="breadcrumb-project">Nuovo progetto</strong></div>
+        <div class="topbar-actions"><span class="saved-label" id="save-status" role="status">Salvataggio locale</span><button class="button secondary compact" id="export-button">Esporta brief</button></div>
+      </header>
+      <main id="main" tabindex="-1">
+        <div class="page-heading"><div><div class="eyebrow">DALLA RICHIESTA AL PROGETTO</div><h1 id="page-title">Brief cliente</h1><p id="page-subtitle">Definisci obiettivi, volumi e vincoli che guideranno la scelta dello stampo e della pressa.</p></div><span class="badge" id="data-badge">Dati da compilare</span></div>
+        <div class="content-grid">
+          <section id="content" aria-labelledby="page-title"></section>
+          <aside class="inspector" aria-label="Stato del brief">
+            <section class="card progress-card"><div class="section-kicker">COMPLETEZZA DEL BRIEF</div><div class="progress-heading"><strong id="progress-value">0 / 6</strong><span>informazioni chiave</span></div><div class="progress-track" aria-hidden="true"><div id="progress-fill"></div></div><p class="muted">La compilazione prepara le verifiche tecniche.</p><ul class="checklist" id="checklist"></ul></section>
+            <section class="card questions-card"><div class="section-kicker">PROSSIMA INFORMAZIONE</div><h2 id="next-question-title">Che cosa deve essere prodotto?</h2><p id="next-question-copy">Assegna un nome al progetto per raccogliere il brief cliente.</p><button class="text-button" id="next-question-button">Completa il campo <span aria-hidden="true">↗</span></button></section>
+            <section class="scope-note"><span class="note-icon" aria-hidden="true">i</span><div><strong>Stato di questa versione</strong><p>Raccoglie requisiti e presse e genera un guscio 3D semplificato. Stampo, simulazioni e agenti AI sono le fasi successive.</p></div></section>
+          </aside>
+        </div>
+        <footer class="page-footer"><span>Le modifiche vengono salvate in questo browser.</span><button class="text-button" id="example-button">Carica esempio di compilazione</button></footer>
+      </main>
+    </div>
+  </div>
+  <div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
+  <dialog id="example-dialog"><form method="dialog"><div class="section-kicker">DATI DIMOSTRATIVI</div><h2>Aprire un esempio?</h2><p>L'esempio contiene valori illustrativi. Il progetto corrente verrà conservato e potrai ripristinarlo.</p><div class="dialog-actions"><button class="button secondary" value="cancel">Annulla</button><button class="button primary" value="load">Apri esempio</button></div></form></dialog>
+  <dialog id="reset-dialog"><form method="dialog"><h2>Ripristinare il tuo progetto?</h2><p>Le modifiche all'esempio verranno sostituite dal progetto conservato.</p><div class="dialog-actions"><button class="button secondary" value="cancel">Annulla</button><button class="button primary" value="restore">Ripristina progetto</button></div></form></dialog>
+</body>
+</html>

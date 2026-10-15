@@ -1,0 +1,20 @@
+{
+  "name": "injection-moulding-workspace-prototype",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "start": "python -m http.server 4173 --bind 127.0.0.1",
+    "test": "node --test tests/*.test.js",
+    "test:browser": "node tests/browser-smoke.mjs",
+    "build:standalone": "node scripts/build-standalone.mjs",
+    "test:standalone": "node tests/browser-smoke.mjs --standalone",
+    "package:demo": "python scripts/package-demo.py"
+  },
+  "dependencies": {
+    "three": "0.180.0"
+  },
+  "devDependencies": {
+    "esbuild": "0.25.12"
+  }
+}
