@@ -135,3 +135,8 @@ Le domande verranno presentate in piccoli gruppi. Le scelte successive dipendera
 | D38 | Obiettivo IP65 anche con cavo collegato | Confermato | Risposta trentunesima domanda |
 | D39 | Quattro schede due per due su un livello | Confermato | Risposta trentaduesima domanda |
 | D40 | Ogni scheda con componenti: 40 × 25 × 8 mm | Confermato | Risposta trentatreesima domanda |
+| D41 | UX professionale da software di modellazione, aspetto moderno e modello centrale | Richiesto | Feedback demo 01 |
+| D42 | Creazione da dialogo, caricamento file 3D e acquisizione da foto | Richiesto per il prodotto completo | Feedback demo 01 |
+| D43 | Percorso esplicito dalla creazione del pezzo alla progettazione dello stampo | Richiesto | Feedback demo 01 |
+
+La possibilità di usare uno stack gratuito/open source è da valutare; non è stato fissato un budget per servizi AI o infrastruttura. La demo 02 implementa comandi locali sul guscio, viewer OBJ/STL e foto di riferimento. Agente AI, STEP e ricostruzione automatica sono moduli successivi, come precisato in ARCHITECTURE.md.

@@ -1,5 +1,7 @@
 'use strict';
 import { createShellConcept, exportConceptObj } from './shell-geometry.js';
+import { describePart } from './description.js';
+import { renderWorkspace, studio } from './workspace.js';
 
 const STORAGE_KEY = 'injection-moulding-brief-v1';
 const BACKUP_KEY = `${STORAGE_KEY}-before-example`;
@@ -133,6 +135,13 @@ let currentConceptModel = null;
 let previewExploded = true;
 let previewTransparent = false;
 let previewCamera = 'iso';
+let assetRequest = 0;
+
+function clearStudioAssets() {
+  assetRequest++;
+  if (studio.photo) URL.revokeObjectURL(studio.photo);
+  Object.assign(studio, { tab: 'text', draft: 'Guscio 120 × 80 × 35 mm, spessore 2 mm, raggio 8 mm, ABS lucido', imported: null, photo: null, photoName: '', source: 'parametric', proposal: null, previous: null, message: '' });
+}
 
 function notify(message) {
   clearTimeout(toastTimeout);
@@ -190,20 +199,75 @@ function renderWallComparison() {
 function previewWall() {
   return project.part.wall_options_mm.includes(project.concept_preview.wall_mm) ? project.concept_preview.wall_mm : project.part.wall_options_mm[0] ?? project.part.nominal_wall_mm;
 }
-function conceptFromProject() {
-  const p = project.part;
+function conceptFromProject(p = project.part, wall = previewWall()) {
   if (p.opening === 'paired_shells' && p.dimension_basis === 'unspecified') throw new Error('Conferma se le dimensioni riguardano il prodotto assemblato o ciascun guscio.');
   if (p.opening === 'paired_shells' && !(p.front_share_percent > 0 && p.front_share_percent < 100)) throw new Error('Definisci la ripartizione dell’altezza fra i due gusci.');
   if (p.opening === 'paired_shells' && p.dimension_basis === 'per_shell' && p.front_share_percent !== 50) throw new Error('Per due gusci di altezze diverse indica l’ingombro assemblato e la relativa ripartizione.');
-  return createShellConcept({ length: p.length_mm, width: p.width_mm, height: p.opening === 'paired_shells' && p.dimension_basis === 'per_shell' ? p.height_mm * 2 : p.height_mm, wall: previewWall(), opening: p.opening, frontFraction: p.front_share_percent / 100, cornerRadius: p.corner_radius_mm });
+  return createShellConcept({ length: p.length_mm, width: p.width_mm, height: p.opening === 'paired_shells' && p.dimension_basis === 'per_shell' ? p.height_mm * 2 : p.height_mm, wall, opening: p.opening, frontFraction: p.front_share_percent / 100, cornerRadius: p.corner_radius_mm });
 }
+function renderDescriptionProposal() {
+  const target = $('#description-proposal');
+  if (!target) return;
+  const labels = { length_mm: 'Lunghezza', width_mm: 'Larghezza', height_mm: 'Altezza', wall_mm: 'Parete in anteprima', corner_radius_mm: 'Raggio', material: 'Materiale', surface_finish: 'Finitura' };
+  target.innerHTML = studio.proposal ? `<div class="command-proposal"><strong>Modifica da applicare</strong><dl>${Object.entries(studio.proposal).map(([key, value]) => `<div><dt>${labels[key]}</dt><dd>${typeof value === 'number' ? displayNumber(value, ' mm') : esc(value === 'glossy' ? 'Lucida' : value === 'satin' ? 'Satinata' : value)}</dd></div>`).join('')}</dl><p>Modifica il guscio parametrico. La parete resta una variante da valutare.</p><div class="proposal-actions"><button class="button primary compact" id="apply-description">Applica al modello</button><button class="text-button" id="discard-description">Scarta</button></div></div>` : '';
+}
+function applyDescription() {
+  if (!studio.proposal || invalidFields.size) { notify('Correggi le proprietà evidenziate prima di applicare.'); return; }
+  const changes = studio.proposal, part = structuredClone(project.part);
+  for (const [key, value] of Object.entries(changes)) if (key !== 'wall_mm') part[key] = value;
+  const wall = changes.wall_mm ?? previewWall();
+  if (changes.wall_mm && !part.wall_options_mm.includes(wall)) part.wall_options_mm.push(wall);
+  part.wall_options_mm.sort((a, b) => a - b);
+  try { conceptFromProject(part, wall); }
+  catch (error) { $('#studio-message').textContent = `Modifica non applicata: ${error.message}`; return; }
+  studio.previous = { part: structuredClone(project.part), concept_preview: structuredClone(project.concept_preview), sources: structuredClone(Object.fromEntries(Object.entries(project.sources).filter(([key]) => key.startsWith('part.')))) };
+  project.part = part; project.concept_preview.wall_mm = wall;
+  for (const key of Object.keys(changes)) project.sources[`part.${key === 'wall_mm' ? 'wall_options_mm' : key}`] = { kind: 'user', method: 'local_command', raw_text: studio.draft, recorded_at: new Date().toISOString() };
+  studio.source = 'parametric'; studio.proposal = null; studio.message = 'Modello aggiornato. Puoi continuare a descrivere o modificare le proprietà.';
+  save(); render('concept');
+}
+
+document.addEventListener('keydown', (event) => {
+  if (!event.target.matches('[data-source-tab]') || !['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(event.key)) return;
+  event.preventDefault();
+  const tabs = [...document.querySelectorAll('[data-source-tab]')], current = tabs.indexOf(event.target);
+  tabs[event.key === 'Home' ? 0 : event.key === 'End' ? tabs.length - 1 : (current + (event.key === 'ArrowRight' ? 1 : -1) + tabs.length) % tabs.length].click();
+});
+document.addEventListener('change', async (event) => {
+  const input = event.target;
+  if (!['mesh-file', 'photo-file'].includes(input.id) || !input.files?.length) return;
+  if (invalidFields.size) { notify('Correggi le proprietà evidenziate prima di caricare un file.'); input.value = ''; return; }
+  const request = ++assetRequest, projectId = project.id, file = input.files[0];
+  const status = (message) => { studio.message = message; if ($('#studio-message')) $('#studio-message').textContent = message; };
+  status('Lettura del file sul dispositivo…');
+  let photoUrl;
+  try {
+    if (input.id === 'mesh-file') {
+      const units = $('#mesh-units').value;
+      if (!units) throw new Error('Seleziona prima l’unità delle coordinate del file.');
+      if (file.size > 12 * 1024 * 1024) throw new Error('La demo accetta mesh fino a 12 MB.');
+      const { importMesh } = await import('./mesh-import.js');
+      const mesh = importMesh(await file.arrayBuffer(), file.name, units);
+      if (request !== assetRequest || projectId !== project.id) return;
+      studio.imported = mesh; studio.source = 'imported';
+      status('Mesh caricata. Gli ingombri dipendono dall’unità selezionata; il brief non è stato modificato.');
+    } else {
+      if (!['image/jpeg', 'image/png', 'image/webp'].includes(file.type) || file.size > 8 * 1024 * 1024) throw new Error('Scegli una foto JPG, PNG o WebP fino a 8 MB.');
+      photoUrl = URL.createObjectURL(file);
+      const reference = new Image(); reference.src = photoUrl; await reference.decode();
+      if (reference.naturalWidth * reference.naturalHeight > 25000000) throw new Error('Riduci la foto a meno di 25 megapixel.');
+      if (request !== assetRequest || projectId !== project.id) { URL.revokeObjectURL(photoUrl); return; }
+      if (studio.photo) URL.revokeObjectURL(studio.photo);
+      studio.photo = photoUrl; studio.photoName = file.name; photoUrl = null;
+      status('Riferimento aggiunto. La foto non ha modificato la geometria 3D.');
+    }
+    if (currentView === 'concept') render('concept');
+  } catch (error) { if (photoUrl) URL.revokeObjectURL(photoUrl); if (request === assetRequest && projectId === project.id) status(error.message || 'Impossibile leggere il file.'); }
+  finally { input.value = ''; }
+});
 function renderConcept() {
   const controls = ['length_mm', 'width_mm', 'height_mm', 'corner_radius_mm', 'opening', 'dimension_basis', 'front_share_percent'];
-  return card('Guscio parametrico', 'Confronto geometrico preliminare delle alternative di spessore.', '3D', `<div class="concept-toolbar"><div class="view-buttons" aria-label="Orientamento della vista">${[['iso', 'Isometrica'], ['front', 'Frontale'], ['rear', 'Retro'], ['side', 'Laterale']].map(([view, label]) => `<button class="button secondary compact" data-concept-camera="${view}">${label}</button>`).join('')}</div><div class="view-buttons"><button class="button secondary compact" id="concept-explode" aria-pressed="${previewExploded}">Vista esplosa</button><button class="button secondary compact" id="concept-transparent" aria-pressed="${previewTransparent}">Trasparenza</button></div></div><div class="concept-viewport" id="concept-viewport"><p class="concept-loading">Preparazione anteprima…</p></div><div class="concept-caption"><span>Trascina per ruotare · rotella per zoom</span><span>Colore e aspetto illustrativi</span></div><div class="preview-variants"><span>Spessore in anteprima</span><div>${project.part.wall_options_mm.map((wall) => `<button class="button secondary compact ${wall === previewWall() ? 'selected' : ''}" data-preview-wall="${wall}" aria-pressed="${wall === previewWall()}">${displayNumber(wall, ' mm')}</button>`).join('')}</div></div><div class="concept-metrics" id="concept-metrics"></div><div class="step-actions" style="margin-top:20px"><p>La variante visualizzata non è una scelta finale.</p><button class="button secondary" id="concept-download" disabled>Esporta geometria OBJ</button></div>`)
-    + card('Parametri geometrici', 'Le modifiche aggiornano l’anteprima e vengono salvate nel brief.', '01', grid(partFields.filter((f) => controls.includes(f.key)), 'part', project.part))
-    + card('Dettagli ancora da progettare', 'Il volume mostrato riguarda le pareti del profilo semplificato.', '02', `<ul class="concept-limitations"><li>${displayNumber(project.part.snap_count)} agganci · ${esc(choiceLabel('snap_layout'))} · obiettivo ${displayNumber(project.part.snap_cycles)} cicli: forma, forze e accesso dell’attrezzo da dimensionare.</li><li>Raccordi fuori piano, sformi, nervature, ritiro e battute di accoppiamento non ancora modellati.</li><li>Compatibilità con pressa, stampo e qualità del pezzo da verificare nelle fasi successive.</li></ul>`)
-    + functionalRequirementsCard()
-    + nextButton('machines', 'Configura le presse candidate');
+  return renderWorkspace({ project, wall: previewWall(), properties: grid(partFields.filter((f) => controls.includes(f.key)), 'part', project.part), exploded: previewExploded, transparent: previewTransparent });
 }
 async function refreshConcept() {
   const container = $('#concept-viewport');
@@ -214,22 +278,23 @@ async function refreshConcept() {
   $('#concept-metrics').replaceChildren();
   delete container.dataset.renderStatus;
   try {
-    const concept = conceptFromProject();
-    currentConceptModel = concept;
-    $('#concept-download').disabled = false;
+    const imported = studio.source === 'imported' && studio.imported;
+    const concept = imported || conceptFromProject();
+    currentConceptModel = imported ? null : concept;
+    $('#concept-download').disabled = Boolean(imported);
     const { length, width, height } = concept.dimensions_mm;
-    $('#concept-metrics').innerHTML = `<div><span>Ingombro assemblato</span><strong>${displayNumber(length)} × ${displayNumber(width)} × ${displayNumber(height)} mm</strong></div><div><span>Volume geometrico totale</span><strong data-volume-mm3="${concept.volume_mm3}">${displayNumber(concept.volume_mm3 / 1000, ' cm³')}</strong></div><div><span>Componenti · raggio profilo</span><strong>${concept.components.length} · R${displayNumber(concept.corner_radius_mm, ' mm')}</strong></div>`;
+    $('#concept-metrics').innerHTML = `<div><span>${imported ? 'Ingombro della mesh' : 'Ingombro assemblato'}</span><strong>${displayNumber(length)} × ${displayNumber(width)} × ${displayNumber(height)} mm</strong></div><div><span>${imported ? 'Superficie triangolata' : 'Volume geometrico'}</span><strong ${imported ? '' : `data-volume-mm3="${concept.volume_mm3}"`}>${imported ? displayNumber(concept.triangle_count, ' triangoli') : displayNumber(concept.volume_mm3 / 1000, ' cm³')}</strong></div><div><span>${imported ? 'Origine coordinate' : 'Profilo esterno'}</span><strong>${imported ? esc(concept.source_units) : `R${displayNumber(concept.corner_radius_mm, ' mm')}`}</strong></div>`;
     const { mountConceptViewer } = await import('./concept-view.js');
     if (request !== viewerRequest || !container.isConnected) return;
     activeViewer = mountConceptViewer(container, concept, { finish: project.part.surface_finish });
     activeViewer.setView(previewCamera);
-    activeViewer.setExploded(previewExploded);
+    activeViewer.setExploded(!imported && previewExploded);
     activeViewer.setTransparent(previewTransparent);
-    $('#concept-explode').disabled = concept.components.length !== 2;
+    $('#concept-explode').disabled = Boolean(imported) || concept.components.length !== 2;
   } catch (error) {
     if (request !== viewerRequest || !container.isConnected) return;
     const text = document.createElement('p'); text.className = 'concept-message';
-    text.textContent = currentConceptModel ? 'Il visualizzatore 3D non è disponibile in questo browser. Le dimensioni e l’esportazione della geometria restano disponibili.' : error.message;
+    text.textContent = currentConceptModel || studio.source === 'imported' ? 'Il visualizzatore 3D non è disponibile in questo browser. Per il rendering serve WebGL2.' : error.message;
     container.replaceChildren(text);
     container.dataset.renderStatus = 'unavailable';
   }
@@ -287,6 +352,7 @@ function render(view = currentView) {
     return;
   }
   currentView = view;
+  document.body.classList.toggle('is-cad', view === 'concept');
   viewerRequest++;
   activeViewer?.dispose(); activeViewer = null; currentConceptModel = null;
   invalidFields.clear();
@@ -297,6 +363,7 @@ function render(view = currentView) {
   $('#content').innerHTML = content();
   renderWallComparison();
   if (view === 'concept') refreshConcept();
+  if (view === 'concept') renderDescriptionProposal();
   document.querySelectorAll('[data-view]').forEach((button) => {
     const selected = button.dataset.view === view;
     button.classList.toggle('active', selected);
@@ -336,7 +403,7 @@ function updateInspector() {
 }
 function exportProject() {
   if (invalidFields.size) { notify('Correggi i valori numerici evidenziati prima di esportare.'); return; }
-  const data = { ...project, exported_at: new Date().toISOString(), prototype_capabilities: ['brief_capture', 'machine_catalogue', 'wall_variant_configuration', 'parametric_shell_preview', 'local_persistence'], engineering_validation: 'not_performed' };
+  const data = { ...project, exported_at: new Date().toISOString(), prototype_capabilities: ['brief_capture', 'machine_catalogue', 'wall_variant_configuration', 'parametric_shell_preview', 'local_commands', 'obj_stl_viewer', 'photo_reference', 'local_persistence'], session_assets: { mesh: studio.imported ? { name: studio.imported.file_name, dimensions_mm: studio.imported.dimensions_mm, source_units: studio.imported.source_units } : null, photo_name: studio.photoName || null, persistence: 'metadata_only_reload_original_files' }, engineering_validation: 'not_performed' };
   const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a'); a.href = url; a.download = `brief-${project.id.slice(0, 8)}.json`; a.click();
@@ -355,8 +422,11 @@ function demoProject() {
 
 document.addEventListener('input', (event) => {
   const field = event.target;
+  if (field.id === 'part-description') { studio.draft = field.value; studio.proposal = null; renderDescriptionProposal(); return; }
   const group = field.dataset.group;
   if (!['brief', 'part'].includes(group)) return;
+  studio.previous = null;
+  if ($('#undo-description')) $('#undo-description').hidden = true;
   const path = `${group}.${field.dataset.key}`;
   if (!field.validity.valid) {
     invalidFields.add(path); field.setAttribute('aria-invalid', 'true');
@@ -382,12 +452,33 @@ document.addEventListener('input', (event) => {
   if (currentView === 'concept') refreshConcept();
 });
 document.addEventListener('click', (event) => {
+  const sourceTab = event.target.closest('[data-source-tab]');
+  if (sourceTab) { if (invalidFields.size) { notify('Correggi le proprietà evidenziate.'); return; } studio.tab = sourceTab.dataset.sourceTab; render('concept'); $(`#source-tab-${studio.tab}`)?.focus(); return; }
+  const modelSource = event.target.closest('[data-model-source]');
+  if (modelSource) { if (invalidFields.size) { notify('Correggi le proprietà evidenziate.'); return; } studio.source = modelSource.dataset.modelSource; studio.message = ''; render('concept'); return; }
+  if (event.target.closest('#apply-description')) { applyDescription(); return; }
+  if (event.target.closest('#discard-description')) { studio.proposal = null; renderDescriptionProposal(); return; }
+  if (event.target.closest('#undo-description') && studio.previous) {
+    if (invalidFields.size) { notify('Correggi le proprietà evidenziate prima di annullare.'); return; }
+    project.part = studio.previous.part; project.concept_preview = studio.previous.concept_preview;
+    project.sources = { ...Object.fromEntries(Object.entries(project.sources).filter(([key]) => !key.startsWith('part.'))), ...studio.previous.sources };
+    studio.previous = null; studio.proposal = null; studio.source = 'parametric'; save(); render('concept'); notify('Ultima modifica da testo annullata.'); return;
+  }
+  if (event.target.closest('#adopt-mesh-dimensions') && studio.imported) {
+    if (invalidFields.size) { notify('Correggi le proprietà evidenziate.'); return; }
+    const d = studio.imported.dimensions_mm;
+    if (![d.length, d.width, d.height].every((v) => v > 0)) { notify('Una superficie piana non definisce i tre ingombri del pezzo.'); return; }
+    for (const [key, value] of Object.entries({ length_mm: d.length, width_mm: d.width, height_mm: d.height })) { project.part[key] = value; project.sources[`part.${key}`] = { kind: 'user', method: 'mesh_bounds', file: studio.imported.file_name, source_units: studio.imported.source_units }; }
+    project.part.dimension_basis = 'assembly'; project.sources['part.dimension_basis'] = { kind: 'user', method: 'mesh_bounds' }; studio.previous = null; save(); render('concept'); notify('Ingombri della mesh trasferiti al brief. Geometria e requisiti restano distinti.'); return;
+  }
+  if (event.target.closest('#remove-photo')) { assetRequest++; URL.revokeObjectURL(studio.photo); studio.photo = null; studio.photoName = ''; render('concept'); return; }
   const camera = event.target.closest('[data-concept-camera]');
   if (camera) { previewCamera = camera.dataset.conceptCamera; activeViewer?.setView(previewCamera); return; }
   const wall = event.target.closest('[data-preview-wall]');
   if (wall) {
     if (invalidFields.size) { notify('Correggi i valori evidenziati prima di cambiare variante.'); return; }
     project.concept_preview.wall_mm = Number(wall.dataset.previewWall);
+    studio.previous = null; if ($('#undo-description')) $('#undo-description').hidden = true;
     save();
     document.querySelectorAll('[data-preview-wall]').forEach((button) => { const selected = Number(button.dataset.previewWall) === previewWall(); button.classList.toggle('selected', selected); button.setAttribute('aria-pressed', String(selected)); });
     refreshConcept(); return;
@@ -401,11 +492,13 @@ document.addEventListener('click', (event) => {
   }
   const removeWall = event.target.closest('[data-remove-wall]');
   if (removeWall) {
+    studio.previous = null;
     project.part.wall_options_mm = project.part.wall_options_mm.filter((v) => v !== Number(removeWall.dataset.removeWall));
     project.sources['part.wall_options_mm'] = { kind: 'user', recorded_at: new Date().toISOString() };
     save(); renderWallComparison(); return;
   }
   if (event.target.closest('#complete-case-requirements')) {
+    studio.previous = null;
     const defaults = newProject(), keys = ['surface_finish', 'fastening', 'wall_options_mm', 'opening', 'dimension_basis', 'front_share_percent', 'aesthetic_surfaces', 'snap_service', 'snap_count', 'corner_radius_mm', 'snap_layout', 'snap_cycles', 'electronics_configuration', 'pcb_count', 'external_openings', 'ip_target', 'thermal_strategy', 'connector_strategy', 'ip_in_use', 'pcb_layout', 'pcb_length_mm', 'pcb_width_mm', 'pcb_height_mm'];
     let changes = 0;
     for (const key of keys) {
@@ -430,12 +523,20 @@ document.addEventListener('click', (event) => {
   if (event.target.closest('#cancel-machine')) { editMachineId = null; render('machines'); }
 });
 document.addEventListener('submit', (event) => {
+    if (event.target.id === 'description-form') {
+    event.preventDefault();
+    if (invalidFields.size) { notify('Correggi le proprietà evidenziate prima di preparare una modifica.'); return; }
+    try { studio.proposal = describePart(studio.draft); studio.message = ''; $('#studio-message').textContent = ''; renderDescriptionProposal(); }
+    catch (error) { studio.proposal = null; renderDescriptionProposal(); $('#studio-message').textContent = error.message; }
+    return;
+  }
   if (event.target.id === 'wall-form') {
     event.preventDefault();
     if (!event.target.reportValidity()) return;
     const input = $('#wall-new-value'), value = input.valueAsNumber;
     if (project.part.wall_options_mm.includes(value)) { notify('Questa variante è già presente.'); return; }
     project.part.wall_options_mm = [...project.part.wall_options_mm, value].sort((a, b) => a - b);
+    studio.previous = null;
     project.sources['part.wall_options_mm'] = { kind: 'user', recorded_at: new Date().toISOString() };
     save(); renderWallComparison(); notify('Variante di spessore aggiunta.'); return;
   }
@@ -467,18 +568,18 @@ $('#example-dialog').addEventListener('close', () => {
   if ($('#example-dialog').returnValue !== 'load') return;
   try { localStorage.setItem(BACKUP_KEY, JSON.stringify(project)); }
   catch { notify('Impossibile conservare il progetto corrente: l’esempio non è stato aperto.'); return; }
-  project = demoProject(); editMachineId = null; save(); render('brief'); notify('Esempio aperto. I valori sono illustrativi; il tuo progetto è conservato.');
+  clearStudioAssets(); project = demoProject(); editMachineId = null; save(); render('brief'); notify('Esempio aperto. I valori sono illustrativi; il tuo progetto è conservato.');
 });
 $('#reset-dialog').addEventListener('close', () => {
   if ($('#reset-dialog').returnValue !== 'restore') return;
   try {
     const backup = normalizeStoredProject(JSON.parse(localStorage.getItem(BACKUP_KEY)));
-    project = backup; editMachineId = null;
+    clearStudioAssets(); project = backup; editMachineId = null;
     if (!save()) return;
     localStorage.removeItem(BACKUP_KEY); render('brief'); notify('Il tuo progetto è stato ripristinato.');
   } catch { notify('Ripristino non riuscito. Il progetto conservato non è stato eliminato.'); }
 });
 const startView = document.querySelector('meta[name="app-start-view"]')?.content;
-render(viewDefinitions[startView] ? startView : 'brief');
+render(viewDefinitions[startView] ? startView : 'concept');
 if (initialLoadError) notify(initialLoadError);
 if (!storageAvailable) $('#save-status').textContent = 'Solo in memoria · esporta il brief';

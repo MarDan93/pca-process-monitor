@@ -1,6 +1,10 @@
-# Prototipo UX — brief e anteprima 3D
+# Mould Studio — workspace di modellazione e brief
 
 Implementazione navigabile in italiano per raccolta dei requisiti e anteprima parametrica dei gusci. La grafica usa Three.js 0.180.0, fissato nel lockfile e servito localmente, senza CDN o chiamate AI. Non implementa ancora calcoli economici, analisi STEP, CAD dello stampo, simulazioni di processo o PCA/PLS.
+
+La seconda demo mette il modello al centro, con albero dei componenti e pannello contestuale da descrizione, file 3D o foto. `description.js` estrae comandi locali limitati a quote/spessore/raggio/materiale/finitura; non usa un modello linguistico. La proposta viene controllata geometricamente prima di applicarla e può essere annullata. `mesh-import.js` visualizza OBJ/STL con unità esplicite e ingombri, senza dedurre volume, materiale o solidità; i file non sono caricati su servizi esterni. Le foto sono riferimenti locali, senza ricostruzione automatica.
+
+Mesh e foto rimangono in memoria durante la sessione e vanno ricaricate dopo un riavvio. L'export JSON ne conserva solo i metadati. L'OBJ esportabile resta quello del guscio parametrico; l'esportazione è disabilitata mentre si osserva una mesh importata. STEP e l'agente AI richiedono i moduli indicati in [architettura](../docs/product/ARCHITECTURE.md).
 
 ## Demo senza installazioni
 
@@ -89,3 +93,5 @@ Verifica aggiuntiva per varianti/versione 2: default lucido/agganci a scatto, tr
 Il 2026-10-15: `npm ci` e avvio `npm start` eseguiti con successo; 16 test geometrici passati, inclusi solidi chiusi/orientati, ingombri, volume verificato dalle triangolazioni, profili arrotondati, ripartizioni asimmetriche e indici OBJ. Controllo Chromium passato per rendering WebGL effettivo R8, variazione dello spessore e del volume, camere/esploso, download OBJ dei due gusci con raggio, export JSON dei requisiti funzionali con IP65 non verificato, blocco di geometria/export obsoleti, reload, migrazione del formato precedente conservando R0, layout mobile e assenza di eccezioni JavaScript.
 
 Sempre il 2026-10-15: lo stesso percorso è passato sul singolo HTML con rete disconnessa durante le interazioni, nessuna richiesta di risorse esterne e partenza diretta dalla vista 3D. Per i reload il test ricollega il server di loopback per ricaricare l'HTML, poi disconnette nuovamente la rete. Anche il percorso di sviluppo è stato ricontrollato dopo la modifica dell'avvio.
+
+Demo 02: 21 test automatici passati per geometria, comandi, conversioni di unità e parser OBJ/STL, compresi input non validi. Nel browser verificati preparazione/applicazione/annullamento dei comandi, rifiuto di geometria impossibile, caricamento/rimozione foto senza modifiche alle quote, importazione OBJ con scelta delle unità, trasferimento esplicito degli ingombri, conservazione del modello dopo un import fallito e layout mobile. Il percorso completo passa anche sul bundle singolo con rete disconnessa durante le interazioni.

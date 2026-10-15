@@ -68,6 +68,11 @@ try {
   }
   const click = (selector) => evaluate(`document.querySelector(${JSON.stringify(selector)}).click()`);
   const fill = (id, value) => evaluate(`{ const el=document.getElementById(${JSON.stringify(id)});el.value=${JSON.stringify(String(value))};el.dispatchEvent(new Event('input',{bubbles:true})); }`);
+  const upload = async (selector, file) => {
+    const { root: documentRoot } = await call('DOM.getDocument');
+    const { nodeId } = await call('DOM.querySelector', { nodeId: documentRoot.nodeId, selector });
+    await call('DOM.setFileInputFiles', { nodeId, files: [file] });
+  };
   const stored = () => evaluate('JSON.parse(localStorage.getItem("injection-moulding-brief-v1"))');
   const ready = async () => {
     await until('Boolean(document.querySelector("#content .card"))');
@@ -164,6 +169,52 @@ try {
   await click('[data-view="concept"]'); await rendered();
   assert.equal((await stored()).concept_preview.wall_mm, 2.5);
   pass('preview selection and service requirements survive navigation and reload');
+  await fill('part-description', 'Guscio 140 × 90 × 40 mm, spessore 2 mm, raggio 10 mm, ABS lucido');
+  await click('#description-form button[type="submit"]');
+  assert.equal((await stored()).part.length_mm, 120);
+  await click('#apply-description'); await rendered();
+  assert.equal((await stored()).part.length_mm, 140);
+  assert.equal((await stored()).part.material, 'ABS');
+  assert.equal((await stored()).sources['part.length_mm'].method, 'local_command');
+  assert.equal((await stored()).part.nominal_wall_mm, null);
+  await fill('part-description', 'raggio 100 mm');
+  await click('#description-form button[type="submit"]'); await click('#apply-description');
+  assert.equal((await stored()).part.corner_radius_mm, 10);
+  assert.match(await evaluate('document.querySelector("#studio-message").textContent'), /non applicata/);
+  await click('#undo-description'); await rendered();
+  assert.equal((await stored()).part.length_mm, 120);
+  assert.equal((await stored()).concept_preview.wall_mm, 2.5);
+  pass('text proposals require Apply, preserve final-wall choice, reject impossible geometry and undo');
+  await click('[data-source-tab="photo"]');
+  const photoPath = join(downloadDir, 'reference.png'); await writeFile(photoPath, Buffer.from(frontImage, 'base64'));
+  await upload('#photo-file', photoPath);
+  await until('document.querySelector(".photo-reference img")?.naturalWidth > 0');
+  assert.equal((await stored()).part.length_mm, 120);
+  await click('#remove-photo');
+  assert.equal(await evaluate('Boolean(document.querySelector(".photo-reference img"))'), false);
+  pass('local photo is displayed and removable without inventing or modifying geometry');
+  await click('[data-source-tab="file"]');
+  const meshPath = join(downloadDir, 'tetrahedron.obj');
+  await writeFile(meshPath, 'v 0 0 0\nv 10 0 0\nv 0 20 0\nv 0 0 30\nf 1 3 2\nf 1 2 4\nf 2 3 4\nf 3 1 4\n');
+  await upload('#mesh-file', meshPath);
+  await until('document.querySelector("#studio-message").textContent.includes("Seleziona prima")');
+  await fill('mesh-units', 'mm'); await upload('#mesh-file', meshPath);
+  await until('Boolean(document.querySelector("[data-model-source=imported]"))'); await rendered();
+  assert.equal((await stored()).part.length_mm, 120);
+  assert.equal(await evaluate('document.querySelector("#concept-download").disabled'), true);
+  assert.equal(await evaluate('document.querySelector("#concept-explode").disabled'), true);
+  assert.match(await evaluate('document.querySelector("#concept-metrics").textContent'), /10 × 20 × 30 mm/);
+  await click('#adopt-mesh-dimensions');
+  assert.equal((await stored()).part.length_mm, 10);
+  assert.equal((await stored()).sources['part.length_mm'].method, 'mesh_bounds');
+  await fill('part-length_mm', 120); await fill('part-width_mm', 80); await fill('part-height_mm', 35);
+  const invalidPath = join(downloadDir, 'empty.obj'); await writeFile(invalidPath, '');
+  await fill('mesh-units', 'mm'); await upload('#mesh-file', invalidPath);
+  await until('document.querySelector("#studio-message").textContent.includes("superfici")');
+  assert.match(await evaluate('document.querySelector("#concept-metrics").textContent'), /10 × 20 × 30 mm/);
+  await click('[data-model-source="parametric"]'); await rendered();
+  assert.equal(await evaluate('document.querySelector("#concept-download").disabled'), false);
+  pass('OBJ import requires units, measures bounds, transfers dimensions only on request and survives a failed import');
   const legacy = await stored(); legacy.schema_version = 2;
   for (const key of ['opening', 'dimension_basis', 'front_share_percent', 'aesthetic_surfaces', 'snap_service', 'snap_count', 'corner_radius_mm', 'snap_layout', 'snap_cycles']) delete legacy.part[key];
   legacy.part.nominal_wall_mm = 3; legacy.brief.customer = 'Cliente da conservare'; delete legacy.concept_preview;
@@ -195,7 +246,7 @@ try {
   const screenshot = await call('Page.captureScreenshot', { format: 'png' });
   await writeFile(join(artifacts, standalone ? 'concept-standalone.png' : 'concept-3d.png'), Buffer.from(screenshot.data, 'base64'));
   if (standalone) {
-    assert.deepEqual(requests.filter((request) => !['Document', 'Other'].includes(request.type)).map((request) => request.request.url), []);
+    assert.deepEqual(requests.filter((request) => !['Document', 'Other'].includes(request.type) && /^(?:https?:|file:)/.test(request.request.url)).map((request) => request.request.url), []);
     pass('no external scripts, stylesheets, fonts, images or data requests');
   }
   assert.deepEqual(exceptions, []);

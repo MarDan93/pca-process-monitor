@@ -4,7 +4,7 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 export function mountConceptViewer(container, concept, { finish = 'unspecified' } = {}) {
   const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false });
   renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
-  renderer.setClearColor(0x142b37);
+  renderer.setClearColor(0x0b131e);
   renderer.outputColorSpace = THREE.SRGBColorSpace;
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
   const canvas = renderer.domElement;
@@ -13,6 +13,7 @@ export function mountConceptViewer(container, concept, { finish = 'unspecified' 
   container.replaceChildren(canvas);
   const scene = new THREE.Scene();
   const camera = new THREE.PerspectiveCamera(35, 1, 0.1, 10000);
+  camera.up.set(0, 0, 1);
   const controls = new OrbitControls(camera, canvas);
   controls.enableDamping = false;
   controls.listenToKeyEvents(canvas);
@@ -31,8 +32,8 @@ export function mountConceptViewer(container, concept, { finish = 'unspecified' 
   }
   const group = new THREE.Group();
   scene.add(group);
-  const material = new THREE.MeshPhysicalMaterial({ color: 0x9dbfc9, metalness: 0, roughness: finish === 'glossy' ? 0.16 : 0.48, clearcoat: finish === 'glossy' ? 1 : 0 });
-  const edgeMaterial = new THREE.LineBasicMaterial({ color: 0x557d8c, transparent: true, opacity: 0.7 });
+  const material = new THREE.MeshPhysicalMaterial({ color: 0x92c8d3, metalness: 0.12, roughness: finish === 'glossy' ? 0.2 : 0.48, clearcoat: finish === 'glossy' ? 1 : 0, side: concept.model_kind === 'imported_mesh' ? THREE.DoubleSide : THREE.FrontSide });
+  const edgeMaterial = new THREE.LineBasicMaterial({ color: 0x6098ad, transparent: true, opacity: 0.45 });
   const meshes = [];
   for (const component of concept.components) {
     const indexed = new THREE.BufferGeometry();
@@ -48,8 +49,9 @@ export function mountConceptViewer(container, concept, { finish = 'unspecified' 
     group.add(mesh);
     meshes.push(mesh);
   }
-  const grid = new THREE.GridHelper(extent * 3, 24, 0x3a5765, 0x263e4b);
-  grid.position.y = -width / 2 - extent * 0.08;
+  const grid = new THREE.GridHelper(extent * 5, 40, 0x2d495b, 0x182c3e);
+  grid.rotation.x = Math.PI / 2;
+  grid.position.z = -extent * 0.16;
   scene.add(grid);
   let disposed = false;
   function draw() {
@@ -59,7 +61,7 @@ export function mountConceptViewer(container, concept, { finish = 'unspecified' 
     container.dataset.drawCalls = String(renderer.info.render.calls);
   }
   function setView(view = 'iso') {
-    const directions = { iso: [1.15, 0.8, -1.3], front: [0, 0, 2.1], rear: [0, 0, -2.1], side: [-2.1, 0.2, 0] };
+    const directions = { iso: [1.15, -1.3, 1.2], front: [0, -0.001, 2.1], rear: [0, -0.001, -2.1], side: [-2.1, 0.2, 0.3] };
     const direction = new THREE.Vector3(...(directions[view] ?? directions.iso));
     camera.position.copy(controls.target).add(direction.multiplyScalar(extent));
     camera.lookAt(controls.target);

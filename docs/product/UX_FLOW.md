@@ -6,6 +6,8 @@ Il prototipo /prototype implementa raccolta brief, pezzo/materiale, varianti di 
 
 ## Principio
 
+Revisione dopo la demo 01: l'utente richiede un ambiente di modellazione professionale e moderno, con il modello al centro e ingressi da dialogo, file e foto. La demo 02 introduce albero, viewport e pannello contestuale, comandi parametrici locali, viewer OBJ/STL e foto come riferimento. Il percorso successivo è visibile nel workspace; agenti e ricostruzione automatica sono da sviluppare. Vedere [architettura](ARCHITECTURE.md) per i confini fra immagine, mesh e CAD.
+
 Il progetto conserva un brief strutturato che può essere compilato direttamente o tramite conversazione con l'agente. La conversazione non è l'unico luogo in cui restano i requisiti: campi, fonti, ipotesi e revisioni devono essere consultabili e modificabili. L'agente pone domande contestuali, iniziando da ciò che cambia le scelte di stampo e pressa.
 
 ## Struttura dello spazio di lavoro
