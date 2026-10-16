@@ -18,6 +18,6 @@ const html = template
   .replace('</head>', () => `<!-- Third-party licence: Three.js\n${license}\n-->\n</head>`)
   .replace('</body>', () => `<script>${javascript}</script>\n</body>`);
 await mkdir(resolve(root, 'dist'), { recursive: true });
-const output = resolve(root, 'dist/Progettazione-stampi.html');
+const output = resolve(root, 'dist/Mould-Studio.html');
 await writeFile(output, html);
 process.stdout.write(`Standalone HTML: ${output} (${Buffer.byteLength(html)} bytes)\n`);

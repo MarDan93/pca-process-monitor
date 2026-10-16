@@ -1,37 +1,31 @@
-# Caso opzionale — involucro elettronico
+# Optional example — electronic enclosure
 
-Requisiti concordati al 2026-10-15. I valori descrivono un caso dimostrativo da progettare e verificare; non sono risultati sperimentali né default della piattaforma. La [specifica generale](SPECIFICATION.md) ammette prodotti differenti e parte dal brief cliente. Questo caso può essere caricato come esempio e usato nella verifica insieme a geometrie diverse.
+Agreed example requirements, not platform defaults or experimental results. Use this case alongside different geometries to verify extensibility. See [general specification](SPECIFICATION.md).
 
-| Aspetto | Requisito |
+| Property | Requirement |
 | --- | --- |
-| Destinazione | Dispositivo elettronico da interno |
-| Assieme | Due gusci abbinati, anteriore e posteriore |
-| Ingombro complessivo | 120 × 80 × 35 mm |
-| Ripartizione iniziale | 50% / 50%, altezze 17,5 mm, modificabili |
-| Profilo esterno | Angoli con raggio iniziale 8 mm |
-| Spessori da confrontare | 1,5 / 2 / 2,5 mm; nessuna scelta finale |
-| Estetica | Lucida, requisiti elevati su frontale e pareti laterali |
-| Materiali candidati | ABS, PC/ABS, PP, PE e copolimeri; gradi da specificare |
-| Fissaggio gusci | Sei agganci a scatto, tre per ciascun lato lungo |
-| Smontaggio | Con attrezzo, senza danni |
-| Vita degli agganci | Obiettivo 1.000 cicli di montaggio/smontaggio |
-| Contenuto | Quattro schede elettroniche, due per due su un livello |
-| Ingombro di ogni scheda | 40 × 25 × 8 mm, inclusi componenti |
-| Connettore | Dietro sportello sigillato, tipologia e dimensioni da definire |
-| Protezione | Obiettivo IP65 anche con cavo collegato |
-| Sfiato | Protetto, per compensare la pressione; involucro chiuso |
-| Raffreddamento | Da dimensionare a involucro chiuso; potenza e ambiente mancanti |
-| Volumi produttivi | Quantità annua libera scelta dall'utente |
-| Orizzonte economico | Inizialmente 5 anni, modificabile |
-| Costo industriale | Da ricavare dal confronto, poi obiettivo fissabile |
-| Presse | Confronto macchine esistenti e da acquistare |
+| Application | Indoor electronic device |
+| Assembly | Paired front/rear shells |
+| Overall envelope | 120 × 80 × 35 mm |
+| Initial height split | 50/50, 17.5 mm each; editable |
+| Outline radius | Initially 8 mm |
+| Candidate walls | 1.5/2/2.5 mm; no final selection |
+| Appearance | High-quality glossy front and side walls |
+| Materials | ABS, PC/ABS, PP, PE, copolymers; grades unspecified |
+| Fastening | Six snap fits, three per long side |
+| Disassembly | Tool-assisted without damage |
+| Service life | Target 1,000 assembly/disassembly cycles, unverified |
+| Electronics | Four PCBs, two by two on one level |
+| PCB envelope | 40 × 25 × 8 mm including components |
+| Connector | Behind sealed cover; type/dimensions missing |
+| Protection | Target IP65 including connected-cable operation, unverified |
+| Vent | Protected pressure equalisation in a closed enclosure |
+| Device cooling | Requires dissipation/ambient data; a pressure vent is not cooling airflow |
+| Annual demand | Freely supplied by the user |
+| Economic horizon | Initial five-year example, editable |
+| Manufacturing cost | Derived from alternatives before optional target selection |
+| Presses | Compare existing resources and purchase candidates |
 
-## Disponibile nel prototipo
+The local prototype provides requirement forms, candidate walls, rounded simplified shell geometry, views/explosion/transparency, geometric volume, OBJ/JSON exports, press records and browser storage. It also supports OBJ/STL viewing, photo references and limited local commands. These are not verified mould/process models.
 
-Brief e requisiti modificabili, varianti di spessore, gusci 3D con profilo arrotondato, rotazione, esploso/assemblato, trasparenza, volume geometrico, export OBJ/JSON, catalogo presse e persistenza nel browser. Sedici test geometrici e controllo funzionale in Chromium passati.
-
-## Attività tecniche aperte del caso
-
-Inserire gli ingombri delle schede e progettare supporti, giunzione, agganci, sportello, passaggio cavo e sfiato. Le aperture, gli agganci e l'elettronica non sono ancora modellati. IP65, durata a 1.000 cicli e prestazioni termiche restano da verificare; la geometria preliminare non è un progetto stampo esecutivo.
-
-Il registro delle risposte è in DISCOVERY.md; modello dei dati e limiti sono in SPECIFICATION.md.
+Unresolved case work includes PCB supports, joints, clips, cover, cable entry, seals, vent position and heat dissipation. Those features are not yet modelled. IP65, service life and thermal performance need technical validation. These open details do not take priority over generic P1 implementation.

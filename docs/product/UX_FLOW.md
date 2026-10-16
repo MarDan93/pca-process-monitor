@@ -1,66 +1,62 @@
-# Esperienza della piattaforma online
+# Online platform user experience
 
-Specifica UX, revisione 3 del 2026-10-15. Il progettista parte dalla richiesta del cliente e costruisce scenari tecnico-economici di produzione. La geometria è una delle viste del progetto; la home iniziale mette in primo piano commessa, domanda, mercato e obiettivi.
+Updated 2026-10-16. Start from the customer request and develop technical/economic production scenarios. Geometry is a project view; the initial home prioritises enquiry, market, demand and objectives.
 
-## Avvio di un progetto
+## Start a project
 
-La home offre «Nuovo studio» e progetti esistenti. Esempi dimostrativi sono un'opzione separata. Un nuovo studio non contiene un guscio, una quantità o un materiale già scelti.
+Offer New study and existing projects, with optional examples separated. A new project has no implicit shell, material, demand or programme length.
 
-La prima domanda è aperta: «Che cosa chiede il cliente e quale decisione vuoi preparare?». È possibile rispondere a testo e allegare documenti, foto o file geometrici. L'assistente struttura il brief e pone poche domande mirate all'informazione che cambia la fattibilità: mercato/uso, quantità e unità commerciale, consegne e obiettivo economico.
+Open with: “What does the customer need, and which decision are you preparing?” Accept text, documents, photographs and geometry. Structure the brief, then ask a small number of high-impact questions about application/market, demand/commercial unit, delivery and economics.
 
-Esempio illustrativo: «Il cliente vuole produrre staffe per elettrodomestici, 600.000 pezzi l'anno, obiettivo 0,40 euro, usando se possibile le presse esistenti». Il sistema registra quanto fornito e lascia aperti grado materiale, geometria, qualità, calendario e significato del costo. Non assume le caratteristiche di un contenitore elettronico.
+Illustrative request: “The customer needs 600,000 appliance brackets a year, with a 0.40 euro target, preferably on existing presses.” Preserve what was said; clarify cost meaning, material, geometry, calendar and quality rather than assuming enclosure requirements.
 
-## Uno spazio condiviso
+## Shared workspace
 
-- Testata: commessa, scenario/revisione, salvataggio server e stato dei lavori.
-- Navigazione: Cliente e mercato; Prodotto; Stampo; Cella; Processo; Confronto e dati.
-- Conversazione principale persistente con contesto del modulo o dell'oggetto selezionato.
-- Area dei risultati: scheda commerciale, prodotto/stampo/cella 3D, timeline, grafici o confronto secondo il compito.
-- Proprietà contestuali apribili per modificare valori, fonti, unità e vincoli; non una lunga procedura obbligatoria di moduli.
-- Stato visibile: dati mancanti, ipotesi, risultati disponibili, verifiche eseguite e risultati da ricalcolare.
+- Project/scenario/revision, server save state and jobs in the header.
+- Modules: Customer and market; Product; Mould; Cell; Process; Comparison and data.
+- Persistent primary conversation, scoped to the module or selected object.
+- Results area: commercial summary, product/mould/cell 3D, timeline, charts or comparison.
+- Optional contextual properties with units, sources, requirements and corrections.
+- Visible missing inputs, assumptions, available checks and stale results.
 
-Il tono visivo è professionale, leggibile e moderno. Colore e animazione aiutano la lettura ma ogni stato ha anche un'etichetta. Il pannello di dettaglio non deve ridurre la conversazione a una funzione marginale.
+Use a modern, professional and legible visual language. Statuses have labels as well as colours. Technical panels must not push the conversation into a secondary role.
 
-## Percorso principale
+## Main workflow
 
-| Passaggio | Azione dell'utente nella chat | Risultato visibile |
+| Stage | Conversation | Visible result |
 | --- | --- | --- |
-| Cliente | Descrive domanda, mercato, prezzo/costo e vincoli | Brief sintetico con campi aggiornati e dati mancanti |
-| Prodotto | Descrive, allega geometria o immagini/misure | Modello o riferimento con scala, proprietà e stato delle analisi |
-| Stampo | Chiede alternative compatibili con domanda e prodotto | Layout cavità, estrazione, raffreddamenti e ragioni del confronto |
-| Cella | Seleziona pressa/robot/nastro o descrive risorse disponibili | Layout e gradi di libertà, pose e compatibilità verificabili |
-| Processo | Definisce ricetta e chiede di vedere dal materiale al deposito | Sequenza, timeline e stati dei componenti/materiale |
-| Confronto | Varia volumi, layout, ciclo o ipotesi | Capacità, costi, criticità e risultati da ricalcolare |
-| Dati reali | Carica dati e definisce target/obiettivi | Esplorazione PCA, previsione PLS e configurazioni da provare |
+| Customer | Demand, market, price/cost and constraints | Structured brief and high-impact missing data |
+| Product | Description, geometry or photographs/measurements | Scaled model/reference, properties and analysis state |
+| Mould | Alternatives consistent with demand and product | Cavities, extraction, cooling and comparison rationale |
+| Cell | Existing/candidate press, robot, conveyor and auxiliaries | Layout, actual axes, poses and available compatibility checks |
+| Process | Recipe and material-to-deposit simulation | Sequence, timeline, component/material states |
+| Comparison | Change demand, layout, cycle or assumptions | Capacity, costs, constraints and results requiring recalculation |
+| Real data | Upload datasets and define targets | PCA exploration, PLS prediction and constrained trial proposals |
 
-Il percorso consente di tornare a qualunque modulo mantenendo scenario e contesto. Le dipendenze bloccano soltanto le operazioni che non possono ancora produrre un risultato utilizzabile.
+Users can revisit modules without losing scenario/context. Dependencies block only operations that lack sufficient inputs.
 
-## Tre ingressi per il prodotto
+## Product inputs
 
-**Testo:** l'agente ricava requisiti e operazioni supportate. Mostra la differenza rispetto alla revisione precedente, permette correzione/annullamento e conserva il dialogo originale. I campi e la chat usano le stesse operazioni di aggiornamento.
+**Text:** AI interprets requirements and supported operations, shows changes, supports correction/undo and retains the request. Chat and properties share update operations.
 
-**File 3D:** il sistema identifica formato, unità, revisione, componenti e integrità disponibile. Unità mancanti vanno chiarite prima delle misure metriche. Una mesh non viene presentata come solido CAD verificato.
+**3D file:** identify format, units, revision, components and available integrity checks. Clarify missing units before metric measurements. A mesh is not a verified CAD solid.
 
-**Foto/schizzi:** l'interfaccia chiede quota nota e viste utili alla ricostruzione. Ipotesi e regioni non osservabili sono esplicite. Una forma generata a scopo illustrativo rimane distinguibile dalla geometria che alimenta le analisi.
+**Photos/sketches:** collect known scale and useful views. Show unobserved regions and assumptions. Generated concept images remain distinguishable from geometry used for engineering analysis.
 
-## La simulazione come esperienza esplorabile
+## Interactive simulation
 
-La vista Processo combina cella 3D, flusso materiale e timeline con tracce per essiccatore, alimentazione, vite, pressa/stampo, robot e nastro. Il flusso attraversa risorse reali o semplificate con collegamenti visibili.
+Combine cell 3D, material flow and tracks for dryer, feeding, screw, press/mould, robot and conveyor. Selecting an event highlights components/parts and exposes timing, parameters, sources and results.
 
-Selezionare una fase evidenzia componenti e pezzi coinvolti e apre tempi, parametri, fonti e risultati. La chat accetta richieste come «Perché il robot aspetta?», «Mostra l'orientamento al deposito», «Confronta un'altra disposizione delle cavità» e «Cosa cambia se il trasporto materiale è più lento?», usando i dati della simulazione.
+Queries such as “Why is the robot waiting?”, “Show deposit orientation” or “Compare another cavity layout” use the selected run. Controls include play, pause, event step, rewind and playback speed. Playback speed does not alter simulation time. Long calculations expose progress, cancellation and waiting reasons.
 
-Controlli: avvio, pausa, passo per evento, riavvolgimento e velocità. Cambiare la velocità di riproduzione non modifica il tempo simulato. Durante il calcolo si mostrano avanzamento, annullamento e motivo di eventuali attese.
+Configure target belt pose and actual robot rotations. Explain unreachable poses and derive alternative scenarios. Isolate trajectories, parting surfaces and cooling circuits. Changing inputs retains old runs with a clear revision/stale marker.
 
-La posa desiderata sul nastro e le rotazioni del robot sono configurabili. Il sistema rende visibile se la posa è raggiungibile con gli assi disponibili; una diversa soluzione richiede un nuovo scenario. Percorsi, piani di separazione e circuiti di raffreddamento possono essere isolati visivamente.
+## Language and data
 
-## Dettagli e gestione delle revisioni
+Default UI language is English. Offer English, Italiano, Français and Español in a persistent selector. Store the preference independently from projects. Switching language preserves user-authored text, filenames, numbers, unsaved input and validation state. Localise labels, choices, help, errors, accessibility text and number/currency presentation.
 
-Da un valore si accede a unità, fonte e ipotesi; da un risultato alle condizioni che lo hanno prodotto. Cambiare dati non aggiorna silenziosamente una simulazione precedente. L'utente vede «risultato della revisione X, da ricalcolare per Y» e può confrontare entrambi.
+## GetcraftAI reference
 
-Se un'operazione non è supportata, l'assistente conserva il requisito e spiega quale rappresentazione o dato permette di proseguire. In assenza di motore AI configurato l'applicazione espone la disponibilità reale e mantiene utilizzabili le proprietà; non etichetta un parser come agente AI.
+The user requested GetcraftAI as an interaction reference. Its features, technology, licensing and performance have not been verified. The earlier request to the candidate site was denied by the environment proxy. No undocumented service behaviour is treated as a product requirement.
 
-## Riferimento GetcraftAI
-
-Riferimento richiesto dall'utente per semplicità di accesso e interazione conversazionale con risultati visivi. La ricerca del sito candidato `https://getcraftai.com` non è stata possibile nell'ambiente: il proxy ha restituito 403. Non sono state verificate funzionalità, stack, licenze o prestazioni del servizio e non vengono usati come requisiti tecnici.
-
-I criteri verificabili del nostro prodotto sono in [BACKLOG.md](BACKLOG.md). La demo 02 rimane una prova di alcune interazioni geometriche, descritta in [IMPLEMENTATION_STATUS.md](IMPLEMENTATION_STATUS.md).
+See [acceptance criteria](BACKLOG.md) and [actual implementation status](IMPLEMENTATION_STATUS.md). An unavailable AI engine must be reported honestly; a local parser is not a conversational model.

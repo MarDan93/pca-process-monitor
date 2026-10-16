@@ -64,7 +64,7 @@ test('unequal shells preserve assembly height, seam position and distinct compon
 test('OBJ export retains separate components and valid face indices in millimetres', () => {
   const concept = createShellConcept({ ...base, wall: 2, opening: 'paired_shells' });
   const obj = exportConceptObj(concept);
-  assert.match(obj, /millimetri/);
+  assert.match(obj, /millimetres/);
   assert.equal(obj.split('\n').filter((line) => line.startsWith('o ')).length, 2);
   const vertices = obj.split('\n').filter((line) => line.startsWith('v '));
   const faces = obj.split('\n').filter((line) => line.startsWith('f ')).map((line) => line.slice(2).split(' ').map(Number));

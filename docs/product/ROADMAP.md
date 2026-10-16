@@ -1,69 +1,74 @@
-# Roadmap della piattaforma — revisione 3
+# Product roadmap
 
-Data: 2026-10-15. La priorità recepisce il chiarimento: piattaforma online di fattibilità e simulazione dell'intero processo, con ingresso commerciale e conversazione trasversale. La demo di gusci è un esperimento precedente. Le fasi descrivono risultati e dipendenze, senza promettere durate non stimate.
+Updated 2026-10-16. The target is an online commercial/technical feasibility and process-simulation platform. The shell demo is a separate experiment, not progress through the platform milestones. See [implementation status](IMPLEMENTATION_STATUS.md).
 
-Riferimenti: [specifica](SPECIFICATION.md), [architettura](ARCHITECTURE.md), [simulazione](SIMULATION.md), [backlog e accettazione](BACKLOG.md), [stato reale](IMPLEMENTATION_STATUS.md).
+## Current position
 
-## Percorso del prodotto
+| Milestone | Scope | Status |
+| --- | --- | --- |
+| P0 | Agreed system specification, UX, architecture and acceptance criteria | Complete as documentation |
+| P1 | Generic customer brief, actual open-source AI, server persistence and web application | Not started |
+| P2 | Generic product geometry, STEP and supported CAD operations | Not started; reusable demo viewer exists |
+| P3 | Mould concepts and functional press/robot/conveyor cell | Not started |
+| P4 | Complete L0 material-to-conveyor sequence, animation, capacity and costs | Not started |
+| P5 | Verified L1 material, plasticisation and cooling models | Not started |
+| P6 | Integrated real-data PCA/PLS and constrained optimisation | Not started; original PCA library requires verification |
+| P7 | Full-path validation and online release | Not started |
 
-Cliente/mercato/domanda → prodotto e vincoli → alternative di stampo/cella → processo dal granulo al nastro → capacità e costo → dati reali e ottimizzazione. Revisioni e scenari consentono di tornare sulle scelte a partire dai risultati.
+Current maintenance: English repository documentation, EN/IT/FR/ES demo UI, download verification and clear status reporting. This does not complete P1. No numerical completion percentage or delivery date is asserted without an implementation estimate.
 
-La chat è disponibile in ogni modulo e opera sugli stessi dati delle proprietà. Software e modelli scelti per il percorso principale devono rispettare il requisito open source. Tutte le fasi includono provenienza, unità, dati mancanti e annullamento/versioni pertinenti.
+## Delivery order
 
-## P0 — Specifica e criteri del sistema
+### P0 — System specification
 
-**Consegna:** requisiti generici, flussi commerciali, mappa dei moduli, contratto delle dipendenze, livelli di simulazione e scenari di accettazione. **Stato:** documentazione di questa revisione; non equivale all'implementazione.
+Generic requirements, commercial workflow, shared entities, model fidelity and acceptance scenarios are documented. The electronic enclosure is optional; its dimensions, material, IP target, clips and five-year programme are not global defaults.
 
-Il caso elettronico resta opzionale. Non sono fissati come default globali forma, materiale, spessore, agganci, grado IP o durata della commessa.
+### P1 — Web foundation and conversational commercial brief
 
-## P1 — Applicazione web e brief cliente conversazionale
+Deliver empty projects, server persistence, files/revisions, Customer and market home, actual open-source AI integration and contextual properties. Capture demand/commercial unit, market, prices/costs/budgets, production conditions and constraints. Show corrections, sources and missing information.
 
-**Consegna:** progetti vuoti, salvataggio server, allegati e revisioni; home Cliente e mercato; chat con primo modello open source integrato e proprietà contestuali. Raccolta domanda/unità commerciale, mercato, costi/prezzi/budget, produzione e vincoli. Correzioni e dati mancanti sono visibili.
+Start with B01 generic data, B02 API/storage, B03 briefing UI and B04 real AI tools. Select and evaluate a suitably licensed model. Develop the stack locally before choosing hosting. Verify A01–A05 and A14; two different customer requests must remain independent and survive reopening. No simulation results are generated for missing inputs.
 
-**Dipendenze:** selezione e prova di un modello con licenza adatta, servizi applicativi e archivio. L'ambiente di sviluppo può eseguire lo stack prima della scelta dell'hosting.
+**This is the next implementation milestone.** A reachable HTTPS address, persistence and access will be tested for a concrete deployment. The ZIP is not the final distribution.
 
-**Uscita:** A01–A05 e A14 di [BACKLOG.md](BACKLOG.md). Due richieste commerciali su prodotti diversi rimangono indipendenti; riapertura e modifica da chat/proprietà convergono sugli stessi dati. Il sistema non genera valori di simulazione per campi mancanti.
+### P2 — Generic product and geometry tools
 
-Questa è la prossima tranche di implementazione. Prima del rilascio esterno, indirizzo HTTPS, persistenza e accessi saranno verificati su una distribuzione concreta; il pacchetto offline non è il canale finale del prodotto.
+STEP/mesh import with units/frames/components, extensible requirements, measurements and supported operations shared by chat/properties. Keep photos/known dimensions as reconstruction references; automatic generation from images is a separate, metrically checked capability.
 
-## P2 — Prodotto generico e strumenti geometrici
+Depends on P1 and a kernel trial with different geometries. Exit: A06–A07 and S01–S02. Flange, bracket and enclosure retain their own features; unsupported operations preserve requirements without fabricated outputs.
 
-**Consegna:** importazione STEP e mesh, scala/riferimenti, componenti e requisiti estensibili. Misure e operazioni CAD supportate sono richiamabili da chat o proprietà. Foto/quote vengono conservate come riferimenti per ricostruzione assistita; generazione da immagini è un'attività separata con verifica metrica.
+### P3 — Mould and functional cell alternatives
 
-**Dipendenze:** P1 e prova del kernel su geometrie differenti. **Uscita:** A06–A07; scenari S01 e S02. Una flangia, una staffa e un involucro non vengono ricondotti forzatamente al template guscio. Le operazioni non supportate mantengono i requisiti senza produrre un risultato fittizio.
+Cavity position/orientation, parting/ejection, mould envelopes; press, Cartesian robot, end effector, conveyor and auxiliaries with actual frames/strokes. Initial cooling paths and available geometric checks. Compare existing resources with purchases.
 
-## P3 — Alternative di stampo e cella funzionale
+Depends on P2 and sourced or explicitly illustrative asset data. Exit: A08–A10 and S03. Layout changes identify effects on access, pose and stale results. Full executable detail of every commercial component is not required.
 
-**Consegna:** cavità e loro orientamenti, divisione/estrazione, ingombri stampo; pressa, robot cartesiano, organo di presa, nastro e ausiliari con riferimenti e corse reali. Proposte iniziali di circuiti di raffreddamento e controllo geometrico disponibile. Risorse esistenti e da acquistare sono confrontabili.
+### P4 — Complete L0 simulation and economics
 
-**Dipendenze:** P2 e dati di almeno un asset per categoria nel caso di prova, eventualmente illustrativi e marcati. **Uscita:** A08–A10; scenario S03. Una modifica del layout evidenzia conseguenze su accesso, posa e dati da ricalcolare. La prima proposta non richiede il dettaglio esecutivo di ogni componente commerciale.
+Configured material/conditioning, feed, press/mould cycle, pickup/transfer/deposit and conveyor with events, resources and overlap. Synchronise animation and parameters. Timing is configured or movement-based with sources. Calculate capacity per article and cost per commercial unit from the scenario and explicit assumptions.
 
-## P4 — Prima simulazione completa L0 e confronto economico
+Depends on P1–P3, recipe and initial state. Exit: A11–A13, A15 and S03–S06. This closes the first integrated technical/economic and animated-cycle delivery. L0 is not detailed physics of melting, filling or warpage.
 
-**Consegna:** flusso materiale/condizionamento configurato, rifornimento, ciclo pressa/stampo, presa/trasferimento/deposito e nastro, con eventi, risorse e sovrapposizioni. Animazione 3D sincronizzata ai parametri; tempi dichiarati o ricavati da movimenti, con origine esplicita. Capacità per articolo e costo per unità commerciale derivano dallo scenario e dalle ipotesi economiche.
+### P5 — Reduced material/plasticisation/cooling models
 
-**Dipendenze:** P1–P3; ricetta e stati iniziali sufficienti. **Uscita:** A11–A13 e A15; scenari S03–S06. Il flusso è completo dal materiale in ingresso al pezzo sul nastro; il livello L0 non viene presentato come previsione fisica dettagliata di fusione, riempimento o deformazione.
+Add documented balances/correlations for conditioning/inventories, plasticisation and thermal behaviour. Compare circuits/ejection criteria with grade-specific properties. Link charts to actually modelled phenomena.
 
-Questa è la prima consegna integrata di studio tecnico-economico e ciclo animato. P1 è già utilizzabile per il brief; P4 chiude il primo percorso di simulazione semplificata.
+Depends on P4 and technical validation references. Exit: S07 and model-specific criteria defined before implementation, including accuracy, domain and runtime. L2 enters phenomenon by phenomenon where a verified solver is justified.
 
-## P5 — Modelli L1 di materiale, plastificazione e raffreddamento
+### P6 — Real-data analysis and optimisation
 
-**Consegna:** bilanci e correlazioni pertinenti per inventari/condizionamento, plastificazione e termica, con proprietà del grado e risorse. Confronto di circuiti e criteri di estrazione. Grafici e parametri sono collegati ai fenomeni effettivamente modellati.
+Import process/quality data, associate cycles/lots/articles, version preprocessing and PCA/PLS, and propose constrained trials with coverage evidence. Keep measured and simulated data separate.
 
-**Dipendenze:** P4 e casi tecnici/dati per verificare ogni modello. **Uscita:** scenario S07 e criteri di confronto specifici definiti prima dell'implementazione. Fonti, campo di validità, errori e tempi di calcolo documentati. Le analisi dettagliate L2 entrano per fenomeno quando esiste una necessità e un solutore verificabile.
+Depends on suitable real datasets and correction/verification of the original PCA implementation. Validate on separated campaigns, against baselines and target-specific criteria; complete A15.
 
-## P6 — Analisi e ottimizzazione su dati reali
+### P7 — Validation and online release
 
-**Consegna:** importazione dati di processo/misure qualità, associazione ciclo/lotto/articolo, preprocessing e modelli PCA/PLS versionati. Ottimizzazione vincolata con evidenza della copertura e piano di prova. Gli scenari simulati restano distinti dai dati misurati.
+Verify the full workflow, saves/restoration, background jobs, access, reproducible deployment, guide and exports. Size hosting/hardware from measured workloads. Pass applicable backlog criteria on different cases and a real case when available.
 
-**Dipendenze:** dati reali pertinenti e correzione/verifica della libreria PCA di base. **Uscita:** A15 e scenari di dataset separati per campagne, con confronto rispetto a baseline e criteri concordati sul target.
+An early test deployment can accompany P1. It does not imply completion of all modules.
 
-## P7 — Verifica e rilascio online
+## Scope discipline
 
-**Consegna:** percorso completo verificato, salvataggi/ripristino, gestione lavori, accessi, deployment ripetibile, guida e report esportabili. Hardware/hosting sono dimensionati in base a misure e carichi concordati.
+Every implementation increment identifies a milestone, backlog items and evidence. Cosmetic/demo maintenance is recorded separately. New shell details do not take priority over B01–B04. Provider/domain, users and AI hardware are clarified when they affect a concrete deployment; product/mould/cell details belong to each project.
 
-**Uscita:** criteri applicabili del backlog superati; capacità disponibili, preliminari e non supportate sono comprensibili. Verifica su casi diversi e almeno un caso reale quando disponibile. Una prima installazione di prova può precedere P7; non implica completamento di tutti i moduli.
-
-## Trattamento delle decisioni aperte
-
-Provider/dominio, numero di utenti, hardware AI e livello fisico per i primi casi vengono definiti quando cambiano una scelta concreta. Non servono altre domande sulle dimensioni del guscio per iniziare P1. Dettagli di ciascun prodotto, materiale, stampo e impianto sono informazioni dei singoli progetti.
+Repository language: English. UI: English by default with Italian, French and Spanish selections. This policy applies throughout future milestones.

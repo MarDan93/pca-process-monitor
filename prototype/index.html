@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="it">
+<html lang="en">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -9,40 +9,41 @@
   <script type="module" src="app.js"></script>
 </head>
 <body>
-  <a class="skip-link" href="#main">Vai al contenuto</a>
+  <a class="skip-link" href="#main">Skip to content</a>
   <div class="workspace">
-    <aside class="sidebar" aria-label="Navigazione progetto">
+    <aside class="sidebar" aria-label="Project navigation">
       <div class="brand-symbol" aria-label="Mould Studio">M<span>•</span></div>
-      <nav id="navigation" aria-label="Aree di lavoro">
+      <nav id="navigation" aria-label="Work areas">
         <button data-view="concept" class="nav-button" title="Design studio"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 3 9 5v8l-9 5-9-5V8Z M3 8l9 5 9-5 M12 13v8"/></svg><span>Studio</span></button>
-        <button data-view="brief" class="nav-button" title="Brief cliente"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 3h14v18H5z M8 8h8 M8 12h8 M8 16h5"/></svg><span>Brief</span></button>
-        <button data-view="part" class="nav-button" title="Pezzo e materiale"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 3 9 5-9 5-9-5z M3 12l9 5 9-5 M3 16l9 5 9-5"/></svg><span>Pezzo</span></button>
-        <button data-view="machines" class="nav-button" title="Presse candidate"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 6h18v12H3z M7 3v18 M16 3v18 M10 9h3v6h-3z"/></svg><span>Presse</span></button>
-        <button data-view="summary" class="nav-button" title="Riepilogo requisiti"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 3h14v18H5z m3 9 3 3 5-6"/></svg><span>Verifica</span></button>
+        <button data-view="brief" class="nav-button" title="Customer brief"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 3h14v18H5z M8 8h8 M8 12h8 M8 16h5"/></svg><span>Brief</span></button>
+        <button data-view="part" class="nav-button" title="Part and material"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 3 9 5-9 5-9-5z M3 12l9 5 9-5 M3 16l9 5 9-5"/></svg><span>Part</span></button>
+        <button data-view="machines" class="nav-button" title="Candidate presses"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 6h18v12H3z M7 3v18 M16 3v18 M10 9h3v6h-3z"/></svg><span>Presses</span></button>
+        <button data-view="summary" class="nav-button" title="Requirements summary"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 3h14v18H5z m3 9 3 3 5-6"/></svg><span>Review</span></button>
       </nav>
-      <div class="rail-footer" title="Elaborazione locale">◉<small>LOCALE</small></div>
+      <div class="rail-footer" title="Local processing">◉<small>LOCAL</small></div>
     </aside>
     <div class="main-shell">
       <header class="topbar">
-        <div class="brand">MOULD <span>/</span> STUDIO <span class="brand-divider"></span><span class="breadcrumb"><span id="sidebar-project" class="visually-hidden">Nuovo progetto</span><strong id="breadcrumb-project">Nuovo progetto</strong></span></div>
-        <div class="topbar-actions"><span class="saved-label" id="save-status" role="status">Salvataggio locale</span><button class="text-button" id="example-button">Apri esempio</button><button class="button secondary compact" id="export-button">↓ Esporta brief</button></div>
+        <div class="brand">MOULD <span>/</span> STUDIO <span class="brand-divider"></span><span class="breadcrumb"><span data-user-content id="sidebar-project" class="visually-hidden">New project</span><strong data-user-content id="breadcrumb-project">New project</strong></span></div>
+        <div class="topbar-actions"><label class="language-control"><span class="visually-hidden">Interface language</span><select id="ui-language" aria-label="Interface language" translate="no"><option value="en">English</option><option value="it">Italiano</option><option value="fr">Français</option><option value="es">Español</option></select></label><span class="saved-label" id="save-status" role="status">Local storage</span><button class="text-button" id="example-button">Open example</button><button class="button secondary compact" id="export-button">↓ Export brief</button></div>
       </header>
+      <div class="roadmap-notice" role="note">Requirements and geometry demo — P0 complete; P1 online application is not implemented.</div>
       <main id="main" tabindex="-1">
-        <div class="page-heading"><div><div class="eyebrow">PROJECT ENGINEERING</div><h1 id="page-title">Design studio</h1><p id="page-subtitle">Dall’idea alla geometria del pezzo.</p></div><span class="badge" id="data-badge">Dati da compilare</span></div>
+        <div class="page-heading"><div><div class="eyebrow">PROJECT ENGINEERING</div><h1 id="page-title">Design studio</h1><p id="page-subtitle">From an idea to part geometry.</p></div><span class="badge" id="data-badge">Inputs required</span></div>
         <div class="content-grid">
           <section id="content" aria-labelledby="page-title"></section>
-          <aside class="inspector" aria-label="Stato del brief">
-            <section class="card progress-card"><div class="section-kicker">REQUISITI DISPONIBILI</div><div class="progress-heading"><strong id="progress-value">0 / 6</strong><span>informazioni chiave</span></div><div class="progress-track" aria-hidden="true"><div id="progress-fill"></div></div><p class="muted">La compilazione prepara le verifiche tecniche.</p><ul class="checklist" id="checklist"></ul></section>
-            <section class="card questions-card"><div class="section-kicker">PROSSIMA INFORMAZIONE</div><h2 id="next-question-title">Che cosa deve essere prodotto?</h2><p id="next-question-copy">Raccogli il brief cliente.</p><button class="text-button" id="next-question-button">Completa il campo ↗</button></section>
-            <section class="scope-note"><div><strong>Stato del progetto</strong><p>Geometria e requisiti preparano il concept dello stampo. Analisi di stampabilità, simulazioni e agenti AI sono i moduli successivi.</p></div></section>
+          <aside class="inspector" aria-label="Brief status">
+            <section class="card progress-card"><div class="section-kicker">AVAILABLE REQUIREMENTS</div><div class="progress-heading"><strong id="progress-value">0 / 6</strong><span>key inputs</span></div><div class="progress-track" aria-hidden="true"><div id="progress-fill"></div></div><p class="muted">Inputs prepare the engineering checks.</p><ul class="checklist" id="checklist"></ul></section>
+            <section class="card questions-card"><div class="section-kicker">NEXT INPUT</div><h2 id="next-question-title">What needs to be produced?</h2><p id="next-question-copy">Capture the customer brief.</p><button class="text-button" id="next-question-button">Complete the field ↗</button></section>
+            <section class="scope-note"><div><strong>Project status</strong><p>Geometry and requirements prepare a mould concept. Mouldability, simulation and AI agents are planned.</p></div></section>
           </aside>
         </div>
-        <footer class="page-footer"><span>Le modifiche al brief vengono salvate in questo browser.</span><button class="text-button" data-view="concept">Torna al Design studio →</button></footer>
+        <footer class="page-footer"><span>Brief changes are saved in this browser.</span><button class="text-button" data-view="concept">Return to Design studio →</button></footer>
       </main>
     </div>
   </div>
   <div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
-  <dialog id="example-dialog"><form method="dialog"><div class="section-kicker">DATI DIMOSTRATIVI</div><h2>Aprire un esempio?</h2><p>L'esempio contiene valori illustrativi. Il progetto corrente verrà conservato e potrai ripristinarlo.</p><div class="dialog-actions"><button class="button secondary" value="cancel">Annulla</button><button class="button primary" value="load">Apri esempio</button></div></form></dialog>
-  <dialog id="reset-dialog"><form method="dialog"><h2>Ripristinare il tuo progetto?</h2><p>Le modifiche all'esempio verranno sostituite dal progetto conservato.</p><div class="dialog-actions"><button class="button secondary" value="cancel">Annulla</button><button class="button primary" value="restore">Ripristina progetto</button></div></form></dialog>
+  <dialog id="example-dialog"><form method="dialog"><div class="section-kicker">DEMO DATA</div><h2>Open an example?</h2><p>The example contains illustrative values. Your current project will be backed up for restoration.</p><div class="dialog-actions"><button class="button secondary" value="cancel">Cancel</button><button class="button primary" value="load">Open example</button></div></form></dialog>
+  <dialog id="reset-dialog"><form method="dialog"><h2>Restore your project?</h2><p>Example changes will be replaced by your backed-up project.</p><div class="dialog-actions"><button class="button secondary" value="cancel">Cancel</button><button class="button primary" value="restore">Restore project</button></div></form></dialog>
 </body>
 </html>

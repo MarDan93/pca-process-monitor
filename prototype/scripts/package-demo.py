@@ -1,64 +1,59 @@
-"""Package the verified standalone build for opening without developer tools."""
-
+"""Package the verified single-file demo with English delivery instructions."""
+from hashlib import sha256
 from pathlib import Path
 from shutil import copyfile
 from zipfile import ZIP_DEFLATED, ZipFile
 
 root = Path(__file__).resolve().parents[1]
 repo = root.parent
-html = root / "dist/Progettazione-stampi.html"
+html = root / "dist/Mould-Studio.html"
 screenshot = repo / ".cache/ux/concept-standalone.png"
 for source in (html, screenshot):
     if not source.is_file():
-        raise SystemExit("Eseguire prima npm run build:standalone e npm run test:standalone.")
+        raise SystemExit("Run npm run build:standalone and npm run test:standalone first.")
 
-instructions = """MOULD STUDIO — DEMO 02
+instructions = """MOULD STUDIO — LOCAL REQUIREMENTS AND GEOMETRY DEMO
 
-1. Estrai tutti i file dello ZIP in una cartella sul computer.
-2. Apri Progettazione-stampi.html con un browser recente (Chrome, Edge,
-   Firefox o Safari). Non occorrono installazioni o connessione Internet.
-3. La demo si apre sui due gusci 3D: trascina per ruotare, usa la rotella
-   per lo zoom e prova le viste, l'esploso e gli spessori 1,5 / 2 / 2,5 mm.
+Extract the ZIP, then open Mould-Studio.html in a recent browser.
+The interface defaults to English. Select English, Italiano, Francais
+or Espanol in the header; the selection is remembered by the browser.
+No developer tools, server or internet connection are needed.
 
-Nel menu trovi brief cliente, pezzo/materiale, presse e riepilogo.
-Puoi modificare i parametri ed esportare il brief JSON e i gusci OBJ.
+This is a local demo, not the target online platform.
+P0 specification is complete. P1 (generic commercial chat with real AI
+and server persistence) has not been implemented.
 
-DESCRIVI: prova "Guscio 140 x 90 x 40 mm, spessore 2 mm,
-raggio 10 mm, PP lucido". Prepara la modifica, controlla e applica.
-Sono comandi parametrici locali; non e ancora un agente AI.
+Try: shell 140 x 90 x 40 mm, wall 2 mm, radius 10 mm, glossy ABS.
+Prepare and apply the proposed change. Local commands also support
+Italian, French and Spanish keywords; they are not an AI agent.
 
-FILE 3D: scegli l'unita e carica OBJ/STL (max 12 MB / 100.000 triangoli).
-Gli ingombri passano al brief solo con il comando dedicato.
-FOTO: aggiungi JPG/PNG/WebP come riferimento (max 8 MB / 25 megapixel).
-La foto non ricostruisce automaticamente un modello 3D.
+For OBJ/STL input choose units first (max 12 MB / 100,000 triangles).
+Photos are local visual references (JPG/PNG/WebP, max 8 MB/25 MP),
+not automatic reconstructions. Meshes and photos remain in session
+memory and must be loaded again after restarting the page.
 
-Mesh e foto sono conservate solo in memoria durante questa sessione.
-Dopo un riavvio occorre ricaricarle; il JSON contiene solo metadati.
-Il rendering richiede WebGL2. Se il browser aziendale blocca i file HTML
-locali, serve un accesso web consentito dall'organizzazione.
-
-I dati restano nel browser; non vengono inviati a un server. Esporta il
-brief per conservarne una copia: la persistenza dei file locali dipende
-dal browser e dal percorso del file. Non c'e ancora importazione JSON.
-
-Questa demo mostra l'interfaccia e la geometria semplificata del
-pezzo. Agganci, schede, guarnizioni e stampo non sono ancora modellati.
-Simulazioni fisiche, import STEP, agenti AI, calcoli di costo e PCA/PLS
-sono nella roadmap. IP65 e 1.000 cicli sono requisiti non verificati.
-
-Anteprima.png mostra la stessa interfaccia senza dover aprire l'HTML.
-La licenza MIT di Three.js e inclusa nel file HTML.
+Use JSON export to retain a copy of the brief. JSON contains asset
+metadata, not original files; JSON import is not yet implemented.
+Browser persistence for local files depends on browser/path settings.
+WebGL2 is required for 3D. Engineering validation has not been performed.
+Mould, cell, process simulation, costs and actual AI are planned modules.
+Preview.png shows the interface. The Three.js MIT licence is in the HTML.
 """
 destination = repo / "demo"
 destination.mkdir(exist_ok=True)
-copyfile(screenshot, destination / "Anteprima.png")
-archive = destination / "progettazione-stampi-demo.zip"
+copyfile(screenshot, destination / "Preview.png")
+copyfile(screenshot, destination / "Anteprima.png")  # Preserve previously shared links.
+copyfile(html, destination / "Mould-Studio.html")
+archive = destination / "mould-studio-demo.zip"
 with ZipFile(archive, "w", compression=ZIP_DEFLATED, compresslevel=9) as package:
-    package.write(html, "Progettazione-stampi.html")
-    package.write(screenshot, "Anteprima.png")
-    package.writestr("LEGGIMI.txt", instructions.encode("utf-8"))
+    package.write(html, "Mould-Studio.html")
+    package.write(screenshot, "Preview.png")
+    package.writestr("README.txt", instructions.encode("utf-8"))
 with ZipFile(archive) as package:
     if package.testzip() is not None:
-        raise SystemExit("Archivio non valido.")
-    assert package.read("Progettazione-stampi.html") == html.read_bytes()
-print(f"Demo: {archive} ({archive.stat().st_size:,} bytes)")
+        raise SystemExit("Archive integrity check failed.")
+    assert package.read("Mould-Studio.html") == html.read_bytes()
+copyfile(archive, destination / "progettazione-stampi-demo.zip")  # Legacy URL alias.
+checksum = sha256(archive.read_bytes()).hexdigest()
+(destination / "SHA256SUMS").write_text(f"{checksum}  {archive.name}\n")
+print(f"Demo: {archive} ({archive.stat().st_size:,} bytes); SHA-256: {checksum}")

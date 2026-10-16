@@ -1,21 +1,17 @@
-# Mould Studio · Demo 02
+# Local demo download
 
-Questa demo locale precede il chiarimento sul prodotto. La [piattaforma prevista, revisione 3](../docs/product/README.md) partirà dal brief commerciale via chat, sarà online e supporterà prodotti differenti; il guscio qui presente è soltanto un esempio. Il pacchetto sottostante conserva le funzionalità della demo 02.
+**This is a requirements/geometry demo. P0 documentation is complete; P1, the online application with commercial chat, real AI and server storage, is not implemented.** Follow the [roadmap](../docs/product/ROADMAP.md) and [actual status](../docs/product/IMPLEMENTATION_STATUS.md).
 
-1. [Scarica il pacchetto ZIP](progettazione-stampi-demo.zip?raw=true).
-2. Estrai il contenuto sul computer.
-3. Apri **Progettazione-stampi.html** con Chrome, Edge, Firefox o Safari aggiornati.
+1. [Download the ZIP](mould-studio-demo.zip?raw=true).
+2. Extract all files and open **Mould-Studio.html** in a recent browser.
+3. Select **English, Italiano, Français or Español** in the header. English is the default.
 
-Non occorrono installazioni o connessione Internet. Si apre il nuovo workspace CAD, con modello centrale, albero del progetto e pannello di creazione.
+If the direct link fails, [open the ZIP file page](mould-studio-demo.zip) and use GitHub **Download raw**. A [single HTML file](Mould-Studio.html?raw=true) is also available; save it as `Mould-Studio.html` and open it locally. [SHA-256 checksum](SHA256SUMS) is provided. Older ZIP/image filenames remain compatibility aliases.
 
-- **Descrivi:** prova “Guscio 140 × 90 × 40 mm, spessore 2 mm, raggio 10 mm, PP lucido”. Prepara la modifica, controlla i parametri e applicala al guscio. Puoi annullare l'ultima modifica. Sono comandi locali per la famiglia di gusci della demo; l'agente AI conversazionale sarà un modulo successivo.
-- **File 3D:** scegli le unità e carica una mesh OBJ/STL (massimo 12 MB e 100.000 triangoli). Puoi ruotarla e consultarne gli ingombri. Questi passano al brief solo premendo “Usa questi ingombri nel brief”. STEP è previsto con il motore CAD.
-- **Foto:** carica JPG/PNG/WebP come riferimento visivo. La ricostruzione automatica non è ancora implementata. Per dimensionarla serviranno misure note e più viste.
+![English interface and 3D example](Preview.png)
 
-Puoi sempre esplorare i gusci parametrici, confrontare gli spessori, compilare il brief, registrare presse ed esportare JSON/OBJ. Il percorso successivo è indicato nell'albero: stampabilità, stampo/pressa/costi, simulazione.
+No installation or network connection is needed for the packaged demo. WebGL2 is required for 3D. Try local geometric commands, OBJ/STL viewing with explicit units, photo references, brief/press forms and JSON/OBJ export. The language selector does not translate project values or filenames.
 
-![Anteprima dell'interfaccia e dei due gusci 3D](Anteprima.png)
+Example command: `shell 140 × 90 × 40 mm, wall 2 mm, radius 10 mm, glossy ABS`. Review/apply the proposal and optionally undo it. Commands also accept the supported Italian/French/Spanish keywords. This is a deterministic parser, not an AI model.
 
-Il visualizzatore richiede WebGL2. I dati rimangono nel browser; usa l'export per conservarne una copia. La persistenza dei file locali dipende dal browser e dalla posizione del file. Mesh e foto rimangono in memoria solo per questa sessione: dopo un riavvio vanno ricaricate. Il JSON contiene i loro metadati, non i file.
-
-Questa versione mostra l'interfaccia e il pezzo parametrico semplificato. Stampo, agganci, tenute e schede non sono ancora modellati; simulazioni fisiche, import STEP, agenti AI, costi e PCA/PLS sono sviluppi successivi. IP65 e 1.000 cicli sono requisiti da verificare.
+Mesh/photo files remain in session memory; reload them after restarting. JSON exports contain their metadata, not original files. STEP, mould/cell modelling, process physics, actual AI, economics and PCA/PLS integration remain future work. The enclosure is only an optional example in the target platform.

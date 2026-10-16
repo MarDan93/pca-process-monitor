@@ -14,9 +14,9 @@ function area(ring) {
 }
 function shell(length, width, depth, wall, radius = 0) {
   if (2 * wall >= Math.min(length, width) || wall >= depth) {
-    throw new Error('Lo spessore non lascia una cavità interna per questa apertura e queste dimensioni.');
+    throw new Error('The wall leaves no internal cavity for these dimensions and opening.');
   }
-  if (radius >= Math.min(length, width) / 2) throw new Error('Il raggio deve essere inferiore a metà del lato più corto del profilo.');
+  if (radius >= Math.min(length, width) / 2) throw new Error('Radius must be less than half the shorter profile side.');
   const outer = roundedRing(length, width, radius), inner = roundedRing(length - 2 * wall, width - 2 * wall, Math.max(0, radius - wall));
   const n = outer.length, m = inner.length;
   const vertices = [...outer.map(([x, y]) => [x, y, 0]), ...outer.map(([x, y]) => [x, y, depth]), ...inner.map(([x, y]) => [x, y, 0]), ...inner.map(([x, y]) => [x, y, depth - wall])];
@@ -46,33 +46,33 @@ function shell(length, width, depth, wall, radius = 0) {
 
 export function createShellConcept({ length, width, height, wall, opening, frontFraction = 0.5, cornerRadius = 0 }) {
   if (![length, width, height, wall].every((value) => Number.isFinite(value) && value > 0)) {
-    throw new Error('Specifica dimensioni e spessore positivi prima di generare il guscio.');
+    throw new Error('Specify positive dimensions and wall thickness before generating the shell.');
   }
-  if (!openingTypes.has(opening)) throw new Error('Scegli come deve essere aperto il guscio per generare l’anteprima.');
-  if (!Number.isFinite(cornerRadius) || cornerRadius < 0) throw new Error('Il raggio esterno deve essere un valore positivo o zero.');
+  if (!openingTypes.has(opening)) throw new Error('Choose the shell opening to generate the preview.');
+  if (!Number.isFinite(cornerRadius) || cornerRadius < 0) throw new Error('External radius must be positive or zero.');
   let components;
   if (opening === 'short_side_open') {
     const model = shell(width, height, length, wall, cornerRadius);
-    components = [{ ...model, name: 'guscio_lato_corto', vertices: model.vertices.map(([x, y, z]) => [z - length / 2, x, y + height / 2]) }];
+    components = [{ ...model, name: 'short_side_shell', vertices: model.vertices.map(([x, y, z]) => [z - length / 2, x, y + height / 2]) }];
   } else if (opening === 'paired_shells') {
-    if (!Number.isFinite(frontFraction) || frontFraction <= 0 || frontFraction >= 1) throw new Error('La ripartizione dei gusci deve essere compresa fra 0 e 100%.');
+    if (!Number.isFinite(frontFraction) || frontFraction <= 0 || frontFraction >= 1) throw new Error('Shell height split must be between 0 and 100%.');
     const backDepth = height * (1 - frontFraction);
     const front = shell(length, width, height * frontFraction, wall, cornerRadius);
     const back = shell(length, width, backDepth, wall, cornerRadius);
     components = [
-      { ...front, name: 'guscio_anteriore', vertices: front.vertices.map(([x, y, z]) => [x, y, z + backDepth]) },
-      { ...back, name: 'guscio_posteriore', vertices: back.vertices.map(([x, y, z]) => [x, -y, backDepth - z]) },
+      { ...front, name: 'front_shell', vertices: front.vertices.map(([x, y, z]) => [x, y, z + backDepth]) },
+      { ...back, name: 'rear_shell', vertices: back.vertices.map(([x, y, z]) => [x, -y, backDepth - z]) },
     ];
   } else {
-    components = [{ ...shell(length, width, height, wall, cornerRadius), name: 'guscio_retro_aperto' }];
+    components = [{ ...shell(length, width, height, wall, cornerRadius), name: 'rear_open_shell' }];
   }
   const volume = components.reduce((total, component) => total + component.volume, 0);
-  if (!Number.isFinite(volume) || volume <= 0) throw new Error('Le dimensioni non consentono un calcolo geometrico valido.');
+  if (!Number.isFinite(volume) || volume <= 0) throw new Error('Dimensions do not permit a valid geometric calculation.');
   return { components, volume_mm3: volume, dimensions_mm: { length, width, height }, wall_mm: wall, corner_radius_mm: cornerRadius, opening, front_fraction: opening === 'paired_shells' ? frontFraction : null, units: 'mm', model_kind: 'preliminary_profile_shell' };
 }
 
 export function exportConceptObj(concept) {
-  const lines = ['# Concept preliminare del guscio', '# Coordinate in millimetri; nessun ritiro o sformo applicato', '# Agganci, raccordi fuori piano, alimentazione e stampo non inclusi', `# Spessore pareti: ${concept.wall_mm} mm`, `# Raggio esterno profilo: ${concept.corner_radius_mm} mm`, `# Configurazione: ${concept.opening}`];
+  const lines = ['# Preliminary shell concept', '# Coordinates in millimetres; no shrinkage or draft applied', '# Clips, out-of-plane fillets, runners and mould not included', `# Wall thickness: ${concept.wall_mm} mm`, `# External profile radius: ${concept.corner_radius_mm} mm`, `# Configuration: ${concept.opening}`];
   let offset = 1;
   for (const component of concept.components) {
     lines.push(`o ${component.name}`);

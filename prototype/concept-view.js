@@ -9,7 +9,7 @@ export function mountConceptViewer(container, concept, { finish = 'unspecified' 
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
   const canvas = renderer.domElement;
   canvas.tabIndex = 0;
-  canvas.setAttribute('aria-label', 'Modello tridimensionale del guscio. Trascina per ruotare, usa la rotella per ingrandire o i pulsanti di vista.');
+  canvas.setAttribute('aria-label', '3D model. Drag to rotate, scroll to zoom, or use the view buttons.');
   container.replaceChildren(canvas);
   const scene = new THREE.Scene();
   const camera = new THREE.PerspectiveCamera(35, 1, 0.1, 10000);

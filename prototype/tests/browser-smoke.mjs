@@ -94,19 +94,44 @@ try {
   await call('Emulation.setDeviceMetricsOverride', { width: 1440, height: 1100, deviceScaleFactor: 1, mobile: false });
   await call('Browser.setDownloadBehavior', { behavior: 'allow', downloadPath: downloadDir });
   if (standalone) await call('Network.enable');
-  await call('Page.navigate', { url: standalone ? `${origin}/dist/Progettazione-stampi.html` : origin });
+  await call('Page.navigate', { url: standalone ? `${origin}/dist/Mould-Studio.html` : origin });
   if (standalone) {
     await rendered();
     await setOffline(true);
     pass('single HTML opens directly in 3D; network disconnected for subsequent interactions');
   }
   await ready();
-  await fill('brief-project_name', 'Gusci elettronica · concept');
+  assert.equal(await evaluate('document.documentElement.lang'), 'en');
+  assert.equal(await evaluate('document.querySelector("#page-title").textContent'), 'Customer brief');
+  const selectLanguage = (value) => evaluate(`{ const select = document.querySelector('#ui-language'); select.value = ${JSON.stringify(value)}; select.dispatchEvent(new Event('change', { bubbles: true })); }`);
+  await fill('brief-project_name', 'Customer brief');
+  const languageSnapshot = await stored();
+  for (const [language, title] of [['it', 'Brief cliente'], ['fr', 'Brief client'], ['es', 'Brief del cliente'], ['en', 'Customer brief']]) {
+    await selectLanguage(language);
+    await until(`document.querySelector('#page-title').textContent === ${JSON.stringify(title)}`);
+    assert.equal(await evaluate('document.documentElement.lang'), language);
+    assert.equal(await evaluate('document.querySelector("#navigation [data-view=machines] span").textContent'), { en: 'Presses', it: 'Presse', fr: 'Presses', es: 'Prensas' }[language]);
+    assert.equal(await evaluate('document.querySelector("#brief-project_name").value'), 'Customer brief');
+    assert.deepEqual(await stored(), languageSnapshot);
+  }
+  await click('[data-view="summary"]'); await selectLanguage('fr');
+  assert.equal(await evaluate('document.querySelector("#content td [data-user-content]").textContent'), 'Customer brief');
+  await click('[data-view="machines"]'); await fill('machine-name', 'Unsaved press'); await selectLanguage('es');
+  assert.equal(await evaluate('document.querySelector("#machine-name").value'), 'Unsaved press');
+  await click('[data-view="brief"]'); await fill('brief-annual_volume', -1); await selectLanguage('it');
+  assert.equal(await evaluate('document.querySelector("#brief-annual_volume").value'), '-1');
+  assert.equal(await evaluate('document.querySelector("#brief-annual_volume").getAttribute("aria-invalid")'), 'true');
+  await fill('brief-annual_volume', 250000);
+  await selectLanguage('es'); await reload();
+  assert.equal(await evaluate('document.documentElement.lang'), 'es');
+  await selectLanguage('en');
+  pass('English default, four UI languages, persistence, unchanged project data and unsaved fields');
+  await fill('brief-project_name', 'Electronic enclosure · concept');
   await fill('brief-annual_volume', 1234567890);
   assert.equal((await stored()).brief.annual_volume, 1234567890);
   await fill('brief-annual_volume', -1);
   await click('[data-view="part"]');
-  assert.equal(await evaluate('document.querySelector("#page-title").textContent'), 'Brief cliente');
+  assert.equal(await evaluate('document.querySelector("#page-title").textContent'), 'Customer brief');
   await fill('brief-annual_volume', 250000);
   await click('[data-view="concept"]'); await rendered();
   assert.ok(await evaluate('Number(document.querySelector("#concept-viewport").dataset.drawCalls) > 0'));
@@ -139,7 +164,7 @@ try {
   for (let i = 0; i < 30; i++) { files = (await readdir(downloadDir)).filter((file) => file.endsWith('.obj')); if (files.length) break; await pause(100); }
   assert.equal(files.length, 1);
   const obj = await readFile(join(downloadDir, files[0]), 'utf8');
-  assert.match(obj, /millimetri/); assert.match(obj, /Spessore pareti: 2.5 mm/); assert.match(obj, /Raggio esterno profilo: 8 mm/);
+  assert.match(obj, /millimetres/); assert.match(obj, /Wall thickness: 2.5 mm/); assert.match(obj, /External profile radius: 8 mm/);
   assert.equal(obj.split('\n').filter((line) => line.startsWith('o ')).length, 2);
   pass('actual OBJ download contains both separate shells and the displayed wall thickness');
   await fill('part-length_mm', -1);
@@ -152,8 +177,8 @@ try {
   await fill('part-front_share_percent', 50); await rendered();
   pass('invalid dimensions and impossible shell splits disable stale geometry and export');
   await click('[data-view="summary"]');
-  assert.match(await evaluate('document.querySelector("#content").textContent'), /Con attrezzo, senza danni/);
-  assert.match(await evaluate('document.querySelector("#content").textContent'), /IP65 è un obiettivo non ancora verificato/);
+  assert.match(await evaluate('document.querySelector("#content").textContent'), /With a tool, without damage/);
+  assert.match(await evaluate('document.querySelector("#content").textContent'), /IP65 is an unverified target/);
   await click('[data-export]');
   let jsonFiles = [];
   for (let i = 0; i < 30; i++) { jsonFiles = (await readdir(downloadDir)).filter((file) => file.endsWith('.json')); if (jsonFiles.length) break; await pause(100); }
@@ -180,7 +205,7 @@ try {
   await fill('part-description', 'raggio 100 mm');
   await click('#description-form button[type="submit"]'); await click('#apply-description');
   assert.equal((await stored()).part.corner_radius_mm, 10);
-  assert.match(await evaluate('document.querySelector("#studio-message").textContent'), /non applicata/);
+  assert.match(await evaluate('document.querySelector("#studio-message").textContent'), /not applied/);
   await click('#undo-description'); await rendered();
   assert.equal((await stored()).part.length_mm, 120);
   assert.equal((await stored()).concept_preview.wall_mm, 2.5);
@@ -197,7 +222,7 @@ try {
   const meshPath = join(downloadDir, 'tetrahedron.obj');
   await writeFile(meshPath, 'v 0 0 0\nv 10 0 0\nv 0 20 0\nv 0 0 30\nf 1 3 2\nf 1 2 4\nf 2 3 4\nf 3 1 4\n');
   await upload('#mesh-file', meshPath);
-  await until('document.querySelector("#studio-message").textContent.includes("Seleziona prima")');
+  await until('document.querySelector("#studio-message").textContent.includes("Select the file")');
   await fill('mesh-units', 'mm'); await upload('#mesh-file', meshPath);
   await until('Boolean(document.querySelector("[data-model-source=imported]"))'); await rendered();
   assert.equal((await stored()).part.length_mm, 120);
@@ -210,20 +235,20 @@ try {
   await fill('part-length_mm', 120); await fill('part-width_mm', 80); await fill('part-height_mm', 35);
   const invalidPath = join(downloadDir, 'empty.obj'); await writeFile(invalidPath, '');
   await fill('mesh-units', 'mm'); await upload('#mesh-file', invalidPath);
-  await until('document.querySelector("#studio-message").textContent.includes("superfici")');
+  await until('document.querySelector("#studio-message").textContent.includes("surfaces")');
   assert.match(await evaluate('document.querySelector("#concept-metrics").textContent'), /10 × 20 × 30 mm/);
   await click('[data-model-source="parametric"]'); await rendered();
   assert.equal(await evaluate('document.querySelector("#concept-download").disabled'), false);
   pass('OBJ import requires units, measures bounds, transfers dimensions only on request and survives a failed import');
   const legacy = await stored(); legacy.schema_version = 2;
   for (const key of ['opening', 'dimension_basis', 'front_share_percent', 'aesthetic_surfaces', 'snap_service', 'snap_count', 'corner_radius_mm', 'snap_layout', 'snap_cycles']) delete legacy.part[key];
-  legacy.part.nominal_wall_mm = 3; legacy.brief.customer = 'Cliente da conservare'; delete legacy.concept_preview;
+  legacy.part.nominal_wall_mm = 3; legacy.brief.customer = 'Customer da conservare'; delete legacy.concept_preview;
   await evaluate(`localStorage.setItem('injection-moulding-brief-v1', ${JSON.stringify(JSON.stringify(legacy))})`);
   await reload();
   await click('[data-view="part"]');
   assert.equal(await evaluate('document.querySelector("#part-opening").value'), 'unspecified');
   await click('#complete-case-requirements');
-  assert.equal((await stored()).brief.customer, 'Cliente da conservare');
+  assert.equal((await stored()).brief.customer, 'Customer da conservare');
   assert.equal((await stored()).part.nominal_wall_mm, 3);
   assert.equal((await stored()).part.opening, 'paired_shells');
   assert.equal((await stored()).schema_version, 4);

@@ -1,108 +1,99 @@
-# Specifica della simulazione: dal granulo al nastro
+# Simulation specification: granules to conveyor
 
-Proposta tecnica per M03–M05, revisione 3 del 2026-10-15. Descrive modelli da implementare e verificare; non documenta un motore già disponibile.
+Technical proposal for M03–M05, updated 2026-10-16. These models are planned, not an implemented simulation engine.
 
-## Domande a cui rispondere
+## Decisions to support
 
-1. Il materiale arriva in quantità, condizioni e tempi sufficienti per la pressa?
-2. Quali operazioni determinano il ciclo e quali possono sovrapporsi?
-3. La geometria dello stampo consente apertura, estrazione, accesso del robot e orientamento richiesto sul nastro?
-4. Quali assi, corse e pose servono, e quali alternative di stampo/cella rimuovono un vincolo?
-5. Come cambiano tempi, capacità e costi quando variano materiale, alimentazione, raffreddamento o movimenti?
-6. Quali risultati sono stime preliminari e quali sono stati confrontati con dati tecnici o prove reali?
+Determine whether material arrives in sufficient quantity and condition; identify cycle constraints and overlapping operations; check mould opening, ejection, robot access and deposit orientation; compare layout, cooling, feed and motion changes; distinguish preliminary estimates from results checked against technical references or measurements.
 
-## Livelli di modellazione
+## Model fidelity
 
-| Livello | Contenuto | Risultati ammessi |
+| Level | Content | Valid outputs |
 | --- | --- | --- |
-| L0 — Sequenza e cinematica | Geometrie funzionali, eventi, risorse, tempi configurati o calcolati dai movimenti | Timeline, ingombri, pose, corse, attese, capacità di uno scenario; animazione dei movimenti |
-| L1 — Processo ridotto | Inventari e flussi, correlazioni documentate, bilanci di massa/energia, modelli concentrati o 1D | Evoluzioni e stime entro le ipotesi/proprietà disponibili, con confronto su riferimenti |
-| L2 — Analisi fisica dettagliata | Solutori e discretizzazioni adatti per riempimento, termica, ritiro/deformazione o interazioni specifiche | Campi fisici soltanto per le analisi effettivamente calcolate e verificate |
+| L0 — Sequence/kinematics | Functional geometry, events, resources, configured times or movement-based durations | Timeline, poses, strokes, waiting, scenario capacity and movement animation |
+| L1 — Reduced process | Inventories/flows, documented correlations, mass/energy balances, lumped or 1D models | Evolutions/estimates within available assumptions and material properties |
+| L2 — Detailed physics | Suitable solvers/discretisation for filling, heat, shrinkage/warpage or specific interactions | Physical fields only for calculations actually executed and verified |
 
-I livelli sono assegnati per fenomeno, non all'intero progetto: una stessa esecuzione può avere cinematica verificata e raffreddamento solo configurato. La prima simulazione completa usa L0 e introduce L1 per singoli fenomeni verificati. Accuratezza, limiti e tempi di calcolo vanno misurati sui casi disponibili prima di promettere simulazione fisica dettagliata in tempo reale.
+Fidelity is assigned per phenomenon. One run can have checked kinematics and configured cooling. The first complete simulation is L0, adding L1 phenomenon by phenomenon. Accuracy, limits and runtime must be measured before promising detailed real-time physics.
 
-## Fasi, parametri e rappresentazione
+## Phases and parameters
 
-| Fase/risorsa | Input e stato da rappresentare | Risultati e grafica |
+| Phase/resource | Inputs/state | Outputs and visualisation |
 | --- | --- | --- |
-| Materiale in ingresso | Grado, lotto, composizione, eventuale rimacinato, massa, temperatura, umidità quando pertinente | Identità e disponibilità del lotto; flusso di materiale simbolico |
-| Essiccazione eventuale | Capacità, carico, tempi/età del materiale, temperatura, condizioni dell'aria, umidità iniziale e obiettivo | Inventario condizionato, attese, consumo se modellato, andamento di temperatura/umidità |
-| Trasporto | Lunghezza/percorso, portata o massa per carico, latenza, modalità ciclica/continua, capacità | Arrivi, ritardi, inventari e percorsi animati |
-| Tramoggia/alimentazione | Capacità e livello iniziale, soglie di ricarica, portate, origine del materiale | Livello nel tempo, ricariche e rischio di alimentazione insufficiente |
-| Plastificazione/dosatura | Vite/cilindro, diametro e geometria disponibili, zone termiche, giri, contropressione, corsa/dose, materiale e tempo di residenza | Massa disponibile, avanzamento vite, stati solidi/fusi e temperature solo secondo il modello scelto |
-| Iniezione | Profilo velocità/portata, limite di pressione, dose, geometria di alimentazione/cavità, viscosità e condizioni termiche | Tempo e stato di riempimento; il fronte spaziale richiede un solutore adeguato |
-| Mantenimento | Profilo pressione/tempo, commutazione, cuscino, condizioni di chiusura del punto di iniezione se modellate | Ricetta applicata, durata e grandezze effettivamente calcolate |
-| Raffreddamento/termoregolazione | Geometria pezzo/stampo/circuiti, proprietà termiche, fluido, portata, temperature e criterio di estrazione | Stato termico configurato/stimato/calcolato; circuiti e direzione dei flussi |
-| Apertura e movimenti stampo | Corse/profili, divisione, carrelli, posizioni di finecorsa, dipendenze | Posizioni, tempi e volumi di ingombro con esiti delle verifiche disponibili |
-| Estrazione e presa | Estrattori, direzione/corsa, sequenza, punti presa, organo di presa, conferma della presa | Distacco e trasferimento di appartenenza del pezzo; vincoli di accesso |
-| Robot e trasferimento | Assi realmente presenti, limiti, velocità/accelerazioni, massa/capacità, traiettorie, pose e tempi di presa | Tempo di movimento, attese, pose raggiungibili e interferenze verificate |
-| Deposito e nastro | Posa richiesta, zona disponibile, passo/spaziatura, velocità, sensori/logica e accumulo | Identità e orientamento dei pezzi depositati, avanzamento e blocchi |
+| Incoming material | Grade, lot, composition/regrind, mass, temperature, relevant moisture | Lot identity/availability and symbolic flow |
+| Optional drying | Capacity/load, material age, time, temperature, air conditions, initial/target moisture | Conditioned inventory, waiting, energy if modelled, temperature/moisture history |
+| Transport | Route, flow or batch mass, latency, continuous/cyclic operation, capacity | Arrivals, delays, inventories and animated routes |
+| Hopper/feed | Capacity, initial level, refill thresholds, flow, material origin | Levels, refills and starvation |
+| Plasticisation/metering | Screw/barrel geometry available, thermal zones, speed, back pressure, stroke/dose, grade and residence | Available mass, screw movement and solid/melt/temperature states according to the selected model |
+| Injection | Speed/flow profile, pressure limit, dose, feed/cavity geometry, rheology and temperature | Filling time/state; spatial flow fronts need an appropriate solver |
+| Holding | Pressure/time, switchover, cushion, gate closure if modelled | Applied recipe, duration and calculated quantities |
+| Cooling/control | Part/mould/circuit geometry, thermal properties, fluid/flow, temperatures and ejection criterion | Configured/estimated/calculated thermal state and circuit flow directions |
+| Mould movements | Strokes/profiles, parting, slides, end positions and dependencies | Positions, timing and interference envelopes/checks |
+| Ejection/pickup | Ejectors, direction/stroke, sequence, grip points/end effector, grip confirmation | Detachment and part support transfer, access constraints |
+| Robot transfer | Actual axes, limits, speeds/accelerations, payload, trajectories, grip times/poses | Movement duration, waiting, reachable poses and available interference checks |
+| Placement/conveyor | Target pose, free zone, spacing, belt speed, sensors/logic and accumulation | Part identities/orientations, travel and blocking |
 
-Unità fisiche esplicite. Pressione specifica del materiale, pressione idraulica e pressione in cavità sono grandezze distinte. Una conversione richiede i dati della macchina. Le proprietà di famiglia del polimero non sostituiscono grado commerciale e coefficienti necessari al modello.
+Specific injection pressure, hydraulic pressure and cavity pressure remain distinct. Conversion requires machine data. Polymer-family properties do not replace grade-specific coefficients required by a model.
 
-## Due scale temporali e condizioni iniziali
+## Material timescale and initial conditions
 
-Il sistema segue sia il flusso materiale (carichi, essiccazione, residenza e rifornimenti) sia i cicli ripetuti della cella. La vista non rappresenta il moto di ogni granulo; particelle/colori sono una visualizzazione del modello aggregato.
+Model bulk material lots/portions with provenance and conditioning state, not individual grain dynamics. Animated particles are a representation of an aggregate model. Material supply and repeated machine cycles share a simulation clock but operate over different time horizons.
 
-La prima implementazione usa lotti/porzioni di massa con origine e stato di condizionamento. L'età iniziale del materiale in essiccatore e tramoggia è parte dello scenario. «Impianto vuoto» e «impianto già alimentato con materiale idoneo» producono transitori differenti.
+Initial inventories include material age and condition. Empty startup and a plant preloaded with qualified material produce different transients. An ideal FIFO or mixed residence model must be declared. Inventory mass/throughput provides nominal residence, not a guarantee that every portion has met minimum drying time. Conditioning requirements come from the grade and initial state.
 
-Un modello ideale FIFO o miscelato deve essere dichiarato. Il rapporto massa/portata fornisce un tempo nominale di residenza, non garantisce da solo che ogni porzione abbia soddisfatto il tempo minimo di essiccazione. Il bisogno di condizionamento deriva dalle specifiche del grado e dalle condizioni iniziali.
+Inventory change equals incoming minus outgoing mass. Availability and balances prevent negative stocks or shots without material. Rejects/runners have explicit destinations; recycling has its own route, delay and limits.
 
-Per un inventario: variazione della massa = massa entrata − massa uscita. Bilanci e disponibilità impediscono inventari negativi e dosi prodotte senza materiale. Scarti e canali escono dal bilancio con destinazione dichiarata; un eventuale riciclo ha percorso, limiti e ritardo propri.
+L1 plasticisation distinguishes zone heating, mechanical energy, losses and transport. Melting/thermal properties include relevant semicrystalline phenomena where applicable. Drying/rheology correlations are enabled only with documented coefficients and validity ranges.
 
-Per L1 della plastificazione considerare separatamente riscaldamento dalle zone, contributo meccanico, perdite e trasporto; termica e fusione dipendono dalle proprietà disponibili, inclusi fenomeni pertinenti ai semicristallini. Correlazioni di essiccazione o reologia, ad esempio modelli di viscosità dipendenti da taglio/temperatura, vengono abilitate soltanto con coefficienti e campo di validità documentati.
+## Events, overlap and cycle time
 
-## Eventi, dipendenze e tempo ciclo
+An operation has ID, preconditions, resources, duration model, state updates and completion conditions. Events share one simulation time; simultaneous events use a documented deterministic order. Playback speed is independent.
 
-Ogni operazione ha identificativo, precondizioni, risorse, durata/modello di durata, modifiche di stato e condizioni di completamento. Gli eventi sono ordinati su un unico tempo simulato; eventi simultanei usano un criterio deterministico documentato. La velocità di riproduzione grafica è indipendente.
+Examples to adapt to the configured cell:
 
-Dipendenze di esempio, da adattare alla cella configurata:
+- Injection requires the mould configuration, injection unit and qualified material/dose to be ready.
+- Cooling starts with melt/mould contact and may overlap holding and metering; it is not automatically a wholly subsequent duration.
+- The next metering operation starts when the recipe/machine and resources allow it.
+- Opening/pickup depend on relevant process completion and compatible mould/ejector/robot positions.
+- Transfer/deposit may continue during the next press cycle when the robot has cleared required zones/resources and other conditions hold.
+- A full conveyor or insufficient feed introduces waiting that propagates through dependencies.
 
-- Avvio iniezione: stampo nella configurazione richiesta, unità pronta e dose/materiale disponibili.
-- Raffreddamento: evolve dal contatto del fuso con lo stampo e può sovrapporsi a mantenimento e dosatura; non si aggiunge automaticamente come tempo interamente successivo.
-- Dosatura successiva: parte quando consentito dalla ricetta e dalla macchina, con risorse disponibili.
-- Apertura/prelievo: richiedono la fine delle fasi pertinenti e le posizioni compatibili di stampo, estrazione e robot.
-- Trasferimento/deposito: possono proseguire mentre la pressa inizia un nuovo ciclo, se il robot è fuori dalle zone e risorse necessarie e le altre precondizioni sono soddisfatte.
-- Nastro pieno o alimentazione insufficiente: creano attese e possono propagare un blocco a monte.
+Press cycle time is measured between identical consecutive reference events, such as closing starts. Material/part lead time, robot cycle and deposit cadence are different metrics. Total duration is not the sum of overlapping operations. The engine reports occupied resources, waiting and the sequence controlling cadence.
 
-Il ciclo pressa è misurato fra due eventi di riferimento uguali consecutivi, ad esempio due inizi di chiusura. Il lead time del materiale/pezzo, il ciclo robot e la cadenza di deposito sono metriche diverse. La durata totale non è la somma di tutte le durate sovrapposte. Il motore identifica risorse occupate, attese e cammino che determina la cadenza.
+## Part pose: cavity → robot → conveyor
 
-## Posa del pezzo: cavità → robot → nastro
+Define a global cell frame and local frames for press, mould halves, cavities, ejectors, robot, end effector, product and conveyor. Store rigid transforms with explicit units/orientation conventions. Exploded display poses are not operational poses.
 
-Ogni cella definisce un riferimento globale e riferimenti locali per pressa, semistampi, cavità, estrattori, robot, organo di presa, prodotto e nastro. Si memorizzano trasformazioni rigide con unità lineari esplicite e convenzione di orientamento; non si confondono viste di esploso e pose operative.
+Global part pose composes the current support frame pose with the local part transform. On support transfer, calculate the new local transform from the current global pose, preserving position/orientation without a jump.
 
-La posa globale di un pezzo è la composizione della posa del riferimento che lo sostiene e della trasformazione locale del pezzo. Al cambio di riferimento, la nuova trasformazione locale viene calcolata dalla posa globale corrente: il pezzo non salta né cambia orientamento al momento della presa o del rilascio.
+Each part/runner records identity, article, cavity, cycle and one current support. Transitions can be cavity/ejector → end effector → belt, according to the configured sequence. Multicavity pickup keeps every part pose relative to the end effector.
 
-Ogni pezzo/canale ha identità, articolo, cavità, ciclo e un unico riferimento di supporto corrente. Le transizioni possono essere cavità/estrattore → organo di presa → nastro, secondo la sequenza configurata. Una presa multicavità rappresenta le pose di ogni pezzo rispetto all'organo di presa.
+An XYZ robot without a wrist cannot flip a part by translation. Explain the constraint and compare actual wrist/actuator, orienting station, different grip/layout or mould cavity/ejection alternatives. Never silently add robot capabilities.
 
-Per un robot cartesiano XYZ senza rotazione, una posa di deposito che richiede un ribaltamento non è raggiungibile con la sola traslazione. Il sistema deve motivare il vincolo e confrontare polso aggiuntivo, stazione di orientamento, diversa presa/layout o diversa disposizione/estrazione dello stampo. La proposta non cambia automaticamente le capacità del robot.
+Initial checks use strokes, envelopes, distances and sampled paths/swept volumes according to available methods. A sampled trajectory retains that limitation; it is not proof of continuous collision freedom. Preliminary simulation is not functional-safety certification.
 
-Le prime verifiche usano corse, inviluppi, distanze e campionamento/swept volumes secondo il metodo disponibile. Una traiettoria soltanto campionata conserva tale limite: non viene dichiarata priva di collisioni per ogni istante. La simulazione preliminare non è una validazione della sicurezza funzionale della cella.
+## Initial movement models
 
-## Modelli iniziali del movimento
+Measured/manufacturer durations retain their source. Otherwise a triangular/trapezoidal profile can estimate rest-to-rest movements. For distance d, maximum speed v and symmetric acceleration a: duration is 2√(d/a) when d ≤ v²/a, otherwise d/v + v/a. Parameters must be positive and travel within limits.
 
-In L0, tempi dichiarati dal costruttore o misurati hanno fonte esplicita. In assenza, un profilo trapezoidale/triangolare può stimare movimenti con partenza e arrivo a velocità zero. Per distanza d, velocità massima v e accelerazione simmetrica a: durata = 2√(d/a) se d ≤ v²/a; altrimenti durata = d/v + v/a. Parametri devono essere positivi e il movimento entro corsa.
+Synchronised axes can share the maximum individual-axis duration when the controller allows it. Sequential movements have separate dependencies. Jerk, blended paths, grip delays, settling and payload limits are added when relevant/provided; the estimate does not replace actual robot specifications.
 
-Assi sincronizzati possono condividere la durata massima dei singoli assi se il controllo lo consente; movimenti sequenziali hanno dipendenze separate. Jerk, traiettorie di raccordo, ritardi di presa, assestamento e limiti sotto carico vanno aggiunti quando richiesti o forniti. Il modello non sostituisce automaticamente i dati del robot reale.
+## Mould cooling circuits
 
-## Circuiti di raffreddamento dello stampo
+Store 3D paths/branches, diameters/sections, inlet/outlet, fluid, temperature, flow or pressure conditions, materials and geometric references. Conventional or conformal alternatives require suitable representation and manufacturing feasibility.
 
-Ogni circuito conserva percorso 3D/rami, diametri/sezioni, ingressi/uscite, fluido, temperature, portata o condizioni di pressione, materiali e riferimenti geometrici. Le alternative possono essere convenzionali o conformali quando rappresentazione e realizzabilità sono supportate.
+AI proposes regions and routes; geometric tools check intersections, access and distances to cavities, surfaces, inserts, fasteners, slides and ejectors according to scenario constraints. There is no universal diameter or spacing imposed on all moulds.
 
-L'agente può proporre zone da raffreddare e alternative di percorso. Gli strumenti geometrici controllano intersezioni, accessibilità e distanze rispetto a cavità, superfici, inserti, fissaggi, carrelli ed estrattori secondo i vincoli dello scenario. Distanze e diametri non hanno un valore universale imposto a ogni stampo.
+An L1 lumped/resistance-network model requires masses, heat capacities, exchange paths and sourced properties. Hydraulic networks require fluid properties, geometry and applicable loss/heat-transfer correlations. Prescribed flow can determine pressure demand; prescribed available pressure requires solving flow. They cannot be imposed as inconsistent independent inputs.
 
-Per L1, un modello termico concentrato/rete di resistenze usa masse, capacità termiche, scambi e proprietà con fonte. Una rete idraulica richiede proprietà del fluido, geometrie e correlazioni applicabili per perdite e scambio. Se la portata è imposta, la pressione richiesta può essere un risultato; se è imposta la pressione disponibile, la portata va risolta. Non si impongono entrambe come dati indipendenti incoerenti.
+Report estimated ejection criterion/time, uniformity at the supported resolution and candidate sensitivity. Local hotspots, stresses and warpage require corresponding models. Average temperature is not converted into an unsupported detailed 3D heat map.
 
-Mostrare tempo/criterio di estrazione stimato, uniformità per la discretizzazione disponibile e sensibilità dei candidati. Hotspot locali, tensioni, deformazione e prestazioni dettagliate richiedono i rispettivi modelli: una temperatura media non diventa una mappa termica 3D interpolata senza fondamento.
+## Capacity, economics and run outputs
 
-## Capacità, costo e output dell'esecuzione
+Retain input snapshot/revision, model versions, initial state, event log, poses/states, unit-bearing signals, balances, metrics, assumptions and checks. Interrupted runs remain visibly partial.
 
-Conservare snapshot/revisione degli input, versioni dei modelli, condizioni iniziali, log degli eventi, stati/trasformazioni, segnali con unità, bilanci, metriche, ipotesi e verifiche. Un'esecuzione interrotta rimane riconoscibile come parziale.
+Capacity comes from simulated good output or a documented steady-state estimate using productive time, cadence, active cavities and yield. Losses already included in events/times are not counted again through OEE factors. Startup and steady operation remain distinct.
 
-La capacità deriva da pezzi effettivamente prodotti/conformi nello scenario o, per una stima stabile, da tempo produttivo, cadenza, cavità attive e resa. Perdite già comprese nei tempi o negli eventi non vengono moltiplicate nuovamente con fattori OEE. Il tempo di avvio si tiene distinto dal regime.
+Family moulds compare output by article against the BOM and demand; total cavity count alone does not determine saleable assembly capacity. Costs distinguish the commercial unit, material/runners/rejects, energy, rates, personnel, investments and allocation basis.
 
-Per stampi famiglia, confrontare produzione per articolo con distinta e domanda; il numero totale di cavità non basta a calcolare gli assiemi vendibili. Il confronto economico distingue unità commerciale, materiale/canali/scarti, energia, tariffe, personale, investimenti e criteri di allocazione.
-
-## Verifiche richieste
-
-I criteri S01–S07 e A01–A15 sono in [BACKLOG.md](BACKLOG.md). Prima di introdurre L1/L2, ogni modello deve avere fonte/equazioni, unità, input necessari, dominio, caso di riferimento e criterio di confronto. La documentazione può essere completata adesso; accuratezza numerica e prestazioni saranno dimostrate con l'implementazione.
+Acceptance scenarios S01–S07 and criteria A01–A15 are in [BACKLOG.md](BACKLOG.md). Before implementing L1/L2, each model needs source/equations, units, required data, domain, reference case and justified comparison tolerances. Numerical accuracy and runtime will be demonstrated by implementation, not by this specification.

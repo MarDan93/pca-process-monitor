@@ -1,28 +1,30 @@
-# Piattaforma di fattibilità e simulazione dello stampaggio a iniezione
+# Injection moulding feasibility and simulation platform
 
-Revisione 3 — 2026-10-15. **Partenza dal cliente, funzionamento online, prodotti generici e AI open source in tutti i moduli.** La conversazione raccoglie informazioni e guida operazioni condivise con le proprietà contestuali.
+Updated 2026-10-16. **Customer-first, online, generic products and open-source AI across modules.** Chat and contextual properties operate on the same project.
+
+**Current position: P0 documentation complete; P1 application implementation not started.** The existing demo is a local geometry/requirements experiment. [Implementation status](IMPLEMENTATION_STATUS.md) and [roadmap](ROADMAP.md) are the progress references.
 
 ```mermaid
 flowchart LR
-    A[Cliente, mercato e domanda] --> B[Prodotto]
-    B --> C[Stampo]
-    C --> D[Cella: pressa, robot e nastro]
-    D --> E[Processo: dal granulo al deposito]
-    E --> F[Capacità, costi e dati reali]
+    A[Customer, market and demand] --> B[Product]
+    B --> C[Mould]
+    C --> D[Cell: press, robot and conveyor]
+    D --> E[Process: granules to finished part]
+    E --> F[Capacity, costs and real data]
     F --> C
 ```
 
-| Documento | Contenuto |
+| Document | Purpose |
 | --- | --- |
-| [Specifica funzionale](SPECIFICATION.md) | Sei moduli, requisiti commerciali/tecnici e contratto comune |
-| [Esperienza utente](UX_FLOW.md) | Chat principale, dettagli contestuali e percorso cliente → processo |
-| [Simulazione](SIMULATION.md) | Materiale, tempi, cinematica, orientamenti e raffreddamenti |
-| [Architettura online](ARCHITECTURE.md) | Servizi, AI open source, dati versionati e distribuzione |
-| [Roadmap](ROADMAP.md) | Consegne ordinate per dipendenze e criteri di uscita |
-| [Backlog e accettazione](BACKLOG.md) | Lavori concreti, 15 criteri e 7 scenari di verifica |
-| [Stato reale](IMPLEMENTATION_STATUS.md) | Cosa esiste e cosa è ancora specificato |
-| [Registro delle decisioni](DISCOVERY.md) | Richieste confermate e chiarimenti successivi |
+| [Functional specification](SPECIFICATION.md) | Six modules, commercial/technical requirements and shared data |
+| [User experience](UX_FLOW.md) | Main chat, contextual properties and customer-to-process workflow |
+| [Simulation](SIMULATION.md) | Material, timing, kinematics, orientations and cooling |
+| [Online architecture](ARCHITECTURE.md) | Services, open-source AI, versioned state and deployment |
+| [Roadmap](ROADMAP.md) | Milestone status, dependencies and exit evidence |
+| [Backlog and acceptance](BACKLOG.md) | Concrete work, 15 criteria and seven verification scenarios |
+| [Implementation status](IMPLEMENTATION_STATUS.md) | Available capabilities and unimplemented modules |
+| [Decision register](DISCOVERY.md) | Confirmed requirements and subsequent clarifications |
 
-Il primo sviluppo sarà il brief cliente generico via chat, con persistenza online. La prima simulazione completa collegherà alimentazione/condizionamento, pressa/stampo, robot e nastro usando tempi e modelli dichiarati, poi introdurrà i fenomeni fisici verificati.
+Repository language is English. Application languages are English, Italian, French and Spanish, defaulting to English. User-authored data remains in its original language.
 
-La [demo 02](../../demo/README.md) resta una prova locale di alcune interazioni geometriche. Il [guscio elettronico](REFERENCE_CASE.md) è soltanto un caso opzionale; i progetti nuovi non ne ereditano forma, materiali o requisiti.
+The next application increment is a generic commercial brief via chat with server persistence and real open-source AI. [The local demo](../../demo/README.md) remains separate; [the enclosure](REFERENCE_CASE.md) is an optional example.

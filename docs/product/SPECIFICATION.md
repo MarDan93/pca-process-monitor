@@ -1,99 +1,100 @@
-# Specifica della piattaforma — revisione 3
+# Platform specification — revision 4
 
-Data: 2026-10-15. Requisiti aggiornati dopo il chiarimento sull'intero sistema. Questo documento descrive il prodotto da costruire. Le funzionalità della demo esistente sono elencate separatamente in [IMPLEMENTATION_STATUS.md](IMPLEMENTATION_STATUS.md).
+Updated 2026-10-16. This is the target product specification. [Implementation status](IMPLEMENTATION_STATUS.md) records what actually works; [the roadmap](ROADMAP.md) records delivery order.
 
-## Scopo e confini
+## Purpose and boundaries
 
-Piattaforma online per studiare fattibilità commerciale e tecnica dello stampaggio a iniezione, configurare prodotto, stampo e cella e simulare il percorso dal granulo al pezzo sul nastro. L'utente confronta alternative prima di investire e prepara verifiche tecniche su ipotesi tracciabili. Il ruolo principale già indicato è il progettista di stampi; il brief deve accogliere anche informazioni commerciali e produttive del cliente.
+An online platform for commercial and technical feasibility studies of injection moulding. It connects customer requirements, products, mould concepts, production cells and simulation from incoming granules to finished parts on a conveyor. The main initial user is a mould designer, supported by commercial and manufacturing information.
 
-Il progetto può riguardare prodotti differenti. La geometria può essere descritta, importata o ricostruita con assistenza da immagini e misure. La copertura della generazione geometrica cresce per operazioni supportate: accettare un prodotto generico non significa promettere la generazione o la simulazione accurata di qualsiasi forma con qualsiasi dato.
+Projects support different products. Geometry may be described, imported or reconstructed with assistance from photographs and measurements. Generic project data does not imply automatic, accurate generation or simulation of every possible shape. Supported operations and analysis limits remain explicit.
 
-La modellazione produce rappresentazioni sufficienti alle decisioni richieste. L'obiettivo comprende orientamenti, corse, ingombri, sequenze, raffreddamenti e parametri; la documentazione esecutiva completa di uno stampo e la programmazione certificata della macchina restano fuori dalla prima versione.
+Models need functional detail sufficient for decisions about orientations, strokes, clearance, timing, cooling and economics. Complete manufacturing drawings and certified machine/robot programming are outside the first release.
 
-## Requisiti trasversali
+## Cross-cutting requirements
 
-- Fruizione dal browser; progetti, allegati e revisioni persistenti sul server. La demo HTML resta un artefatto di sviluppo.
-- Conversazione come ingresso principale in ogni modulo. Proprietà e campi strutturati sono una modalità contestuale di lettura/correzione degli stessi dati.
-- Un nuovo progetto parte dalla richiesta del cliente, senza geometria, materiale, quantità, vita commessa o prezzo impliciti. Esempi e template si caricano su scelta esplicita e mantengono origine dimostrativa.
-- Software, grafica, strumenti di calcolo e integrazione AI basati su componenti open source. Il modello AI e la relativa licenza saranno selezionati esplicitamente; accesso ai pesi e licenza open source non sono sinonimi.
-- Ogni dato distingue valore fornito, estratto, assunto, stimato, simulato o misurato, con fonte, unità, revisione e stato delle verifiche.
-- Un dato assente resta assente. Può impedire una specifica valutazione senza impedire la raccolta del resto del progetto.
-- Le modifiche aggiornano le dipendenze: risultati su revisioni precedenti restano consultabili e sono segnalati come da ricalcolare.
+- Browser-based use with server persistence for projects, files and revisions. Downloadable HTML is a development demo, not the target distribution.
+- Chat is the main input in every module. Contextual properties expose and edit the same structured data.
+- New platform projects start without an implicit shell, material, volume, programme length or price. Optional examples retain their illustrative provenance.
+- Graphics, functional tools and AI integrations use open-source components. Model licensing must be selected explicitly; available weights alone do not establish an open-source licence.
+- Repository documentation, code comments and new identifiers use English. The application supports English, Italian, French and Spanish, defaults to English and remembers an explicit selection. User content is not translated by changing the interface.
+- Every value records units, source, revision and whether it was provided, extracted, assumed, estimated, simulated or measured. Requested, proposed and verified are different states.
+- Missing inputs block only dependent operations. They are not silently filled with invented measurements.
+- Changes mark dependent results as requiring recalculation. Historical results retain their original inputs.
 
-## M01 — Cliente, mercato e fattibilità commerciale
+## M01 — Customer, market and commercial feasibility
 
-È il punto di ingresso del progetto. La chat raccoglie funzione e mercato del prodotto, destinatari, requisiti applicabili, obiettivi economici e vincoli. Non richiede subito dati che non cambiano la decisione corrente.
+The starting point is the customer request: product function, market, commercial objectives and constraints. Questions are ordered by their effect on the current decision.
 
-| Gruppo | Informazioni da poter descrivere | Uso nei moduli successivi |
+| Group | Information | Downstream use |
 | --- | --- | --- |
-| Richiesta | Cliente, RFQ, articolo/revisione, funzione, mercato, applicazione, area di vendita | Requisiti tecnici e criteri di accettazione |
-| Domanda | Quantità annue per scenario/anno, lotti, stagionalità, crescita, ricambi, scadenze | Cavità, numero di stampi/celle, capacità e servizio |
-| Unità commerciale | Pezzo, kit o assieme; distinta e quantità di ciascun componente | Conversione della domanda e costi confrontabili |
-| Economia | Prezzo vendita, valuta, costo industriale obiettivo oppure esplorativo, margine richiesto | Alternative ammissibili e sensibilità |
-| Investimenti | Budget separati per stampo, pressa, automazione e ausiliari; titolarità e vita attesa | Acquisto, ammortamento e confronto con risorse esistenti |
-| Produzione | Stabilimento, turni/ore, cambi produzione, disponibilità, scarti e vincoli di capacità | Produzione conforme e lead time |
-| Accettazione | Qualità funzionale/estetica, tolleranze, ambiente, prove e documenti richiesti | Vincoli sul prodotto e verifica finale |
+| Enquiry | Customer, RFQ, article/revision, function, market, application and sales region | Technical requirements and acceptance criteria |
+| Demand | Annual scenarios, lots, seasonality, growth, spares and deadlines | Cavities, mould/cell counts, capacity and delivery |
+| Commercial unit | Part, kit or assembly; bill of materials and component quantities | Comparable demand, capacity and unit costs |
+| Economics | Selling price, currency, manufacturing target or exploratory mode, required margin and its definition | Alternatives and sensitivity |
+| Investment | Separate mould, press, automation and auxiliary budgets, ownership and useful life | Existing-resource versus purchase comparison and allocation |
+| Production | Plant, calendar, shifts, changeovers, availability, reject rate and capacity constraints | Good output and lead time |
+| Acceptance | Functional/cosmetic quality, tolerances, environment, required tests and documents | Product constraints and technical verification |
 
-Quantità annua libera, senza tetto commerciale prefissato; assenza di quantità e domanda illimitata non sono equivalenti. Durata e valuta sono dati di progetto. Il prezzo di vendita non sostituisce il costo industriale. Una percentuale di margine deve indicare la base di calcolo.
+Annual demand has no predetermined commercial ceiling. Missing demand is not unlimited demand. Selling price is distinct from manufacturing cost; programme length and currency belong to each project. The original text and additional information remain available beyond the initial structured fields.
 
-Output: brief strutturato, fonti/allegati, domande mancanti ordinate per impatto, scenari di domanda e obiettivi. Testo originale e informazioni aggiuntive restano conservati: la tabella non limita ciò che il cliente può descrivere. La prima revisione può essere completa dal punto di vista commerciale e ancora incompleta per simulare.
+Output: structured brief, sources/files, prioritised missing information, demand scenarios and objectives. A commercial brief can be usable before simulation inputs are complete.
 
-## M02 — Prodotto
+## M02 — Product
 
-Descrizione libera e requisiti estensibili per uno o più articoli/componenti: funzione, geometria, dimensioni, materiale/grado, superfici, tolleranze, estetica, assemblaggio e caratteristiche speciali. Le proprietà specifiche appartengono al prodotto o alla feature interessata; non diventano campi obbligatori globali.
+One or more articles/components with extensible requirements and features: function, geometry, dimensions, material/grade, surfaces, tolerances, appearance, assembly and special properties. Product-specific requirements do not become globally mandatory fields.
 
-Ingressi: testo, file CAD/mesh, foto, schizzi e quote. Immagini concettuali possono aiutare l'esplorazione della forma. Una foto richiede scala nota e informazioni aggiuntive per ricostruzione metrica; interni, materiale e tolleranze non vengono inventati.
+Inputs include text, CAD/mesh, photographs, sketches and dimensions. Concept images support exploration. Metric reconstruction from photographs needs a known scale and additional views/information; hidden geometry, material and tolerances are not invented.
 
-Output: geometria con sistema di riferimento, requisiti collegati a regioni/feature quando disponibili, osservazioni di stampabilità e dati mancanti. Un modello può essere un solido CAD, una mesh o un riferimento, con capacità di analisi esplicite. Geometrie diverse da un involucro devono mantenere le proprie caratteristiche.
+Output: geometry with coordinate frames, requirements linked to regions/features where possible, mouldability observations and missing inputs. Solids, meshes and visual references have distinct analysis capabilities. A flange or bracket retains its own geometry rather than being converted to an enclosure template.
 
-## M03 — Stampo
+## M03 — Mould
 
-Alternative per numero/disposizione delle cavità, piano e direzione di divisione, inserti, materiali, alimentazione, sfiati, carrelli/lifters, estrazione e circuiti di raffreddamento. Stampo monoimpronta, multicavità o famiglia richiedono rappresentazione distinta della produzione per articolo.
+Compare cavity count/layout, parting direction/plane, inserts, steels, feeding, venting, slides/lifters, ejection and cooling circuits. Single-cavity, multicavity and family moulds represent output per article separately.
 
-Ogni cavità associa prodotto, orientamento, posizione, origine locale e punto/direzione di estrazione. La scelta determina anche accesso del robot e orientamento del pezzo al prelievo. I raffreddamenti conservano percorso 3D, sezioni, connessioni, portata/fluido/temperature e verifiche disponibili rispetto a cavità, inserti, estrattori e strutture.
+Each cavity links a product, position, orientation, local origin and ejection reference. These affect robot access and the orientation of the extracted part. Cooling circuits retain 3D paths, sections, connections, fluid, flow/pressure/temperature conditions and available geometric/thermal checks.
 
-Output: concept modificabile e alternative confrontabili, ingombri, corse, vincoli sulla pressa/cella e stato delle verifiche. La proposta dei raffreddamenti usa geometria e modelli termici dichiarati, come dettagliato in [SIMULATION.md](SIMULATION.md).
+Output: editable concepts, alternative comparisons, dimensions, strokes, press/cell constraints and verification states. Cooling proposals use explicit geometry and thermal models as described in [the simulation specification](SIMULATION.md).
 
-## M04 — Cella: pressa, stampo, robot cartesiano, nastro e ausiliari
+## M04 — Cell: press, mould, Cartesian robot, conveyor and auxiliaries
 
-Configurazione di macchine già disponibili o candidate da acquistare. Modelli semplificati devono mantenere ingombri funzionali, corse, velocità/accelerazioni, capacità, riferimenti di installazione e punti di interfaccia.
+Configure existing machines and purchase candidates. Simplified models retain functional envelopes, strokes, speeds/accelerations, capacity, installation frames and interface points.
 
-La cella comprende pressa e unità di iniezione, stampo, robot cartesiano, organo di presa, nastro, essiccatore eventuale, alimentazione/trasporto materiale e termoregolazione. Le singole risorse sono opzionali secondo il processo; l'assenza di un essiccatore non implica che un materiale sia lavorabile senza condizionamento.
+Resources include press and injection unit, mould, Cartesian robot, end effector, conveyor, optional dryer, material transport/feed and temperature control. Resources are optional according to the process; omitting a dryer does not establish that the material can be processed without conditioning.
 
-Output: layout 3D, montaggio, compatibilità per verifiche disponibili, traiettorie e accessibilità, prese e pose di deposito. Un robot cartesiano non acquisisce gradi di libertà rotativi inesistenti: un ribaltamento richiesto deve trovare un polso/attuatore configurato, una stazione ausiliaria o una diversa soluzione di stampo/layout.
+Output: 3D layout, installation, available compatibility checks, paths, access, grip and deposit poses. An XYZ robot cannot acquire an unconfigured rotary axis. A required flip needs an actual wrist/actuator, auxiliary orienting station or a different mould/grip/layout solution.
 
-## M05 — Processo temporale dal granulo al nastro
+## M05 — Time-based material-to-conveyor process
 
-Materiale in ingresso → essiccazione/condizionamento eventuale → trasporto e tramoggia → alimentazione vite → plastificazione/dosatura → iniezione → mantenimento/raffreddamento → apertura e movimenti stampo → estrazione/prelievo → trasferimento → deposito → avanzamento sul nastro.
+Incoming material → optional drying/conditioning → transport and hopper → screw feed → plasticisation/metering → injection → holding/cooling → opening and mould movements → ejection/pickup → transfer → placement → conveyor movement.
 
-La sequenza è un grafo di dipendenze e risorse: attività indipendenti possono sovrapporsi. Essiccazione e alimentazione operano anche su tempi diversi dal singolo ciclo pressa. La simulazione distingue avviamento, stato iniziale dei serbatoi e funzionamento ripetuto.
+This is a graph of dependencies and resources, allowing compatible operations to overlap. Drying and replenishment operate on different timescales from a press cycle. Startup, initial inventories and repeated operation are distinct conditions.
 
-Ogni fase collega rappresentazione 3D, stato, inizio/fine, parametri, grafici e fonte del calcolo. L'utente può riprodurre, fermare, avanzare per evento e confrontare scenari. Orientamento e identità di ciascun pezzo restano tracciati da cavità a nastro. I livelli di modellazione e relativi criteri sono definiti in [SIMULATION.md](SIMULATION.md).
+Every phase links 3D state, timing, parameters, charts and model/source. Playback, pause, event stepping and scenario comparison share a simulation clock. Part identity and orientation remain traceable from cavity to conveyor. Model fidelity is defined per phenomenon in [SIMULATION.md](SIMULATION.md).
 
-## M06 — Economia, dati reali e ottimizzazione
+## M06 — Economics, real data and optimisation
 
-Il confronto economico riceve domanda da M01, materiali/geometrie da M02, investimenti da M03/M04 e ciclo/capacità da M05. Restituisce costo per unità commerciale conforme, capacità per articolo, investimento, sensibilità e dati mancanti, evitando doppi conteggi di tariffa, energia, ammortamento e perdite.
+Economics receives demand from M01, product/material from M02, investments from M03/M04 and timing/capacity from M05. It returns cost per conforming commercial unit, capacity by article, investment, sensitivities and missing inputs without double-counting rates, energy, depreciation or losses.
 
-PCA esplora variabilità, raggruppamenti e contributi senza attribuire automaticamente causalità. PLS prevede variabili target misurate a partire da condizioni e caratteristiche dichiarate. Dati reali dell'utente, identificativi ciclo/lotto, preprocessing, separazione di addestramento/validazione e copertura delle condizioni sono prerequisiti delle raccomandazioni produttive. L'ottimizzazione conserva vincoli tecnici e piano di prova delle configurazioni proposte.
+PCA explores variability, groups and contributions without establishing causality. PLS predicts measured targets from documented inputs/features. Real user data, cycle/lot identifiers, preprocessing, separated training/validation and condition coverage are prerequisites for production recommendations. Optimisation preserves constraints and a trial plan.
 
-## Contratto comune fra moduli
+## Shared data contract
 
-| Entità | Contenuto e collegamenti |
+| Entity | Content and references |
 | --- | --- |
-| Progetto e revisioni | Identità, cliente, valuta, unità, scenari e revisione immutabile di input |
-| Brief e requisiti | Domanda, unità commerciale/distinta, mercato, obiettivi, vincoli e origine |
-| Prodotti e feature | Geometria/allegati versionati, riferimenti, materiali e proprietà estensibili |
-| Alternative stampo | Cavità collegate ai prodotti, attuatori, estrazione e circuiti |
-| Cella e risorse | Asset, installazioni, trasformazioni, capacità, disponibilità e tariffe |
-| Ricetta e sequenza | Parametri, unità, limiti, eventi, dipendenze, traiettorie e risorse |
-| Esecuzione simulata | Snapshot degli input, versioni dei modelli, condizioni iniziali, eventi, segnali, pezzi e verifiche |
-| Analisi economica/ML | Scenario o dataset/versione, metodo, risultati, campo di validità e dipendenze |
-| Conversazione e operazioni | Richiesta originale, interpretazione strutturata, modifiche, fonti e annullamento |
+| Projects/revisions | Identity, customer, currency, units, scenarios and immutable input revisions |
+| Brief/requirements | Demand, commercial unit/BOM, market, objectives, constraints and sources |
+| Products/features | Versioned geometry/files, coordinate frames, material and extensible properties |
+| Mould alternatives | Product-linked cavities, actuators, ejection and circuits |
+| Cell/resources | Assets, installations, transforms, capacity, availability and rates |
+| Recipe/sequence | Parameters, units, limits, events, dependencies, trajectories and resources |
+| Simulation run | Input snapshot, model versions, initial conditions, events, signals, parts and checks |
+| Economic/ML analyses | Scenario or dataset version, method, results, validity and dependencies |
+| Conversation/operations | Original request, structured interpretation, changes, sources and undo |
 
-Un riferimento fisico o geometrico usa un identificativo stabile; la posizione visualizzata di un oggetto non sostituisce la sua posa nel processo. Il vecchio export `schema_version: 4` descrive la demo e non è il contratto della piattaforma. Dettagli storici in [archive/DEMO_02_SPECIFICATION.md](archive/DEMO_02_SPECIFICATION.md).
+Object references are stable IDs. A visual exploded view is not an operational pose. The legacy demo export `schema_version: 4` is not the platform contract; its historical description is [archived](archive/DEMO_02_SPECIFICATION.md).
 
-## Prima tranche e verifica del prodotto
+## Delivery and acceptance
 
-La prima tranche applicativa è il brief commerciale generico via chat e campi contestuali, con salvataggio online e progetti privi di dati dimostrativi impliciti. La prima tranche di simulazione collega un prodotto importato, uno stampo/cella semplificati e una sequenza parametrica completa. Casi di geometria differenti devono verificare l'estensibilità fin dall'inizio.
+The first application increment is a generic commercial brief through chat and contextual properties, with server persistence and no implicit sample data. The first simulation increment links imported geometry, simplified mould/cell models and a complete parametric sequence. Different product geometries test extensibility from the beginning.
 
-Requisiti e stato dell'implementazione sono separati. Criteri osservabili e ordine di sviluppo sono in [BACKLOG.md](BACKLOG.md) e [ROADMAP.md](ROADMAP.md).
+Acceptance criteria and implementation order are defined in [BACKLOG.md](BACKLOG.md) and [ROADMAP.md](ROADMAP.md). Requirements do not imply that a module is implemented.

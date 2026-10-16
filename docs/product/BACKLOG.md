@@ -1,77 +1,77 @@
-# Backlog e criteri di accettazione — revisione 3
+# Implementation backlog and acceptance
 
-Stato: pianificato, 2026-10-15. Questi sono criteri da verificare nell'applicazione futura, non test già passati. Priorità e dipendenze seguono [ROADMAP.md](ROADMAP.md).
+Updated 2026-10-16. Platform criteria below are **planned, not passed tests**. P1 implementation has not started. Demo language/access maintenance is tracked separately in [implementation status](IMPLEMENTATION_STATUS.md).
 
-## Lavori nell'ordine di sviluppo
+## Ordered work
 
-| ID | Lavoro | Dipendenza | Esito osservabile |
+| ID | Work | Dependencies | Observable outcome |
 | --- | --- | --- | --- |
-| B01 | Modello generico di commessa, prodotti/requisiti e unità commerciali | Specifica | Progetto vuoto e scenari indipendenti da una forma |
-| B02 | API, archivio server, allegati, revisioni e operazioni | B01 | Salvataggio/riapertura e modifiche versionate |
-| B03 | Home Cliente e mercato, chat principale e proprietà contestuali | B01–B02 | Brief commerciale completo senza passare da un editor geometrico |
-| B04 | Prima inferenza open source e strumenti sul brief | B02–B03 | Conversazione reale, correzioni e fonti; modello dichiarato |
-| B05 | Import CAD/mesh, riferimenti e requisiti geometrici estensibili | B02, B04 | Prodotti differenti e misure con unità |
-| B06 | Alternative di stampo, cavità/estrazione e raffreddamenti geometrici | B05 | Concept collegato a domanda e prodotto |
-| B07 | Cella con pressa, robot, presa, nastro e ausiliari | B05–B06 | Pose e assi espliciti, controlli di accesso/compatibilità disponibili |
-| B08 | Motore eventi, bilanci di inventario e ricette L0 | B06–B07 | Dal materiale in ingresso al deposito, con attese e sovrapposizioni |
-| B09 | Animazione e grafici sincronizzati, analisi delle pose | B08 | Timeline riproducibile e spiegazione dei vincoli |
-| B10 | Capacità/costi e confronto di scenari | B01, B08 | Costo per unità venduta e capacità per articolo senza doppi conteggi |
-| B11 | Modelli L1 e verifica termica/plastificazione | B08–B09 e riferimenti tecnici | Stime confrontate con casi noti e limiti dichiarati |
-| B12 | Dati reali, PCA/PLS e ottimizzazione vincolata | B02, B10 e dataset | Previsioni validate e prove proposte entro vincoli |
-| B13 | Distribuzione online, accessi e recupero dei dati | B02; ampliamento progressivo | Installazione HTTPS raggiungibile e dati recuperabili |
+| B01 | Generic projects, products/requirements and commercial units | Specification | Empty projects independent of product shape |
+| B02 | API, server storage, files, revisions and operations | B01 | Reopening and versioned changes |
+| B03 | Customer/market home, primary chat, contextual properties | B01–B02 | Commercial brief without starting in a geometry editor |
+| B04 | Actual open-source inference and brief tools | B02–B03 | Real conversation, sources, corrections and declared model |
+| B05 | CAD/mesh input, frames and extensible features | B02, B04 | Different products and unit-aware measurements |
+| B06 | Mould alternatives, cavities/ejection and geometric cooling paths | B05 | Concepts linked to demand/product |
+| B07 | Press/Cartesian robot/end-effector/conveyor/auxiliary cell | B05–B06 | Explicit poses, axes and available access/compatibility checks |
+| B08 | Events, inventories and L0 recipes | B06–B07 | Material-to-conveyor sequence, waiting and overlap |
+| B09 | Synchronous animation/charts and pose analysis | B08 | Reproducible timeline and explained constraints |
+| B10 | Scenario capacity/cost comparison | B01, B08 | Cost per sold unit and per-article capacity without double counting |
+| B11 | Verified reduced thermal/plasticisation models | B08–B09, references | Estimates compared to known cases within explicit limits |
+| B12 | Real data, PCA/PLS and constrained optimisation | B02, B10, datasets | Validated predictions and constrained trial plans |
+| B13 | Online deployment, access and recovery | B02; progressive | Reachable HTTPS and recoverable persistent data |
 
-B13 abilita un'installazione di prova già con il primo percorso B01–B04; non si attende l'implementazione di tutta la fisica per utilizzare il brief online.
+A test deployment can accompany B01–B04; detailed physics is not a prerequisite for online commercial briefing. Every future UI follows English-default EN/IT/FR/ES support and English repository conventions.
 
-## Criteri di accettazione
+## Acceptance criteria
 
-| ID | Dato / azione | Esito richiesto |
+| ID | Given/action | Required outcome |
 | --- | --- | --- |
-| A01 | Creazione nuova commessa | Nessun guscio, materiale, IP, quantità o durata impliciti; esempi opzionali marcati |
-| A02 | Descrizione di domanda, mercato, prezzo, costo e budget | Dati separati e con unità; ambiguità sul costo e sull'unità venduta vengono chiarite |
-| A03 | Correzione via chat e poi tramite proprietà | Stesso valore/versione nel progetto; fonte e annullamento disponibili |
-| A04 | Riapertura e aggiornamenti concorrenti | Dati server conservati; nessuna sovrascrittura silenziosa di una revisione più recente |
-| A05 | Mancanza di dati necessari | Sono indicati requisito e calcolo impedito, mentre il resto del brief resta utilizzabile |
-| A06 | Import di flangia, staffa e involucro | Geometria/unità/feature proprie mantenute; nessun campo PCB/agganci obbligatorio globale |
-| A07 | Foto senza scala e STEP/mesh con unità mancanti | Nessuna misura metrica dichiarata verificata; richiesta dei dati necessari e distinzione riferimento/mesh/solido |
-| A08 | Cambio cavità o orientamento nello stampo | Nuova revisione e verifiche dipendenti da ricalcolare per presa, traiettoria, ciclo e costo |
-| A09 | Robot XYZ senza polso e deposito con ribaltamento richiesto | Posa irraggiungibile motivata; nessuna rotazione aggiunta implicitamente all'animazione |
-| A10 | Circuito proposto che interseca un estrattore nel modello disponibile | Conflitto geometrico segnalato con oggetti interessati; nessuna validazione termica dedotta dall'assenza di collisioni |
-| A11 | Replay, pausa, passo e cambio velocità grafica | Stessi tempi simulati, log e pose agli eventi; soltanto il tempo di visione cambia |
-| A12 | Raffreddamento/dosatura/trasferimento compatibili in parallelo | Sovrapposizioni rispettate; cadenza misurata dagli eventi, senza sommare tutte le durate |
-| A13 | Presa e rilascio multicavità, nastro in moto | Identità/cavità e posa di ogni pezzo conservate; passaggio di riferimento senza salti |
-| A14 | Modello AI indisponibile o operazione non supportata | Stato reale esposto; dati conservati; nessun parser o risultato fittizio etichettato come AI |
-| A15 | Confronto economico o previsione da dati reali | Fonti, unità commerciale, versione input/modello e campo di validità presenti; mancanze e risultati da ricalcolare visibili |
+| A01 | Create a new project | No implicit shell/material/IP/demand/programme; optional marked examples |
+| A02 | Describe demand, market, price, cost and budgets | Separate unit-bearing values; clarify cost/commercial-unit ambiguity |
+| A03 | Correct through chat then properties | Shared value/revision, source and undo |
+| A04 | Reopen and edit concurrently | Server persistence; no silent overwrite of a newer revision |
+| A05 | Required data missing | Identify blocked calculation/input while other work remains possible |
+| A06 | Import flange, bracket and enclosure | Preserve geometry, units and features; no mandatory global PCB/clip fields |
+| A07 | Photo without scale or geometry without units | No verified metric claim; distinguish reference, mesh and solid |
+| A08 | Change cavities/orientation | New revision and stale grip/trajectory/cycle/cost checks |
+| A09 | XYZ robot without wrist; flipped deposit requested | Explained unreachable pose; no implicit animated rotary capability |
+| A10 | Cooling path intersects an ejector | Explain geometric conflict; lack of collision is not thermal validation |
+| A11 | Replay, pause, step and change playback speed | Same simulation timestamps, event log and event poses |
+| A12 | Cooling/metering/transfer can overlap | Respect resource dependencies; derive cadence from events |
+| A13 | Multicavity pickup/release on moving belt | Preserve each part identity/cavity/pose without support-transfer jumps |
+| A14 | AI unavailable or unsupported operation | Honest state and retained data; no fabricated AI/calculation |
+| A15 | Economic comparison or real-data prediction | Source, commercial unit, input/model versions and validity; visible missing/stale results |
 
-## Scenari di verifica trasversali
+## Cross-module scenarios
 
-### S01 — Nuova richiesta commerciale generica
+### S01 — Generic customer request
 
-Eseguire separatamente una commessa per flangia e una per staffa; il guscio elettronico è un terzo caso opzionale. Fornire nella chat quantità, mercato e obiettivo economico, quindi correggere quantità da proprietà e dalla chat. Riaprire i progetti. Verificare indipendenza, provenienza e assenza di requisiti del guscio importati negli altri articoli. Dati degli scenari sono illustrativi e non diventano default.
+Use independent flange and bracket enquiries; the enclosure is an optional third case. Describe demand/market/economic target, correct from chat and properties, reopen and verify independence/provenance. Illustrative scenario inputs never become defaults.
 
-### S02 — Stampo famiglia e unità venduta
+### S02 — Family mould and sold unit
 
-Definire un assieme che richiede due articoli e una disposizione cavità non bilanciata rispetto alla distinta. Verificare che domanda, capacità e costo siano espressi per articolo e per assieme conforme. Non basta sommare cavità per dichiarare la capacità vendibile. Cambiare domanda deve invalidare il confronto economico pertinente.
+An assembly needs two articles; cavity counts do not match their BOM ratio. Verify article and good-assembly demand/capacity/cost. Total cavities alone cannot determine saleable capacity. Demand changes invalidate relevant comparisons.
 
-### S03 — Orientamento dal prelievo al nastro
+### S03 — Pickup-to-conveyor orientation
 
-Configurare uno stampo multicavità, prese e un robot XYZ privo di rotazione; richiedere un deposito ribaltato. Verificare rifiuto motivato e alternative. In una variante aggiungere un polso realmente configurato o modificare stampo/presa. Verificare continuità delle pose e limiti di corsa al cambio di supporto; metodo e limiti della verifica collisioni devono essere visibili.
+Configure multiple cavities and an XYZ robot without rotation; request a flipped deposit. Explain the constraint and alternatives. Add an actual wrist or revise mould/grip in another scenario. Verify pose continuity, strokes and the declared limits of collision checking.
 
-### S04 — Impianto vuoto e materiale già pronto
+### S04 — Empty plant versus conditioned stock
 
-Confrontare avvio con essiccazione richiesta e inventari vuoti contro avvio con quantità/età del materiale già condizionato note. L'iniezione attende dose e materiale idoneo nel primo scenario. Verificare conservazione della massa, nessun inventario negativo e identità dei lotti. Non si assume che il tempo nominale di residenza certifichi la condizione di ogni porzione.
+Compare required drying with empty inventories to preloaded qualified material with known mass/age. Injection waits for dose and qualified feed. Verify lot identity, mass conservation and nonnegative inventory. Nominal residence does not certify each portion.
 
-### S05 — Attività sovrapposte e nastro bloccato
+### S05 — Overlap and conveyor blockage
 
-Configurare un caso in cui dosatura e raffreddamento si sovrappongono e il robot può depositare durante il ciclo successivo. Verificare cadenza dagli eventi, uso delle risorse e conteggio dei pezzi. Bloccare la disponibilità sul nastro: l'attesa si propaga secondo le dipendenze e non produce compenetrazioni o duplicazioni di pezzi.
+Meter during cooling and place parts while the next press cycle runs when allowed. Verify event cadence, resources and part count. Block belt availability: waiting propagates without overlapping or duplicated parts.
 
-### S06 — Revisione, costi e replay
+### S06 — Revisions, costs and replay
 
-Eseguire uno scenario, rivedere una corsa o un tempo, poi confrontare i risultati. Il vecchio run mantiene input e tempi originali; il nuovo usa la revisione nuova. Tariffa inclusiva di energia o ammortamento non somma nuovamente quelle voci. La velocità di playback non altera capacità o costo.
+Run a scenario, change stroke/time and compare. Old runs retain old inputs. Energy/depreciation included in a rate are not added again. Playback speed never changes capacity/cost.
 
-### S07 — Raffreddamenti e modelli ridotti
+### S07 — Cooling and reduced models
 
-Confrontare un percorso che interseca una parte vincolata con uno geometricamente ammissibile secondo il modello. Valutare termica/idraulica soltanto se i dati sono sufficienti. Il secondo circuito non è automaticamente ottimale o validato fisicamente. Ogni modello L1 ha un caso di riferimento, tolleranze motivate e analisi del dominio; soglie numeriche da definire prima di implementarlo.
+Compare an intersecting circuit with one meeting the available geometric constraints. Thermal/hydraulic calculations require sufficient inputs. Geometric feasibility does not establish optimal cooling. Define reference cases, justified tolerances and validity before implementing each L1 model.
 
-## Condizione per dichiarare una consegna pronta
+## Completion evidence
 
-Per la tranche indicata devono essere elencati criteri eseguiti/passati/falliti/non eseguiti, input e versioni, limiti e risultati riproducibili. Una schermata con dati illustrativi non dimostra che i motori sottostanti siano implementati. La validazione ingegneristica richiede evidenze tecniche specifiche oltre ai controlli del software.
+Each delivery lists executed/passed/failed/unrun criteria, input/model versions, limits and reproducible results. Illustrative screens do not demonstrate engine implementation. Engineering validation needs technical evidence beyond software checks.

@@ -1,61 +1,59 @@
-# Architettura della piattaforma online — revisione 3
+# Online platform architecture — revision 4
 
-Proposta tecnica del 2026-10-15, guidata dalla [specifica funzionale](SPECIFICATION.md). I componenti descritti qui sono da implementare; lo stato reale è in [IMPLEMENTATION_STATUS.md](IMPLEMENTATION_STATUS.md).
+Updated 2026-10-16. Proposed architecture for the [specification](SPECIFICATION.md). [Implementation status](IMPLEMENTATION_STATUS.md) separates proposals from working capabilities.
 
-## Struttura
+## Structure
 
 ```mermaid
 flowchart TD
-    U[Browser: chat, schede commerciali, 3D, timeline e grafici] --> API[API e operazioni sul progetto]
-    API --> P[(Progetti, revisioni e dati strutturati)]
-    API --> F[(Geometrie, documenti e dataset)]
-    API --> AI[Coordinamento AI open source]
-    AI --> T[Strumenti con input e output strutturati]
+    U[Browser: chat, commercial brief, 3D, timeline and charts] --> API[API and project operations]
+    API --> P[(Projects, revisions and structured data)]
+    API --> F[(Geometry, documents and datasets)]
+    API --> AI[Open-source AI orchestration]
+    AI --> T[Tools with structured inputs and outputs]
     API --> T
-    T --> C[Prodotto, stampo e geometria]
-    T --> S[Cella, eventi e processo]
-    T --> E[Economia, PCA e PLS]
-    C --> J[Lavori asincroni e risultati versionati]
+    T --> C[Product, mould and geometry]
+    T --> S[Cell, events and process]
+    T --> E[Economics, PCA and PLS]
+    C --> J[Asynchronous jobs and versioned results]
     S --> J
     E --> J
     J --> API
 ```
 
-La chat e le proprietà usano le stesse operazioni applicative. I motori leggono uno snapshot di progetto; il browser riproduce eventi e risultati con lo stesso riferimento temporale. L'AI interpreta, propone, seleziona strumenti e spiega esiti; geometria e risultati numerici provengono dai motori dichiarati.
+Chat and properties use the same application operations. Engines consume project snapshots; the browser replays their events/results on a shared clock. AI interprets, proposes, selects tools and explains evidence. Geometry and numerical results come from the declared engines.
 
-## Componenti open source proposti
+## Proposed open-source stack
 
-| Componente | Proposta di partenza | Confine |
+| Layer | Starting proposal | Responsibility |
 | --- | --- | --- |
-| Applicazione web | React e TypeScript; Three.js per la scena | Esperienza principale cliente/processo; geometria e proprietà contestuali |
-| API e validazione | Python, FastAPI e Pydantic | Dati generici, operazioni, revisioni, cataloghi e risultati |
-| Persistenza | PostgreSQL e archivio file persistente con metadati; object storage compatibile quando necessario | Brief, conversazioni, geometrie originali, anteprime e dataset |
-| Lavori lunghi | Worker Python e coda; RQ/Valkey come candidato da verificare | Import CAD, generazione, analisi, simulazioni e addestramento |
-| Geometria | Open CASCADE, con CadQuery/FreeCAD o integrazione dedicata da valutare sul workflow | Solidi STEP, operazioni supportate, misure e concept; mesh distinta dal CAD |
-| Simulazione | SimPy come candidato per eventi; NumPy/SciPy per modelli ridotti | Stato globale, risorse, bilanci e equazioni di processo |
-| Dati e ML | NumPy, SciPy, scikit-learn e adattamento della libreria PCA esistente | PCA/PLS, preprocessing, validazione e ottimizzazione vincolata |
-| Inferenza AI | Servizio con modelli selezionati per licenza e capacità; llama.cpp o vLLM secondo hardware | Testo, documenti e visione; nessun servizio proprietario obbligatorio |
-| Distribuzione | Container, reverse proxy HTTPS, database/file su volumi persistenti, worker separati | Uso online; stack locale per sviluppo e installazioni autonome |
+| Web application | React, TypeScript, Three.js | Customer/process experience and contextual geometry/properties |
+| API/validation | Python, FastAPI, Pydantic | Generic data, operations, revisions, catalogues and results |
+| Persistence | PostgreSQL and persistent file storage with metadata; object storage when needed | Briefs, conversations, original geometry, previews and datasets |
+| Background jobs | Python workers and queue; RQ/Valkey as a candidate to verify | CAD import/generation, analysis, simulation and training |
+| Geometry | Open CASCADE with CadQuery/FreeCAD or dedicated integration | STEP solids, supported operations, measurements and concepts |
+| Simulation | SimPy candidate for events; NumPy/SciPy for reduced models | Resources, state, balances and process equations |
+| Data/ML | NumPy, SciPy, scikit-learn and verified adaptation of the existing PCA library | PCA/PLS, preprocessing, validation and constrained optimisation |
+| AI inference | Models selected for licence/capability; llama.cpp or vLLM according to hardware | Text, documents and vision without mandatory proprietary services |
+| Distribution | Containers, HTTPS reverse proxy, persistent volumes and separate workers | Online use and reproducible local development |
 
-Queste scelte sono proposte implementative, non dipendenze già installate né un benchmark. Anche modelli multimodali, eventuale generazione immagini e solutori dettagliati devono soddisfare il requisito open source. Modelli solo a pesi accessibili o con licenze incompatibili non vengono inclusi implicitamente. Componenti proprietari non devono essere necessari al percorso principale.
+These are design proposals, not installed services or benchmark results. Multimodal models, optional image generation and detailed solvers must also meet the open-source requirement. Available weights or incompatible licences do not satisfy it by implication. Hardware and hosting still have costs.
 
-## Contratto dei dati generico
+## Generic project data
 
-Il nucleo conserva `projects`, `revisions`, `briefs`, `requirements`, `products`, `geometry_assets`, `material_grades`, `mould_variants`, `cell_assets`, `installations`, `process_recipes`, `scenarios`, `simulation_runs`, `datasets`, `analysis_runs`, `conversations` e `operations`.
+Core entities: projects, revisions, briefs, requirements, products, geometry assets, material grades, mould variants, cell assets/installations, recipes, scenarios, simulation runs, datasets, analysis runs, conversations and operations.
 
-Ogni entità ha ID stabile e riferimenti espliciti. Le feature sono una collezione tipizzata/estensibile: un foro, una nervatura, una superficie estetica o un requisito elettrico appartengono al prodotto interessato. Nessun campo PCB, IP65, numero di gusci o agganci è obbligatorio nel modello globale.
+Stable IDs and explicit references connect modules. Features are extensible typed collections: a hole, rib, cosmetic surface or electrical requirement belongs to its product. PCB, IP65, shell count and clips are not mandatory global fields.
 
-Un dato numerico porta valore e unità; un requisito porta soggetto, proprietà e condizione. La provenienza identifica dichiarazione cliente, documento/file, ipotesi o metodo di calcolo con revisione. «Richiesto», «proposto» e «verificato» sono stati distinti. Le unità vengono convertite ai confini dei motori, conservando l'originale.
+Values have units; requirements have subject, property and condition. Sources identify customer statements, document/file evidence, assumptions or calculation methods and revisions. Original units are retained when engines convert to their own units. Commercial units/BOM, annual scenarios, lots, currency and cost bases are explicit.
 
-Le domande commerciali identificano unità venduta, distinta, scenari annuali, lotti, valuta e base dei costi. Le pose della cella identificano riferimento padre, trasformazione e convenzioni. La sequenza identifica operazione, precondizioni, risorse, modello di durata e aggiornamenti di stato.
+Cell poses record parent frame, rigid transform and conventions. Operations record preconditions, resources, duration model and state updates. Runs reference immutable snapshots, tool versions and exact datasets/assets. Changes invalidate dependent results without rewriting historical runs. Yield and losses have one defined place in production/economic calculations.
 
-Un run fa riferimento a snapshot immutabile, versioni degli strumenti e allegati/dataset esatti. Una modifica a materiale, stampo, pose, ricetta o condizioni commerciali marca come da ricalcolare i risultati dipendenti; un risultato storico rimane associato ai vecchi input. La resa e le perdite hanno una sola collocazione nel modello economico/produttivo.
+## Operations shared by AI and properties
 
-## Operazioni condivise da chat e proprietà
+Each operation receives project, base revision, target, parameters/units and source. It returns applicable changes, missing inputs, performed/unavailable checks, invalidated dependencies and any job ID. Concurrent revisions require reconciliation; retries must not duplicate completed operations.
 
-Ogni operazione riceve progetto, revisione di partenza, oggetto interessato, parametri con unità e fonte. Restituisce modifiche applicabili, dati mancanti, verifiche eseguite/non eseguibili, dipendenze invalidate ed eventuale ID lavoro. Una revisione concorrente non viene sovrascritta senza riconciliazione.
-
-Esempi di capacità da esporre come strumenti:
+Proposed tool contracts include:
 
 - `update_customer_brief`, `set_demand_scenario`, `add_requirement`.
 - `register_geometry`, `measure_geometry`, `propose_product_change`.
@@ -64,37 +62,33 @@ Esempi di capacità da esporre come strumenti:
 - `configure_process_recipe`, `run_process_scenario`, `explain_simulation_event`.
 - `compare_capacity_and_cost`, `analyse_real_dataset`, `propose_constrained_trial`.
 
-Sono contratti proposti, non endpoint già esistenti. Una richiesta ripetuta non deve duplicare un'operazione completata; gli aggiornamenti conservano il contesto necessario ad annullare una modifica o a derivare uno scenario alternativo.
+These are future contracts, not existing endpoints. Changes retain undo/scenario derivation information. Jobs have queued/running/completed/failed/cancelled states and distinguish partial results. Server events report progress; closing the browser does not implicitly delete project state.
 
-Lavori: `queued`, `running`, `completed`, `failed`, `cancelled`; progressi e risultati parziali sono distinguibili. Aggiornamenti via eventi server; WebSocket solo dove necessario. Un'interruzione della scheda browser non cancella implicitamente lo stato del progetto.
+## AI across modules
 
-## AI in tutti i moduli
-
-| Contesto | Compito dell'agente | Strumenti/evidenze |
+| Context | Agent role | Evidence/tools |
 | --- | --- | --- |
-| Cliente e mercato | Strutturare richiesta, identificare ambiguità prezzo/costo/unità, chiedere dati ad alto impatto | Brief e allegati, operazioni di aggiornamento |
-| Prodotto | Interpretare testo/immagini, individuare dati mancanti e proporre geometria/feature | File originali, misure e motore geometrico |
-| Stampo | Proporre layout, estrazione e raffreddamenti coerenti con vincoli | Prodotti, cataloghi, verifiche geometriche/termiche disponibili |
-| Cella | Configurare layout, spiegare incompatibilità e orientamenti | Modelli macchina, assi reali, pose e verifica delle traiettorie |
-| Processo | Costruire scenari, evidenziare precondizioni e spiegare attese/parametri | Motore eventi, bilanci e log del run selezionato |
-| Economia e dati | Confrontare alternative e spiegare risultati o esperimenti proposti | Calcoli economici, dataset reali e modelli PCA/PLS versionati |
+| Customer/market | Structure requests, distinguish price/cost/unit and prioritise questions | Brief, source documents and update operations |
+| Product | Interpret text/images, identify gaps and propose supported features | Original files, measurements and geometry engine |
+| Mould | Propose cavities, ejection and cooling alternatives | Requirements, catalogues and available geometric/thermal checks |
+| Cell | Configure layouts and explain orientation/compatibility limits | Real axes, installation frames and trajectory checks |
+| Process | Build scenarios and explain parameters, dependencies and waiting | Event engine, balances and selected run log |
+| Economics/data | Compare alternatives and explain predictions/trials | Cost calculations, real datasets and versioned PCA/PLS models |
 
-La prima integrazione usa un coordinatore con strumenti distinti per modulo. Specializzazioni ulteriori sono una scelta basata su risultati misurati, non un requisito di eseguire più modelli per ogni richiesta. La conversazione non sostituisce l'archivio strutturato.
+Start with one coordinator and module-specific tools. Additional agent specialisation depends on measurable benefit; multiple models per request are not mandatory. Conversation does not replace structured storage. Evidence retains document/page references. Unsupported operations or unavailable AI remain visible; a local parser is not labelled as an AI agent.
 
-Le risposte distinguono dato trovato, inferenza da controllare e risultato calcolato. Per documenti tecnici si conservano file/pagina o riferimento recuperabile. Mancanza di motore/modello configurato è visibile; un parser locale non viene presentato come AI.
+## Languages
 
-## Pubblicazione online
+English is the repository language. Runtime UI text is localised into EN/IT/FR/ES, defaulting to English without inferring a preference from browser language. Preferences are separate from project data. Changing UI language never translates customer text, names, file contents or identifiers. Numeric/currency presentation follows the selected locale while stored numbers and unit conventions remain unchanged. Translation catalogues are an intentional multilingual-data exception to English source documentation.
 
-Sviluppo e prova possono usare risorse locali. Il prodotto richiede un servizio web raggiungibile via HTTPS, salvataggio persistente di progetti/allegati, accessi per progetto, backup e un modo supportato di eseguire inferenza e lavori lunghi. Per la prima installazione basta un singolo host con servizi separati, dimensionato dopo prove; non è richiesto Kubernetes.
+## Online distribution
 
-Il browser gestisce vista e riproduzione; il server esegue il calcolo che deve sopravvivere alla sessione. Mesh di visualizzazione e livelli di dettaglio riducono il trasferimento dei CAD originali. File grandi e lavori hanno limiti espliciti dell'installazione, senza tradurli in vincoli sulle famiglie di prodotto.
+The product requires reachable HTTPS, persistent projects/files, project access, backups and supported execution of inference and long jobs. An initial host can run separate services; Kubernetes is not required. Mesh previews/levels of detail limit transfers of original CAD assets.
 
-Provider, dominio, numero di utenti, capacità CPU/GPU e collocazione dei dati sono decisioni di distribuzione ancora aperte. Non impediscono specifica, sviluppo locale e confezionamento ripetibile. La pubblicazione verrà verificata su un indirizzo raggiungibile; un repository o un file HTML scaricabile non costituiscono l'applicazione online.
+Provider, domain, users, CPU/GPU capacity and data location remain deployment decisions. They do not block local implementation and reproducible packaging. A repository or downloadable HTML does not constitute the online application. No cloud cost or response time is promised without a measured configuration.
 
-Software open source può evitare licenze commerciali obbligatorie; hosting, calcolo AI, memoria, manutenzione e verifica tecnica restano costi da dimensionare. Nessun costo cloud o tempo di risposta è stimato senza una configurazione e prove pertinenti.
+## Migration from the demo
 
-## Migrazione dalla demo
+Reuse the viewer, mesh import, example geometry and meaningful tests. Explicit import from legacy v4 preserves fields and provenance as properties of that particular product. New projects do not inherit them.
 
-Conservare come componenti riutilizzabili viewer, import mesh, geometria dimostrativa e test. Introdurre un nuovo modello di progetto e un percorso di import esplicito dal formato storico v4: i dati del guscio diventano proprietà di quel prodotto e mantengono provenienza, senza riempire altri progetti.
-
-La demo 02 resta disponibile con i suoi limiti. La nuova applicazione avrà home commerciale, dati server e moduli generici. Il primo modello parametrico di guscio può restare un template opzionale e un caso di regressione; non determina la struttura dei moduli.
+The demo remains a local development artefact. The platform will start with a commercial home, server state and generic modules. The shell may remain an optional template/regression case, not the global data model.

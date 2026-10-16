@@ -34,8 +34,8 @@ test('STL binary triangle is read with millimetre bounds', () => {
 });
 test('invalid formats, missing units, empty and nonfinite meshes are rejected', () => {
   assert.throws(() => importMesh(buffer(tetrahedron), 'part.step', 'mm'), /STEP/);
-  assert.throws(() => importMesh(buffer(tetrahedron), 'part.obj', ''), /unità/);
-  assert.throws(() => importMesh(buffer(''), 'part.obj', 'mm'), /superfici/);
-  assert.throws(() => importMesh(buffer(tetrahedron.replace('v 10', 'v NaN')), 'part.obj', 'mm'), /coordinate/);
+  assert.throws(() => importMesh(buffer(tetrahedron), 'part.obj', ''), /units/);
+  assert.throws(() => importMesh(buffer(''), 'part.obj', 'mm'), /surfaces/);
+  assert.throws(() => importMesh(buffer(tetrahedron.replace('v 10', 'v NaN')), 'part.obj', 'mm'), /coordinates/);
   assert.throws(() => importMesh(new ArrayBuffer(13 * 1024 * 1024), 'part.obj', 'mm'), /12 MB/);
 });
