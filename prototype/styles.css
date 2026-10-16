@@ -251,3 +251,103 @@ dialog p { font-size: 13px; color: var(--muted); }
 @media(max-width:450px) { .brand { font-size: 9px; letter-spacing: .5px; } .language-control select { width: 69px; } }
 .roadmap-notice { padding: 7px 20px; border-bottom: 1px solid var(--line); color: #a3bacb; background: #162735; font-size: 10px; }
 .is-cad .cad-grid { min-height: calc(100vh - 174px); }
+/* CAD workbench conventions, inspired by FreeCAD. Lucide icons retain their ISC licence. */
+:root { color-scheme: light; --ink:#273648; --muted:#67788d; --line:#d1d9e3; --paper:#fff; --canvas:#edf1f6; --nav:#23344b; --accent:#246ac4; --accent-light:#e7f0fd; --danger:#b63833; --radius:5px; }
+input, textarea, select { background:#fff; border-color:#c5cfda; color:var(--ink); }
+.button.primary { background:#2367be; color:#fff; border:1px solid #205fae; }
+.button.primary:hover { background:#19589f; }
+.button.secondary { background:#f8fafc; color:#354b64; border-color:#c5cfda; }
+.text-button { color:#2462a9; }
+.brand { color:#344b67; } .brand>span:first-child { color:#9aadc2; }
+.topbar { background:#fff; } .brand-symbol { color:#fff; } .brand-symbol span { color:#8ebafa; }
+.nav-button { color:#bdcadb; } .nav-button.active { background:#34557e; color:#fff; border-color:#567ba8; }
+.nav-button:hover { background:#304963; color:#fff; }
+.saved-label { color:#648071; } .badge { background:#e7effa; color:#3e6391; border-color:#c5d4e7; }
+.roadmap-notice { color:#566c86; background:#e8eef6; border-bottom-color:#d1dbe8; }
+.section-kicker, .eyebrow, .section-number { color:#7588a0; }
+.form-note, .summary-note, .scope-note, .empty-state, .machine-item { background:#f2f5fa; color:#526a86; border-color:#d8e0ea; }
+.data-table th, .data-table td { border-color:#dce3eb; } .data-table td { color:var(--ink); }
+.source-tag { color:#52779e; background:#eaf1f9; } .checklist li { color:#6c7f95; }
+.checklist .done { color:#2e705b; } .progress-track { background:#e0e7f0; }
+.field-unit { color:#547091; background:#eef3fa; }
+.toast { background:#243b57; color:#fff; border-color:#52749b; }
+dialog { background:#fff; color:var(--ink); border:1px solid var(--line); }
+.cad-workspace.card { background:#f3f6fa; }
+.cad-toolbar { height:44px; background:#f7f9fc; padding:0 16px; }
+.workspace-title strong { font-weight:600; } .version-tag { background:#e7edf5; color:#697e96; }
+.cad-ribbon { display:flex; align-items:stretch; min-height:92px; background:linear-gradient(#fdfefe,#e9eef5); border-bottom:1px solid #bdcbdc; padding:5px 12px 3px; gap:9px; }
+.ribbon-group { border-right:1px solid #cbd5e1; padding:0 10px 0 0; display:flex; flex-direction:column; justify-content:space-between; gap:3px; }
+.ribbon-tools { display:flex; gap:3px; }
+.ribbon-tools button { border:1px solid transparent; border-radius:3px; background:transparent; color:#3c526f; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:5px; padding:5px 10px; font-size:10px; min-width:65px; }
+.ribbon-tools button:hover, .ribbon-tools button[aria-pressed=true] { background:#deebfc; border-color:#9db9df; }
+.cad-icon { display:grid; place-items:center; width:26px; height:26px; color:#356ba6; }
+.cad-icon svg { width:24px; height:24px; stroke-width:1.5; }
+.ribbon-group>small { color:#7d8da2; font-size:9px; text-align:center; }
+.ribbon-context { margin:auto 10px auto auto; display:flex; flex-direction:column; gap:2px; text-align:right; color:#75879e; }
+.ribbon-context>span { font-size:8px; letter-spacing:1.2px; } .ribbon-context strong { color:#3a5677; font-size:12px; font-weight:500; } .ribbon-context small { font-size:9px; }
+.cad-document-tab { height:31px; background:#dfe6f0; border-bottom:1px solid #bccada; display:flex; align-items:center; gap:8px; padding:0 18px; font-size:10px; color:#325c8a; }
+.cad-document-tab small { color:#70849c; margin-left:12px; font-size:9px; }
+.is-cad .cad-grid { min-height:calc(100vh - 285px); grid-template-columns:205px minmax(0,1fr) 340px; }
+.model-browser { padding:18px 10px; background:#f6f8fb; } .panel-heading { color:#71869f; margin-bottom:16px; }
+.assembly-name { color:#364e69; } .tree-item, .tree-link { color:#526a86; }
+.tree-item.selected { background:#dfebfa; border-color:#b4cbea; color:#27588e; }
+.tree-item small, .tree-status { color:#6884a1; } .tree-children { color:#71859b; border-color:#cbd7e5; }
+.design-path li { color:#8290a2; } .design-path small { color:#91a0b2; } .design-path .current { color:#285f9c; }
+.design-path .current>span { background:#e1ecfa; color:#2864aa; border-color:#b2c9e6; }
+.design-path li>span { border-color:#cdd7e4; } .browser-note { color:#8191a5; }
+.model-stage, .concept-viewport { background:#d9e1eb; }
+.stage-top { height:34px; background:#e9eef5; border-color:#c6d2e1; padding:0 15px; }
+.stage-name { color:#4c6481; } .stage-state { color:#7a8ea6; }
+.viewport-wrap { min-height:410px; } .concept-viewport { min-height:410px; }
+.concept-message, .concept-loading { color:#526a87; }
+.viewport-actions { inset:12px 12px auto; }
+.viewport-actions .button { background:#f9fbfde8; border-color:#bccbde; color:#486482; }
+.view-buttons [aria-pressed=true], .preview-variants .selected { background:#d4e5fb; border-color:#8eafd7; color:#275e9d; }
+.viewport-label { color:#6e8199; } .axis-label i:nth-child(1) { color:#bd5358; } .axis-label i:nth-child(2) { color:#3d815f; } .axis-label i:nth-child(3) { color:#3979be; }
+.stage-bottom { background:#f4f7fb; border-color:#c7d4e3; padding:14px 18px; }
+.preview-variants { color:#58708d; } .preview-variants small { color:#8293a8; }
+.concept-metrics { border-color:#d4deea; } .concept-metrics span { color:#7a8da4; } .concept-metrics strong { color:#3d597b; }
+.stage-footer { background:#f7f9fc; border-color:#d1dce9; color:#6c819b; }
+.creation-panel { background:#fff; padding:18px; } .creation-panel h2 { font-size:19px; color:#314c6c; } .panel-intro { color:#788da7; margin-bottom:14px; }
+.source-tabs { grid-template-columns:repeat(4,minmax(0,1fr)); background:#eef2f8; border-color:#d9e1ec; margin-bottom:16px; }
+.source-tabs button { color:#7187a2; } .source-tabs [aria-selected=true] { background:#fff; color:#2866b1; }
+.source-panel label { color:#49617d; } .local-label { color:#467eb5; }
+#part-description { background:#f9fbfe; color:#3b5777; }
+.source-help, .source-help small { color:#7b8da3; } .studio-message { color:#4a7297; }
+.command-proposal { background:#edf5ff; border-color:#c1d6ef; } .command-proposal strong { color:#2c609d; }
+.command-proposal dt, .command-proposal p { color:#6b86a5; } .command-proposal dd { color:#354f70; overflow-wrap:anywhere; }
+.upload-zone { background:#f6f9fd; border-color:#aebfd5; } .upload-zone strong { color:#466584; }
+.feature-note { background:#edf2f9; color:#6d829e; border-color:#93aecf; }
+.properties-section summary { color:#506c8d; } .next-operation { background:#f3f7fc; border-color:#d7e2f0; }
+.next-operation strong { color:#41678f; } .next-operation p { color:#8497af; }
+.cad-status { background:#e7edf6; color:#5f7796; border-color:#c1cfdf; font-size:9px; }
+.ai-panel-header { display:flex; align-items:center; gap:8px; margin-bottom:12px; }
+.ai-spark { background:#e6f0ff; color:#2466b8; width:29px; height:29px; display:grid; place-items:center; border-radius:7px; font-size:22px; }
+.ai-panel-header strong { font-size:12px; color:#325779; display:block; } .ai-panel-header small { color:#8595a9; display:block; font-size:8px; }
+.ai-status { margin-left:auto; border:1px solid #d2dfef; color:#5b7ba4; border-radius:12px; padding:2px 7px; font-size:8px; }
+.ai-intro { color:#7389a3; font-size:11px; margin-bottom:10px; }
+.ai-loader>.button { width:100%; justify-content:center; margin-bottom:5px; }
+.ai-loader progress { width:100%; accent-color:#3475c4; }
+.ai-loader .source-help { font-size:9px; line-height:1.6; margin:6px 0 12px; }
+.ai-chat-log { max-height:290px; overflow-y:auto; scroll-behavior:smooth; }
+.ai-message { padding:9px 11px; margin:8px 0; background:#f3f6fb; border:1px solid #e4eaf3; border-radius:5px; }
+.ai-message.user { background:#edf4fe; border-color:#dce8fa; }
+.ai-message>span { font-size:9px; color:#7287a2; } .ai-message p { font-size:11px; color:#3f5d7f; white-space:pre-wrap; overflow-wrap:anywhere; margin:4px 0 0; }
+#ai-message { min-height:90px; background:#fafcff; border-color:#cbd8e9; font-size:11px; }
+.ai-send-row { display:flex; align-items:center; justify-content:space-between; margin-top:8px; gap:10px; }
+.ai-send-row>span { color:#8b9caf; font-size:8px; } .ai-scope { margin:14px 0 0; font-size:9px; line-height:1.6; color:#8798ac; }
+.ai-error { color:#a1463c; font-size:10px; margin:12px 0 6px; }
+#ai-technical-error { font-size:9px; color:#8292a7; } #ai-error-details { white-space:pre-wrap; overflow-wrap:anywhere; max-height:110px; overflow:auto; }
+@media(min-width:1700px) { .is-cad .cad-grid { grid-template-columns:230px minmax(0,1fr) 360px; } }
+@media(max-width:1200px) { .is-cad .cad-grid { grid-template-columns:175px minmax(0,1fr) 300px; } .ribbon-context { display:none; } }
+@media(max-width:1000px) { .is-cad .cad-grid { grid-template-columns:minmax(0,1fr) 300px; } }
+@media(max-width:750px) { .is-cad .cad-grid { grid-template-columns:minmax(0,1fr); } .cad-ribbon { overflow-x:auto; padding:4px; } .ribbon-tools button { padding:5px; min-width:53px; font-size:9px; } .ribbon-group { padding-right:4px; } .ribbon-tools { gap:0; } .cad-document-tab { overflow:hidden; } .cad-document-tab>span:nth-child(2) { overflow:hidden; text-overflow:ellipsis; white-space:nowrap; } .cad-document-tab small { display:none; } }
+
+#ai-mode { min-height:32px; font-size:10px; margin:0 0 10px; background:#f4f8fe; }
+#ai-chat-form>label:not(.visually-hidden) { font-size:9px; color:#7b8fa8; display:block; margin-bottom:5px; }
+@media(min-width:751px) {
+  .is-cad .cad-grid { height:calc(100dvh - 285px); min-height:480px; }
+  .creation-panel, .model-browser { overflow-y:auto; min-height:0; }
+  .model-stage { min-height:0; }
+  .viewport-wrap, .concept-viewport { min-height:220px; }
+}

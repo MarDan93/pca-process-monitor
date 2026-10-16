@@ -2,6 +2,10 @@
 import { createShellConcept, exportConceptObj } from './shell-geometry.js';
 import { describePart } from './description.js';
 import { renderWorkspace, studio } from './workspace.js';
+import { localAI } from './ai-client.js';
+import { renderAIPanel, updateAIPanel } from './ai-panel.js';
+import { applyAIProposal } from './ai-apply.js';
+import { mountCADIcons } from './cad-ui.js';
 import { t, formatNumber, formatMoney, getLanguage, setLanguage, startLocalization } from './i18n.js';
 
 const STORAGE_KEY = 'injection-moulding-brief-v1';
@@ -17,6 +21,8 @@ const briefFields = [
   { key: 'project_name', label: 'Project name', placeholder: 'E.g. Device enclosure — new project', full: true },
   { key: 'customer', label: 'Customer', placeholder: 'Customer name or reference', optional: true },
   { key: 'reference', label: 'Part / enquiry reference', placeholder: 'E.g. RFQ-2026-014', optional: true },
+  { key: 'market', label: 'Target market', placeholder: 'E.g. Appliances, automotive, medical', optional: true },
+  { key: 'commercial_unit', label: 'Commercial unit', type: 'select', choices: [['unspecified', 'Not specified'], ['part', 'Individual part'], ['kit', 'Kit'], ['assembly', 'Assembly']] },
   { key: 'annual_volume', label: 'Annual demand', type: 'number', min: 1, step: 1, placeholder: 'Good parts / year', help: 'Demand guides cavity count and production capacity.' },
   { key: 'lot_size', label: 'Batch size', type: 'number', min: 1, step: 1, optional: true, placeholder: 'Parts / batch' },
   { key: 'program_years', label: 'Programme duration', type: 'number', min: 0.1, step: 'any', placeholder: 'Years', help: 'Time horizon for evaluating investments.' },
@@ -77,18 +83,20 @@ const machineFields = [
 function blankValues(fields) { return Object.fromEntries(fields.map((f) => [f.key, f.type === 'number' ? null : f.type === 'select' ? f.choices[0][0] : ''])); }
 function newProject() {
   const now = new Date().toISOString();
-  const part = { ...blankValues(partFields), name: 'Cosmetic shells with snap fits', application: 'Indoor electronic device', material: 'ABS; PC/ABS; PP; PE; copolymer grades to be specified', length_mm: 120, width_mm: 80, height_mm: 35, corner_radius_mm: 8, surface_finish: 'glossy', fastening: 'snap_only', opening: 'paired_shells', dimension_basis: 'assembly', front_share_percent: 50, aesthetic_surfaces: 'front_sides', snap_service: 'tool', snap_count: 6, snap_layout: 'long_sides', snap_cycles: 1000, wall_options_mm: [1.5, 2, 2.5], aesthetic_requirements: 'Appearance requirements elevati su faccia frontale e pareti laterali. Colore, gloss e criteri di accettazione da definire.', undercuts: 'Sei agganci a scatto, tre per lato lungo, smontabili con attrezzo senza dyears. Obiettivo 1.000 cicli. Geometria, forze, direzioni di estrazione e corse dei carrelli da definire.' };
+  const part = { ...blankValues(partFields), name: 'Cosmetic shells with snap fits', application: 'Indoor electronic device', material: 'ABS; PC/ABS; PP; PE; copolymer grades to be specified', length_mm: 120, width_mm: 80, height_mm: 35, corner_radius_mm: 8, surface_finish: 'glossy', fastening: 'snap_only', opening: 'paired_shells', dimension_basis: 'assembly', front_share_percent: 50, aesthetic_surfaces: 'front_sides', snap_service: 'tool', snap_count: 6, snap_layout: 'long_sides', snap_cycles: 1000, wall_options_mm: [1.5, 2, 2.5], aesthetic_requirements: 'High appearance requirements for the front face and side walls. Colour, gloss and acceptance criteria are to be defined.', undercuts: 'Six snap fits, three on each long side, removable with a tool without damage. Target: 1,000 cycles. Geometry, forces, ejection directions and slide strokes are to be defined.' };
   const sources = Object.fromEntries(['name', 'application', 'material', 'length_mm', 'width_mm', 'height_mm', 'corner_radius_mm', 'surface_finish', 'fastening', 'opening', 'dimension_basis', 'front_share_percent', 'aesthetic_surfaces', 'snap_service', 'snap_count', 'snap_layout', 'snap_cycles', 'wall_options_mm', 'aesthetic_requirements', 'undercuts'].map((key) => [`part.${key}`, { kind: 'requirement', note: 'Demo-case requirement agreed with the user; not a production measurement.' }]));
   Object.assign(part, { electronics_configuration: 'multiple_pcbs', pcb_count: 4, external_openings: 'connector_protected_vent', ip_target: 'IP65', thermal_strategy: 'sealed', connector_strategy: 'sealed_cover', ip_in_use: 'with_cable', pcb_layout: 'two_by_two', pcb_length_mm: 40, pcb_width_mm: 25, pcb_height_mm: 8 });
   for (const key of ['electronics_configuration', 'pcb_count', 'external_openings', 'ip_target', 'thermal_strategy', 'connector_strategy', 'ip_in_use', 'pcb_layout', 'pcb_length_mm', 'pcb_width_mm', 'pcb_height_mm']) sources[`part.${key}`] = { kind: 'requirement', note: 'Customer requirement; geometry and engineering qualification not yet verified.' };
   sources['brief.program_years'] = { kind: 'requirement', note: 'Initial five-year duration chosen for the demo; editable.' };
-  sources['brief.cost_target_mode'] = { kind: 'requirement', note: 'Cost estimated from comparison, poi fissare come obiettivo.' };
+  sources['brief.cost_target_mode'] = { kind: 'requirement', note: 'Estimate cost from alternatives, then set a target.' };
   return { schema_version: 4, id: crypto.randomUUID(), created_at: now, updated_at: now, dataset_kind: 'user', currency: 'EUR', units: { length: 'mm', force: 'kN', volume: 'cm3', time: 's' }, brief: { ...blankValues(briefFields), program_years: 5, cost_target_mode: 'exploratory' }, part, concept_preview: { wall_mm: null }, machines: [], sources };
 }
 let storageAvailable = true;
 let initialLoadError = '';
 function normalizeStoredProject(parsed) {
   if (![1, 2, 3, 4].includes(parsed?.schema_version) || !parsed.brief || !parsed.part || !Array.isArray(parsed.machines) || !parsed.sources || !parsed.id) throw new Error('Unrecognised project format.');
+  parsed.brief.market ??= '';
+  parsed.brief.commercial_unit ??= 'unspecified';
   if (!parsed.brief.cost_target_mode) parsed.brief.cost_target_mode = parsed.brief.unit_cost_target_eur == null ? 'exploratory' : 'fixed';
   if (parsed.schema_version === 1) {
     parsed.part.surface_finish ??= 'unspecified';
@@ -136,12 +144,15 @@ let currentConceptModel = null;
 let previewExploded = true;
 let previewTransparent = false;
 let previewCamera = 'iso';
+let previewWireframe = false;
+let previewGrid = true;
 let assetRequest = 0;
 
 function clearStudioAssets() {
+  localAI.clear();
   assetRequest++;
   if (studio.photo) URL.revokeObjectURL(studio.photo);
-  Object.assign(studio, { tab: 'text', draft: 'Shell 120 × 80 × 35 mm, wall 2 mm, radius 8 mm, glossy ABS', imported: null, photo: null, photoName: '', source: 'parametric', proposal: null, previous: null, message: '' });
+  Object.assign(studio, { tab: 'ai', draft: 'Shell 120 × 80 × 35 mm, wall 2 mm, radius 8 mm, glossy ABS', imported: null, photo: null, photoName: '', source: 'parametric', proposal: null, previous: null, message: '' });
 }
 
 function notify(message) {
@@ -174,7 +185,8 @@ function grid(fields, group, values) { return `<div class="field-grid">${fields.
 function nextButton(view, label) { return `<div class="step-actions"><p>You can complete the remaining fields later.</p><button class="button primary" data-go="${view}">${esc(label)} <span aria-hidden="true">→</span></button></div>`; }
 
 function renderBrief() {
-  return card('Enquiry details', 'Organise the project and its references.', '01', grid(briefFields.slice(0, 3), 'brief', project.brief))
+  return card('Discuss the customer request', 'Start with demand, market and commercial requirements.', 'AI', renderAIPanel())
+    + card('Enquiry details', 'Organise the project and its references.', '01', grid(briefFields.slice(0, 3), 'brief', project.brief))
     + card('Demand and commercial targets', 'Inputs for comparing configurations.', '02', grid(briefFields.slice(3, -1), 'brief', project.brief) + '<p class="form-note">Annual demand is unrestricted. Good-part cost, selling price and mould investment are separate inputs.</p>')
     + card('Project requirements', 'Capture the requirements driving engineering decisions.', '03', grid(briefFields.slice(-1), 'brief', project.brief))
     + nextButton('part', 'Define part and material');
@@ -229,9 +241,9 @@ function applyDescription() {
 }
 
 document.addEventListener('keydown', (event) => {
-  if (!event.target.matches('[data-source-tab]') || !['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(event.key)) return;
+  if (!event.target.matches('[role="tab"][data-source-tab]') || !['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(event.key)) return;
   event.preventDefault();
-  const tabs = [...document.querySelectorAll('[data-source-tab]')], current = tabs.indexOf(event.target);
+  const tabs = [...document.querySelectorAll('[role="tab"][data-source-tab]')], current = tabs.indexOf(event.target);
   tabs[event.key === 'Home' ? 0 : event.key === 'End' ? tabs.length - 1 : (current + (event.key === 'ArrowRight' ? 1 : -1) + tabs.length) % tabs.length].click();
 });
 document.addEventListener('change', async (event) => {
@@ -268,7 +280,7 @@ document.addEventListener('change', async (event) => {
 });
 function renderConcept() {
   const controls = ['length_mm', 'width_mm', 'height_mm', 'corner_radius_mm', 'opening', 'dimension_basis', 'front_share_percent'];
-  return renderWorkspace({ project, wall: previewWall(), properties: grid(partFields.filter((f) => controls.includes(f.key)), 'part', project.part), exploded: previewExploded, transparent: previewTransparent });
+  return renderWorkspace({ project, wall: previewWall(), properties: grid(partFields.filter((f) => controls.includes(f.key)), 'part', project.part), exploded: previewExploded, transparent: previewTransparent, wireframe: previewWireframe, gridVisible: previewGrid });
 }
 async function refreshConcept() {
   const container = $('#concept-viewport');
@@ -291,6 +303,8 @@ async function refreshConcept() {
     activeViewer.setView(previewCamera);
     activeViewer.setExploded(!imported && previewExploded);
     activeViewer.setTransparent(previewTransparent);
+    activeViewer.setWireframe(previewWireframe);
+    activeViewer.setGridVisible(previewGrid);
     $('#concept-explode').disabled = Boolean(imported) || concept.components.length !== 2;
   } catch (error) {
     if (request !== viewerRequest || !container.isConnected) return;
@@ -310,7 +324,7 @@ function renderMachines() {
 }
 function sourceLabel(path) {
   const kind = project.sources[path]?.kind;
-  return kind === 'demo' ? 'Illustrative example' : kind === 'requirement' ? 'Demo-case requirement' : 'User-provided';
+  return kind === 'ai_proposal' ? 'AI proposal accepted by user' : kind === 'demo' ? 'Illustrative example' : kind === 'requirement' ? 'Demo-case requirement' : 'User-provided';
 }
 function row(label, value, path) {
   const missing = value == null || value === '';
@@ -333,7 +347,7 @@ function renderSummary() {
   return card('Request and targets', 'Commercial inputs and their sources.', '01', `<table class="data-table">${row('Project', b.project_name, 'brief.project_name')}${row('Customer', b.customer, 'brief.customer')}${row('Annual demand', b.annual_volume == null ? null : displayNumber(b.annual_volume, ' good parts'), 'brief.annual_volume')}${row('Programme length', b.program_years == null ? null : displayNumber(b.program_years, ' years'), 'brief.program_years')}${row('Cost approach', b.cost_target_mode === 'exploratory' ? 'Cost estimated from comparison' : 'Fixed target', 'brief.cost_target_mode')}${row('Target manufacturing cost', b.cost_target_mode === 'exploratory' ? 'To set after comparison' : b.unit_cost_target_eur == null ? null : displayMoney(b.unit_cost_target_eur), b.cost_target_mode === 'exploratory' ? null : 'brief.unit_cost_target_eur')}${row('Selling price', b.selling_price_eur == null ? null : displayMoney(b.selling_price_eur), 'brief.selling_price_eur')}${row('Mould budget', b.mould_budget_eur == null ? null : displayMoney(b.mould_budget_eur), 'brief.mould_budget_eur')}</table>`)
     + card('Part and resources', 'Inputs for mould concepts and press comparison.', '02', `<table class="data-table">${row('Part', p.name, 'part.name')}${row('End use', p.application, 'part.application')}${row('Material / alternatives', p.material, 'part.material')}${row('Material grade', p.material_grade, 'part.material_grade')}${row('Length', p.length_mm == null ? null : displayNumber(p.length_mm, ' mm'), 'part.length_mm')}${row('Width', p.width_mm == null ? null : displayNumber(p.width_mm, ' mm'), 'part.width_mm')}${row('Height', p.height_mm == null ? null : displayNumber(p.height_mm, ' mm'), 'part.height_mm')}${row('Existing presses', project.machines.filter((m) => m.ownership === 'existing').length)}${row('Presses to purchase', project.machines.filter((m) => m.ownership === 'purchase').length)}</table>`)
     + card('Appearance, fastening and variants', 'Design requirements and alternatives to verify.', '03', `<table class="data-table">${row('Finish', partFields.find((f) => f.key === 'surface_finish').choices.find(([key]) => key === p.surface_finish)?.[1], 'part.surface_finish')}${row('Fasteners', partFields.find((f) => f.key === 'fastening').choices.find(([key]) => key === p.fastening)?.[1], 'part.fastening')}${row('Wall candidates', p.wall_options_mm.length ? p.wall_options_mm.map((v) => displayNumber(v, ' mm')).join(' / ') : null, 'part.wall_options_mm')}${row('Selected nominal wall', p.nominal_wall_mm == null ? null : displayNumber(p.nominal_wall_mm, ' mm'), 'part.nominal_wall_mm')}${row('Appearance requirements', p.aesthetic_requirements, 'part.aesthetic_requirements')}</table>`)
-    + card('Enclosure configuration', 'Assembly and shell connection requirements.', '04', `<table class="data-table">${row('Opening / componenti', choiceLabel('opening'), 'part.opening')}${row('Riferimento delle dimensioni', choiceLabel('dimension_basis'), 'part.dimension_basis')}${row('Quota anteriore', p.front_share_percent == null ? null : displayNumber(p.front_share_percent, '%'), 'part.front_share_percent')}${row('Radius del profilo', p.corner_radius_mm == null ? null : displayNumber(p.corner_radius_mm, ' mm'), 'part.corner_radius_mm')}${row('Cosmetic surfaces', choiceLabel('aesthetic_surfaces'), 'part.aesthetic_surfaces')}${row('Smontaggio', choiceLabel('snap_service'), 'part.snap_service')}${row('Number of snap fits', p.snap_count, 'part.snap_count')}${row('Clip layout', choiceLabel('snap_layout'), 'part.snap_layout')}${row('Required cycles', p.snap_cycles, 'part.snap_cycles')}</table>`)
+    + card('Enclosure configuration', 'Assembly and shell connection requirements.', '04', `<table class="data-table">${row('Opening / components', choiceLabel('opening'), 'part.opening')}${row('Dimension reference', choiceLabel('dimension_basis'), 'part.dimension_basis')}${row('Front height share', p.front_share_percent == null ? null : displayNumber(p.front_share_percent, '%'), 'part.front_share_percent')}${row('Profile radius', p.corner_radius_mm == null ? null : displayNumber(p.corner_radius_mm, ' mm'), 'part.corner_radius_mm')}${row('Cosmetic surfaces', choiceLabel('aesthetic_surfaces'), 'part.aesthetic_surfaces')}${row('Disassembly', choiceLabel('snap_service'), 'part.snap_service')}${row('Number of snap fits', p.snap_count, 'part.snap_count')}${row('Clip layout', choiceLabel('snap_layout'), 'part.snap_layout')}${row('Required cycles', p.snap_cycles, 'part.snap_cycles')}</table>`)
     + functionalRequirementsCard()
     + '<div class="summary-note">This is a simplified geometric preview. Mould concepts, cost comparison and press compatibility are not yet implemented.</div>'
     + '<div class="step-actions"><button class="button secondary" data-go="brief">Back to brief</button><button class="button primary" data-export>Export requirements JSON</button></div>';
@@ -363,6 +377,8 @@ function render(view = currentView) {
   document.title = `Mould Studio · ${t(title)}`;
   $('#content').innerHTML = content();
   renderWallComparison();
+  updateAIPanel();
+  mountCADIcons();
   if (view === 'concept') refreshConcept();
   if (view === 'concept') renderDescriptionProposal();
   document.querySelectorAll('[data-view]').forEach((button) => {
@@ -404,7 +420,7 @@ function updateInspector() {
 }
 function exportProject() {
   if (invalidFields.size) { notify('Correct highlighted numbers before exporting.'); return; }
-  const data = { ...project, exported_at: new Date().toISOString(), prototype_capabilities: ['brief_capture', 'machine_catalogue', 'wall_variant_configuration', 'parametric_shell_preview', 'local_commands', 'obj_stl_viewer', 'photo_reference', 'local_persistence'], session_assets: { mesh: studio.imported ? { name: studio.imported.file_name, dimensions_mm: studio.imported.dimensions_mm, source_units: studio.imported.source_units } : null, photo_name: studio.photoName || null, persistence: 'metadata_only_reload_original_files' }, engineering_validation: 'not_performed' };
+  const data = { ...project, exported_at: new Date().toISOString(), prototype_capabilities: ['brief_capture', 'machine_catalogue', 'wall_variant_configuration', 'parametric_shell_preview', 'local_commands', 'browser_ai_proposals', 'obj_stl_viewer', 'photo_reference', 'local_persistence'], session_assets: { mesh: studio.imported ? { name: studio.imported.file_name, dimensions_mm: studio.imported.dimensions_mm, source_units: studio.imported.source_units } : null, photo_name: studio.photoName || null, persistence: 'metadata_only_reload_original_files' }, engineering_validation: 'not_performed' };
   const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a'); a.href = url; a.download = `brief-${project.id.slice(0, 8)}.json`; a.click();
@@ -423,6 +439,8 @@ function demoProject() {
 
 document.addEventListener('input', (event) => {
   const field = event.target;
+  if (field.id === 'ai-mode') { localAI.state.mode = field.value; return; }
+  if (field.id === 'ai-message') { localAI.state.draft = field.value; return; }
   if (field.id === 'part-description') { studio.draft = field.value; studio.proposal = null; renderDescriptionProposal(); return; }
   const group = field.dataset.group;
   if (!['brief', 'part'].includes(group)) return;
@@ -452,7 +470,25 @@ document.addEventListener('input', (event) => {
   if (group === 'part' && ['surface_finish', 'fastening'].includes(field.dataset.key)) renderWallComparison();
   if (currentView === 'concept') refreshConcept();
 });
+localAI.subscribe(updateAIPanel);
 document.addEventListener('click', (event) => {
+  if (event.target.closest('#ai-load')) { localAI.load(); return; }
+  if (event.target.closest('#ai-cancel')) { localAI.cancel(); return; }
+  if (event.target.closest('#ai-discard')) { localAI.state.proposal = null; localAI.emit(); return; }
+  if (event.target.closest('#ai-apply') && localAI.state.proposal) {
+    if (invalidFields.size) { notify('Correct the highlighted properties before applying.'); return; }
+    try {
+      project = applyAIProposal(project, localAI.state.proposal, { expectedRevision: localAI.state.baseRevision, wall: previewWall(), validateGeometry: conceptFromProject });
+      studio.previous = null; studio.proposal = null;
+      localAI.state.proposal = null; localAI.state.error = '';
+      save(); render(currentView); notify('AI proposal applied. Engineering validation has not been performed.');
+    } catch (error) { notify(error.message); }
+    return;
+  }
+  if (event.target.closest('#concept-wireframe')) { previewWireframe = !previewWireframe; $('#concept-wireframe').setAttribute('aria-pressed', String(previewWireframe)); activeViewer?.setWireframe(previewWireframe); return; }
+  if (event.target.closest('#concept-grid')) { previewGrid = !previewGrid; $('#concept-grid').setAttribute('aria-pressed', String(previewGrid)); activeViewer?.setGridVisible(previewGrid); return; }
+  if (event.target.closest('#concept-fit')) { previewCamera = 'iso'; activeViewer?.setView('iso'); return; }
+
   const sourceTab = event.target.closest('[data-source-tab]');
   if (sourceTab) { if (invalidFields.size) { notify('Correct the highlighted properties.'); return; } studio.tab = sourceTab.dataset.sourceTab; render('concept'); $(`#source-tab-${studio.tab}`)?.focus(); return; }
   const modelSource = event.target.closest('[data-model-source]');
@@ -524,6 +560,18 @@ document.addEventListener('click', (event) => {
   if (event.target.closest('#cancel-machine')) { editMachineId = null; render('machines'); }
 });
 document.addEventListener('submit', (event) => {
+  if (event.target.id === 'ai-chat-form') {
+    event.preventDefault();
+    if (invalidFields.size) { notify('Correct the highlighted properties before applying.'); return; }
+    const input = $('#ai-message');
+    const { name, application, material, length_mm, width_mm, height_mm } = project.part;
+    try {
+      localAI.send(input.value, { brief: project.brief, part: { name, application, material, length_mm, width_mm, height_mm }, preview_shape: 'reference rectangular shell only' }, getLanguage(), `${project.id}:${project.updated_at}`);
+      input.value = '';
+    } catch (error) { notify(error.message); }
+    return;
+  }
+
     if (event.target.id === 'description-form') {
     event.preventDefault();
     if (invalidFields.size) { notify('Correct highlighted properties before preparing a change.'); return; }

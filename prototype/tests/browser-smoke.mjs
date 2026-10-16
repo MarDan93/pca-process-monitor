@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import { spawn } from 'node:child_process';
+import { spawn, execFileSync } from 'node:child_process';
 import { createServer } from 'node:http';
 import { readFile, writeFile, mkdir, mkdtemp, readdir, rm } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
@@ -8,23 +8,54 @@ import { fileURLToPath } from 'node:url';
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const standalone = process.argv.includes('--standalone');
+const realAI = process.argv.includes('--ai-real');
+const localAIAssets = process.argv.includes('--ai-local-assets');
 const artifacts = resolve(root, '../.cache/ux');
 await mkdir(artifacts, { recursive: true });
 const downloadDir = await mkdtemp(join(artifacts, 'browser-run-'));
 const profile = await mkdtemp(join(tmpdir(), 'mould-browser-'));
-const mime = { '.html': 'text/html', '.js': 'application/javascript', '.css': 'text/css', '.json': 'application/json' };
+const mime = { '.html': 'text/html', '.js': 'application/javascript', '.mjs': 'application/javascript', '.wasm': 'application/wasm', '.css': 'text/css', '.json': 'application/json' };
 const server = createServer(async (request, response) => {
   try {
+    const pathname = new URL(request.url, 'http://localhost').pathname;
+    if (localAIAssets && (pathname.startsWith('/ai-assets/') || pathname.startsWith('/ai-runtime/'))) {
+      const modelPath = pathname.startsWith('/ai-assets/') ? pathname.slice('/ai-assets/'.length).replace('/resolve/', '/') : pathname.slice('/ai-runtime/'.length);
+      const base = resolve(root, pathname.startsWith('/ai-assets/') ? '../.cache/ai/models' : '../.cache/ai/runtime');
+      const assetPath = resolve(base, modelPath);
+      if (!assetPath.startsWith(base + sep)) throw new Error('Invalid AI asset path');
+      const { createReadStream } = await import('node:fs');
+      const { stat } = await import('node:fs/promises');
+      const info = await stat(assetPath);
+      response.writeHead(200, { 'Content-Type': mime[extname(assetPath)] ?? 'application/octet-stream', 'Content-Length': info.size });
+      createReadStream(assetPath).pipe(response); return;
+    }
     const path = resolve(root, '.' + (new URL(request.url, 'http://localhost').pathname === '/' ? '/index.html' : decodeURIComponent(new URL(request.url, 'http://localhost').pathname)));
     if (!path.startsWith(root + sep)) throw new Error('Invalid path');
-    const data = await readFile(path);
+    let data = await readFile(path);
+    if (localAIAssets && extname(path) === '.html') data = Buffer.from(data.toString().replace('</head>', `<meta name="ai-model-host" content="/ai-assets/"><meta name="ai-wasm-base" content="/ai-runtime/"></head>`));
     response.writeHead(200, { 'Content-Type': mime[extname(path)] ?? 'application/octet-stream' });
     response.end(data);
   } catch { response.writeHead(404); response.end(); }
 });
 await new Promise((accept) => server.listen(0, '127.0.0.1', accept));
 const origin = `http://127.0.0.1:${server.address().port}`;
-const browser = spawn(process.env.CHROMIUM_BINARY || 'chromium', ['--headless', '--no-sandbox', '--disable-dev-shm-usage', '--disable-background-networking', '--no-first-run', '--no-default-browser-check', '--use-angle=swiftshader', '--enable-unsafe-swiftshader', '--remote-debugging-port=0', `--user-data-dir=${profile}`, 'about:blank'], { stdio: ['ignore', 'ignore', 'pipe'], env: { ...process.env, XDG_CACHE_HOME: join(profile, 'cache'), XDG_CONFIG_HOME: join(profile, 'config') } });
+const proxyURL = process.env.HTTPS_PROXY || process.env.HTTP_PROXY;
+const browserProxy = proxyURL ? new URL(proxyURL) : null;
+const proxyArgs = browserProxy && !browserProxy.username && !browserProxy.password ? [`--proxy-server=${browserProxy.origin}`, '--proxy-bypass-list=<-loopback>;127.0.0.1;localhost'] : [];
+const browserData = join(profile, 'data');
+if (browserProxy && process.env.CODEX_PROXY_CERT) {
+  const trustDB = join(browserData, 'pki/nssdb');
+  await mkdir(trustDB, { recursive: true });
+  execFileSync('certutil', ['-N', '--empty-password', '-d', `sql:${trustDB}`]);
+  const certificates = (await readFile(process.env.CODEX_PROXY_CERT, 'utf8')).match(/-----BEGIN CERTIFICATE-----[\s\S]*?-----END CERTIFICATE-----/g) ?? [];
+  if (!certificates.length) throw new Error('Configured proxy CA bundle contains no certificates.');
+  for (const [index, certificate] of certificates.entries()) {
+    const file = join(profile, `trusted-proxy-${index}.crt`);
+    await writeFile(file, certificate);
+    execFileSync('certutil', ['-A', '-d', `sql:${trustDB}`, '-n', `Cloud environment proxy ${index}`, '-t', 'C,,', '-i', file]);
+  }
+}
+const browser = spawn(process.env.CHROMIUM_BINARY || 'chromium', [...proxyArgs, '--headless', '--no-sandbox', '--disable-dev-shm-usage', '--disable-background-networking', '--no-first-run', '--no-default-browser-check', '--use-angle=swiftshader', '--enable-unsafe-swiftshader', '--remote-debugging-port=0', `--user-data-dir=${profile}`, 'about:blank'], { stdio: ['ignore', 'ignore', 'pipe'], env: { ...process.env, XDG_DATA_HOME: browserData, XDG_CACHE_HOME: join(profile, 'cache'), XDG_CONFIG_HOME: join(profile, 'config') } });
 let browserLog = '', spawnError;
 browser.stderr.on('data', (chunk) => { browserLog = (browserLog + chunk.toString()).slice(-2500); });
 browser.on('error', (error) => { spawnError = error; });
@@ -42,9 +73,11 @@ try {
   socket = new WebSocket(pages.find((page) => page.type === 'page').webSocketDebuggerUrl);
   await new Promise((accept, reject) => { socket.addEventListener('open', accept, { once: true }); socket.addEventListener('error', reject, { once: true }); });
   let sequence = 0;
-  const pending = new Map(), exceptions = [], requests = [];
+  const pending = new Map(), exceptions = [], requests = [], networkFailures = [];
   socket.addEventListener('message', (event) => {
     const data = JSON.parse(event.data);
+    if (realAI && data.method === 'Target.attachedToTarget') socket.send(JSON.stringify({ id: ++sequence, sessionId: data.params.sessionId, method: 'Network.enable' }));
+    if (data.method === 'Network.loadingFailed') networkFailures.push({ error: data.params.errorText, blockedReason: data.params.blockedReason, corsError: data.params.corsErrorStatus });
     if (data.method === 'Runtime.exceptionThrown') exceptions.push(data.params.exceptionDetails);
     if (data.method === 'Network.requestWillBeSent') requests.push(data.params);
     if (pending.has(data.id)) { const handler = pending.get(data.id); pending.delete(data.id); clearTimeout(handler.timer); if (data.error) handler.reject(data.error); else handler.accept(data.result); }
@@ -93,7 +126,8 @@ try {
   await call('Runtime.enable'); await call('Page.enable');
   await call('Emulation.setDeviceMetricsOverride', { width: 1440, height: 1100, deviceScaleFactor: 1, mobile: false });
   await call('Browser.setDownloadBehavior', { behavior: 'allow', downloadPath: downloadDir });
-  if (standalone) await call('Network.enable');
+  if (standalone || realAI) await call('Network.enable');
+  if (realAI) await call('Target.setAutoAttach', { autoAttach: true, waitForDebuggerOnStart: false, flatten: true });
   await call('Page.navigate', { url: standalone ? `${origin}/dist/Mould-Studio.html` : origin });
   if (standalone) {
     await rendered();
@@ -125,6 +159,12 @@ try {
   await selectLanguage('es'); await reload();
   assert.equal(await evaluate('document.documentElement.lang'), 'es');
   await selectLanguage('en');
+  assert.equal(await evaluate('document.querySelector("#ai-status").textContent'), 'Not loaded');
+  assert.equal(await evaluate('document.querySelector("#ai-send").disabled'), true);
+  await fill('ai-message', 'Pending customer request'); await selectLanguage('it');
+  assert.equal(await evaluate('document.querySelector("#ai-message").value'), 'Pending customer request');
+  assert.equal(await evaluate('document.querySelector("#ai-load").textContent'), 'Carica modello AI');
+  await selectLanguage('en');
   pass('English default, four UI languages, persistence, unchanged project data and unsaved fields');
   await fill('brief-project_name', 'Electronic enclosure · concept');
   await fill('brief-annual_volume', 1234567890);
@@ -146,6 +186,13 @@ try {
   assert.equal((await stored()).part.ip_in_use, 'with_cable');
   assert.equal((await stored()).part.pcb_layout, 'two_by_two');
   assert.deepEqual([(await stored()).part.pcb_length_mm, (await stored()).part.pcb_width_mm, (await stored()).part.pcb_height_mm], [40, 25, 8]);
+  await click('#concept-wireframe');
+  assert.equal(await evaluate('document.querySelector("#concept-viewport").dataset.wireframe'), 'true');
+  await click('#concept-wireframe'); await click('#concept-grid');
+  assert.equal(await evaluate('document.querySelector("#concept-viewport").dataset.gridVisible'), 'false');
+  await click('#concept-grid'); await click('#concept-fit');
+  assert.ok(await evaluate('document.querySelectorAll(".cad-icon svg").length >= 7'));
+  pass('CAD ribbon icons, wireframe, grid and fit controls affect the actual 3D viewer');
   pass('3D renders the R8 paired-shell case; six snaps and 1,000 service cycles are requirements');
   await click('[data-preview-wall="2.5"]'); await rendered();
   assert.ok(Math.abs(await evaluate('Number(document.querySelector("[data-volume-mm3]").dataset.volumeMm3)') - idealRoundedVolume(2.5)) < 10);
@@ -194,6 +241,7 @@ try {
   await click('[data-view="concept"]'); await rendered();
   assert.equal((await stored()).concept_preview.wall_mm, 2.5);
   pass('preview selection and service requirements survive navigation and reload');
+  await click('#source-tab-text');
   await fill('part-description', 'Guscio 140 × 90 × 40 mm, spessore 2 mm, raggio 10 mm, ABS lucido');
   await click('#description-form button[type="submit"]');
   assert.equal((await stored()).part.length_mm, 120);
@@ -273,6 +321,61 @@ try {
   if (standalone) {
     assert.deepEqual(requests.filter((request) => !['Document', 'Other'].includes(request.type) && /^(?:https?:|file:)/.test(request.request.url)).map((request) => request.request.url), []);
     pass('no external scripts, stylesheets, fonts, images or data requests');
+  }
+  if (realAI) {
+    await setOffline(false);
+    await click('#source-tab-ai'); await click('#ai-load');
+    const started = Date.now();
+    for (let tick = 0; tick < 720; tick++) {
+      const state = await evaluate('document.querySelector("#ai-status").textContent');
+      if (state === 'Ready' || state === 'Unavailable') break;
+      if (tick % 15 === 0) process.stdout.write(`AI ${Math.round((Date.now()-started)/1000)}s: ${await evaluate('document.querySelector("#ai-progress-text").textContent')}\n`);
+      await pause(1000);
+    }
+    const status = await evaluate('document.querySelector("#ai-status").textContent');
+    const error = await evaluate('document.querySelector("#ai-error-details").textContent');
+    await writeFile(join(artifacts, localAIAssets ? 'ai-local-check.json' : standalone ? 'ai-standalone-check.json' : 'ai-check.json'), JSON.stringify({ status, error, networkFailures, elapsed_ms: Date.now()-started }, null, 2));
+    assert.equal(status, 'Ready', `Real AI load failed: ${error}`);
+    const projectBeforeAI = await stored();
+    const generationStarted = Date.now();
+    await fill('ai-mode', 'changes');
+    await fill('ai-message', 'Set annual_volume to 80000 and market to Appliances. Reply briefly in English.');
+    await click('#ai-send');
+    for (let tick = 0; tick < 600; tick++) {
+      if (await evaluate('document.querySelector("#ai-status").textContent !== "Thinking"')) break;
+      if (tick % 15 === 0) process.stdout.write(`AI generating: ${tick}s\n`);
+      await pause(1000);
+    }
+    const reply = await evaluate('document.querySelector("#ai-chat-log").textContent');
+    await writeFile(join(artifacts, 'ai-real-response.txt'), reply);
+    assert.ok(await evaluate('Boolean(document.querySelector("#ai-apply"))'), reply);
+    const aiScreenshot = await call('Page.captureScreenshot', { format: 'png' });
+    await writeFile(join(artifacts, 'ai-conversation.png'), Buffer.from(aiScreenshot.data, 'base64'));
+    await click('#ai-apply');
+    assert.equal((await stored()).brief.annual_volume, 80000);
+    const projectAfterAI = await stored();
+    assert.equal(projectAfterAI.sources['brief.annual_volume'].kind, 'ai_proposal');
+    assert.equal(projectAfterAI.brief.market, 'Appliances');
+    assert.deepEqual(projectAfterAI.part, projectBeforeAI.part);
+    assert.deepEqual({ ...projectAfterAI.brief, annual_volume: projectBeforeAI.brief.annual_volume, market: projectBeforeAI.brief.market }, projectBeforeAI.brief);
+    await writeFile(join(artifacts, localAIAssets ? 'ai-local-result.json' : 'ai-remote-result.json'), JSON.stringify({ passed: true, runtime: 'Chromium WebAssembly, one thread', self_hosted_assets: localAIAssets, reply, generation_ms: Date.now()-generationStarted }, null, 2));
+    await fill('ai-mode', 'chat');
+    const beforeConversation = await stored();
+    await fill('ai-message', 'What material grade information do you need? Answer briefly.');
+    await click('#ai-send');
+    for (let tick = 0; tick < 240; tick++) {
+      if (await evaluate('document.querySelector("#ai-status").textContent !== "Thinking"')) break;
+      if (tick % 15 === 0) process.stdout.write(`AI conversation: ${tick}s\n`);
+      await pause(1000);
+    }
+    const answer = await evaluate('document.querySelector("#ai-chat-log .assistant:last-child p").textContent');
+    assert.match(answer, /grade|material|resin|manufacturer/i);
+    assert.equal(await evaluate('Boolean(document.querySelector("#ai-apply"))'), false);
+    assert.equal(await evaluate('document.querySelector("#ai-error").hidden'), true);
+    assert.deepEqual(await stored(), beforeConversation);
+    await writeFile(join(artifacts, 'ai-conversation-answer.txt'), answer);
+    pass('REAL natural-language AI conversation leaves project data unchanged');
+    pass(`REAL ${localAIAssets ? 'self-hosted' : 'remote'} model load, WASM inference, reviewed AI proposal and persisted fields`);
   }
   assert.deepEqual(exceptions, []);
   pass('no JavaScript runtime exceptions');

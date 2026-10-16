@@ -4,7 +4,7 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 export function mountConceptViewer(container, concept, { finish = 'unspecified' } = {}) {
   const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false });
   renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
-  renderer.setClearColor(0x0b131e);
+  renderer.setClearColor(0xd9e1eb);
   renderer.outputColorSpace = THREE.SRGBColorSpace;
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
   const canvas = renderer.domElement;
@@ -32,8 +32,8 @@ export function mountConceptViewer(container, concept, { finish = 'unspecified' 
   }
   const group = new THREE.Group();
   scene.add(group);
-  const material = new THREE.MeshPhysicalMaterial({ color: 0x92c8d3, metalness: 0.12, roughness: finish === 'glossy' ? 0.2 : 0.48, clearcoat: finish === 'glossy' ? 1 : 0, side: concept.model_kind === 'imported_mesh' ? THREE.DoubleSide : THREE.FrontSide });
-  const edgeMaterial = new THREE.LineBasicMaterial({ color: 0x6098ad, transparent: true, opacity: 0.45 });
+  const material = new THREE.MeshPhysicalMaterial({ color: 0xadc2dc, metalness: 0.12, roughness: finish === 'glossy' ? 0.2 : 0.48, clearcoat: finish === 'glossy' ? 1 : 0, side: concept.model_kind === 'imported_mesh' ? THREE.DoubleSide : THREE.FrontSide });
+  const edgeMaterial = new THREE.LineBasicMaterial({ color: 0x334b68, transparent: true, opacity: 0.7 });
   const meshes = [];
   for (const component of concept.components) {
     const indexed = new THREE.BufferGeometry();
@@ -49,7 +49,7 @@ export function mountConceptViewer(container, concept, { finish = 'unspecified' 
     group.add(mesh);
     meshes.push(mesh);
   }
-  const grid = new THREE.GridHelper(extent * 5, 40, 0x2d495b, 0x182c3e);
+  const grid = new THREE.GridHelper(extent * 5, 40, 0x9dabbc, 0xc1cad5);
   grid.rotation.x = Math.PI / 2;
   grid.position.z = -extent * 0.16;
   scene.add(grid);
@@ -63,7 +63,12 @@ export function mountConceptViewer(container, concept, { finish = 'unspecified' 
   function setView(view = 'iso') {
     const directions = { iso: [1.15, -1.3, 1.2], front: [0, -0.001, 2.1], rear: [0, -0.001, -2.1], side: [-2.1, 0.2, 0.3] };
     const direction = new THREE.Vector3(...(directions[view] ?? directions.iso));
-    camera.position.copy(controls.target).add(direction.multiplyScalar(extent));
+    const sphere = new THREE.Box3().setFromObject(group).getBoundingSphere(new THREE.Sphere());
+    const verticalHalf = THREE.MathUtils.degToRad(camera.fov / 2);
+    const horizontalHalf = Math.atan(Math.tan(verticalHalf) * camera.aspect);
+    const distance = sphere.radius / Math.sin(Math.min(verticalHalf, horizontalHalf)) * 1.08;
+    controls.target.copy(sphere.center);
+    camera.position.copy(controls.target).add(direction.normalize().multiplyScalar(distance));
     camera.lookAt(controls.target);
     controls.update();
     draw();
@@ -83,6 +88,8 @@ export function mountConceptViewer(container, concept, { finish = 'unspecified' 
   setView();
   return {
     setView,
+    setWireframe(value) { material.wireframe = value; material.needsUpdate = true; container.dataset.wireframe = String(value); draw(); },
+    setGridVisible(value) { grid.visible = value; container.dataset.gridVisible = String(value); draw(); },
     setTransparent(value) {
       material.transparent = value;
       material.opacity = value ? 0.35 : 1;

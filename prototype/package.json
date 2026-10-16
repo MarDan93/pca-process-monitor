@@ -9,9 +9,15 @@
     "test:browser": "node tests/browser-smoke.mjs",
     "build:standalone": "node scripts/build-standalone.mjs",
     "test:standalone": "node tests/browser-smoke.mjs --standalone",
-    "package:demo": "python scripts/package-demo.py"
+    "package:demo": "python scripts/package-demo.py",
+    "test:ai-real": "node tests/browser-smoke.mjs --standalone --ai-real",
+    "test:ai-local": "node tests/browser-smoke.mjs --standalone --ai-real --ai-local-assets",
+    "test:ai-model": "node --use-env-proxy tests/ai-model-smoke.mjs",
+    "prepare:ai-assets": "node scripts/prepare-ai-assets.mjs"
   },
   "dependencies": {
+    "@huggingface/transformers": "3.7.2",
+    "lucide": "0.468.0",
     "three": "0.180.0"
   },
   "devDependencies": {

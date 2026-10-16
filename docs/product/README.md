@@ -2,7 +2,7 @@
 
 Updated 2026-10-16. **Customer-first, online, generic products and open-source AI across modules.** Chat and contextual properties operate on the same project.
 
-**Current position: P0 documentation complete; P1 application implementation not started.** The existing demo is a local geometry/requirements experiment. [Implementation status](IMPLEMENTATION_STATUS.md) and [roadmap](ROADMAP.md) are the progress references.
+**Current position: P0 documentation complete; P1 incomplete; a browser-AI demo experiment is implemented, with browser inference verified with self-hosted assets.** The existing demo is a local geometry/requirements experiment. [Implementation status](IMPLEMENTATION_STATUS.md) and [roadmap](ROADMAP.md) are the progress references.
 
 ```mermaid
 flowchart LR

@@ -7,7 +7,7 @@ Updated 2026-10-16. The target is an online commercial/technical feasibility and
 | Milestone | Scope | Status |
 | --- | --- | --- |
 | P0 | Agreed system specification, UX, architecture and acceptance criteria | Complete as documentation |
-| P1 | Generic customer brief, actual open-source AI, server persistence and web application | Not started |
+| P1 | Generic customer brief, actual open-source AI, server persistence and web application | Incomplete; browser-AI experiment implemented, browser inference verified with self-hosted assets |
 | P2 | Generic product geometry, STEP and supported CAD operations | Not started; reusable demo viewer exists |
 | P3 | Mould concepts and functional press/robot/conveyor cell | Not started |
 | P4 | Complete L0 material-to-conveyor sequence, animation, capacity and costs | Not started |
@@ -15,7 +15,7 @@ Updated 2026-10-16. The target is an online commercial/technical feasibility and
 | P6 | Integrated real-data PCA/PLS and constrained optimisation | Not started; original PCA library requires verification |
 | P7 | Full-path validation and online release | Not started |
 
-Current maintenance: English repository documentation, EN/IT/FR/ES demo UI, download verification and clear status reporting. This does not complete P1. No numerical completion percentage or delivery date is asserted without an implementation estimate.
+Current increment: experimental browser AI for B04 and a FreeCAD-inspired demo workbench; EN/IT/FR/ES support and download verification continue. This does not complete P1. No numerical completion percentage or delivery date is asserted without an implementation estimate.
 
 ## Delivery order
 
@@ -27,7 +27,7 @@ Generic requirements, commercial workflow, shared entities, model fidelity and a
 
 Deliver empty projects, server persistence, files/revisions, Customer and market home, actual open-source AI integration and contextual properties. Capture demand/commercial unit, market, prices/costs/budgets, production conditions and constraints. Show corrections, sources and missing information.
 
-Start with B01 generic data, B02 API/storage, B03 briefing UI and B04 real AI tools. Select and evaluate a suitably licensed model. Develop the stack locally before choosing hosting. Verify A01–A05 and A14; two different customer requests must remain independent and survive reopening. No simulation results are generated for missing inputs.
+Start with B01 generic data, B02 API/storage, B03 briefing UI and B04 real AI tools. A small Qwen model is wired into the demo; extend inference evaluation and extraction-quality checks before accepting B04. Develop the stack locally before choosing hosting. Verify A01–A05 and A14; two different customer requests must remain independent and survive reopening. No simulation results are generated for missing inputs.
 
 **This is the next implementation milestone.** A reachable HTTPS address, persistence and access will be tested for a concrete deployment. The ZIP is not the final distribution.
 

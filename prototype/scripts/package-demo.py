@@ -12,32 +12,42 @@ for source in (html, screenshot):
     if not source.is_file():
         raise SystemExit("Run npm run build:standalone and npm run test:standalone first.")
 
-instructions = """MOULD STUDIO — LOCAL REQUIREMENTS AND GEOMETRY DEMO
+instructions = """MOULD STUDIO — AI AND GEOMETRY DEMO
 
 Extract the ZIP, then open Mould-Studio.html in a recent browser.
-The interface defaults to English. Select English, Italiano, Francais
-or Espanol in the header; the selection is remembered by the browser.
-No developer tools, server or internet connection are needed.
+English is the default. English, Italiano, Francais and Espanol
+are selectable in the header without translating project values.
 
-This is a local demo, not the target online platform.
-P0 specification is complete. P1 (generic commercial chat with real AI
-and server persistence) has not been implemented.
+AI: select AI > Load AI model. First use needs internet and downloads
+about 800 MB. No API key, account or paid inference is required.
+After Ready, use Conversation for questions or select Propose changes
+and try: Set annual_volume to 80000 and market to Appliances.
+Review the reply and Apply AI proposal only if correct. Accepted values
+are sourced in JSON export. Stop terminates loading/generation.
+The small Qwen2.5 model can make mistakes or return unusable proposals.
+Real browser inference and review/apply pass with self-hosted assets.
+The remote-host route is blocked by the cloud browser certificate store;
+see prototype/OPEN_SOURCE.md in the repository for exact evidence.
 
-Try: shell 140 x 90 x 40 mm, wall 2 mm, radius 10 mm, glossy ABS.
-Prepare and apply the proposed change. Local commands also support
-Italian, French and Spanish keywords; they are not an AI agent.
+The CAD-style interface follows FreeCAD conventions with Lucide icons,
+not an embedded FreeCAD/SolidWorks kernel. Use wireframe, grid, fit,
+standard views, explosion and transparency on the actual 3D viewer.
+Geometry/forms/local Commands work offline; first-use AI does not.
 
-For OBJ/STL input choose units first (max 12 MB / 100,000 triangles).
-Photos are local visual references (JPG/PNG/WebP, max 8 MB/25 MP),
-not automatic reconstructions. Meshes and photos remain in session
-memory and must be loaded again after restarting the page.
+Commands example: shell 140 x 90 x 40 mm, wall 2 mm, radius 10 mm, ABS.
+Prepare and apply the proposed reference-shell change. Commands support
+English, Italian, French and Spanish; this parser is separate from AI.
+OBJ/STL input: choose units first (12 MB / 100,000 triangles).
+Photos are references (JPG/PNG/WebP, 8 MB/25 MP), not reconstructions.
+Mesh/photo files remain in session memory; reload after restart.
+JSON exports contain metadata, not source files. JSON import is planned.
 
-Use JSON export to retain a copy of the brief. JSON contains asset
-metadata, not original files; JSON import is not yet implemented.
-Browser persistence for local files depends on browser/path settings.
-WebGL2 is required for 3D. Engineering validation has not been performed.
-Mould, cell, process simulation, costs and actual AI are planned modules.
-Preview.png shows the interface. The Three.js MIT licence is in the HTML.
+This local demo is a partial AI experiment for P1, not the complete
+online platform. Server persistence, STEP, generic CAD generation,
+mould/cell/process simulation, economics and ML integration are planned.
+WebGL2 is required for 3D and WebAssembly for AI. Runtime licences are
+included in the HTML. Weights are not included. No engineering validation
+has been performed. See Preview.png for the new interface.
 """
 destination = repo / "demo"
 destination.mkdir(exist_ok=True)

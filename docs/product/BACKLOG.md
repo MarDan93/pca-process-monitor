@@ -1,6 +1,6 @@
 # Implementation backlog and acceptance
 
-Updated 2026-10-16. Platform criteria below are **planned, not passed tests**. P1 implementation has not started. Demo language/access maintenance is tracked separately in [implementation status](IMPLEMENTATION_STATUS.md).
+Updated 2026-10-16. Platform criteria below are **planned, not passed tests**. P1 is incomplete. A client-side B04 AI experiment and CAD-style demo are implemented; B04 acceptance is pending broader evaluation and platform integration; actual browser inference is verified. Progress is tracked in [implementation status](IMPLEMENTATION_STATUS.md).
 
 ## Ordered work
 
