@@ -9,7 +9,7 @@ The target is an online, AI-assisted platform for commercial and technical feasi
 
 The new [runnable workspace](web/README.md) implements generic projects, durable commercial requirements, approved revisioned operations and an original dark CAD-style interface with persistent 3D and a right AI copilot. The local FastAPI/SQLite service and React/TypeScript interface reuse the existing viewer, mesh importer, translations and actual browser inference. See [implementation evidence](docs/verification/WORKSPACE_2026-10-17.md).
 
-The [product documents](docs/product/README.md) define the full system. The existing offline demo remains an earlier shell-specific experiment. The new workspace starts with empty generic projects and retains original OBJ/STL files; mould/cell/process/cost engines and production online deployment remain on the roadmap. The [17 October audit](docs/README.md) remains the dated baseline for scientific, security, rights and data gates. No push, merge, relicense or publication was performed.
+The [product documents](docs/product/README.md) define the full system. The existing offline demo remains an earlier shell-specific experiment. The new workspace starts with empty generic projects and retains original OBJ/STL files; mould/cell/process/cost engines and production online deployment remain on the roadmap. The [17 October audit](docs/README.md) remains the dated baseline for scientific, security, rights and data gates. The earlier local increment did not publish a hosted service. The current source is now published on `deploy/web-pilot` for owner-authorised deployment; `main` and the MIT licence are unchanged.
 
 - [Prototype setup and checks](prototype/README.md)
 - [Run the new workspace](web/README.md)
@@ -24,6 +24,6 @@ The [product documents](docs/product/README.md) define the full system. The exis
 
 ## Project status and languages
 
-I01a and a bounded part of I01b are implemented locally. The new workspace passes transactional API, browser workflow and actual self-hosted browser-AI checks. P1 is not a completed online milestone: wider AI evaluation, production identity/access/recovery and the remaining migration work are open. See [the milestone table](docs/product/ROADMAP.md) and [actual implementation status](docs/product/IMPLEMENTATION_STATUS.md). Development remains on `demo/progettazione-stampi-2026-10-15`, not `main`; this increment is uncommitted local work.
+I01a and a bounded part of I01b are implemented locally. The new workspace passes transactional API, browser workflow and actual self-hosted browser-AI checks. P1 is not a completed online milestone: wider AI evaluation, production identity/access/recovery and the remaining migration work are open. See [the milestone table](docs/product/ROADMAP.md) and [actual implementation status](docs/product/IMPLEMENTATION_STATUS.md). The complete hosted source is published on `deploy/web-pilot`; the working checkout preserves earlier changes on `demo/progettazione-stampi-2026-10-15`. No merge into `main` was performed, and hosting activation is pending.
 
 The official repository language is English. The demo supports English, Italian, French and Spanish, with English as its default. See [contribution and language conventions](CONTRIBUTING.md).
