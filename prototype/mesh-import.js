@@ -37,7 +37,7 @@ export function importMesh(buffer, name, units) {
     if (!faces || !Number.isFinite(min[0]) || Math.max(...max.map((v, i) => v - min[i])) <= 0) throw new Error('No usable 3D surfaces found.');
     const offset = [(min[0] + max[0]) / 2, (min[1] + max[1]) / 2, min[2]];
     for (const component of components) component.vertices = component.vertices.map((vertex) => vertex.map((v, i) => v - offset[i]));
-    return { components, dimensions_mm: { length: max[0] - min[0], width: max[1] - min[1], height: max[2] - min[2] }, volume_mm3: null, units: 'mm', source_units: units, file_name: name, triangle_count: faces, model_kind: 'imported_mesh' };
+    return { components, dimensions_mm: { length: max[0] - min[0], width: max[1] - min[1], height: max[2] - min[2] }, source_bounds_mm: { min, max }, display_offset_mm: offset, volume_mm3: null, units: 'mm', source_units: units, file_name: name, triangle_count: faces, model_kind: 'imported_mesh' };
   } finally {
     geometries.forEach((geometry) => geometry.dispose());
     object?.traverse((node) => { if (node.material) for (const material of [].concat(node.material)) material.dispose(); });

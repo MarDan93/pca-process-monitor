@@ -1,0 +1,38 @@
+pca-process-monitor / injection-moulding engineering platform
+Copyright (c) 2026 MarDan93. Project licence: MIT; see LICENSE.
+
+Third-party attribution entry point (audit 17 October 2026)
+
+The browser demo uses Three.js (MIT), Lucide (ISC), Transformers.js
+(Apache-2.0) and ONNX Runtime (MIT). Exact package versions, source links
+and licence evidence are recorded in prototype/OPEN_SOURCE.md and
+docs/compliance/DEPENDENCY_INVENTORY.md. The standalone HTML retains
+upstream runtime licence texts. These notices do not replace any
+third-party terms or constitute a complete distribution review.
+
+Qwen model weights are downloaded separately, not included in the demo
+ZIP or Git repository. Upstream model licensing, conversion provenance
+and future redistribution are separate review items. Do not apply the
+project MIT licence to model weights, datasets, solver binaries or other
+third-party material.
+
+The Python numerical environment and optional native ML/image packages
+have their own licences and bundled notices. Some optional libvips/sharp
+platform packages include LGPL-3.0-or-later components. Before distributing
+native packages or containers, review the exact artefacts and obligations.
+
+FreeCAD was a historical interface research reference; its application,
+kernel and graphical assets are not embedded. REA was inspected as a
+public MIT-licensed research framework and was not installed or run.
+The new design studies are original schematic documents.
+
+The subsequent local workspace adds React/React DOM 19.3.1 (MIT),
+Scheduler (MIT), an original icon/ribbon layout and a FastAPI/SQLite
+development service. Its browser build retains runtime licence texts
+in web/dist/THIRD_PARTY_NOTICES.txt. See web/README.md and
+docs/compliance/WORKSPACE_DEPENDENCIES.md for the incremental inventory.
+No proprietary SolidWorks/Fusion artwork or implementation is included.
+
+Source/rights/limitation records: docs/compliance/RESEARCH_PROVENANCE.md.
+This preliminary notice neither grants rights we do not hold nor states
+that the entire platform is legally cleared. LICENSE remains unchanged.

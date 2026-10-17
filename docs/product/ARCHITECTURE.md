@@ -1,6 +1,6 @@
 # Online platform architecture — revision 4
 
-Updated 2026-10-16. Proposed architecture for the [specification](SPECIFICATION.md). [Implementation status](IMPLEMENTATION_STATUS.md) separates proposals from working capabilities.
+Historical revision-4 proposal. Updated pointers 2026-10-17: [TARGET_ARCHITECTURE.md](../architecture/TARGET_ARCHITECTURE.md) and [IMPLEMENTATION_PLAN.md](../planning/IMPLEMENTATION_PLAN.md) supersede conflicting proposals below. No service is inferred from this sketch. Proposed architecture for the [specification](SPECIFICATION.md). [Implementation status](IMPLEMENTATION_STATUS.md) separates proposals from working capabilities.
 
 ## Structure
 

@@ -1,0 +1,4 @@
+node_modules/
+dist/
+public/ai-worker.js
+public/THIRD_PARTY_NOTICES.txt

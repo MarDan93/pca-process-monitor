@@ -2,6 +2,8 @@
 
 Technical proposal for M03–M05, updated 2026-10-16. These models are planned, not an implemented simulation engine.
 
+Audit update 2026-10-17: follow the model-specific gates in [VALIDATION_PROTOCOL.md](../data/VALIDATION_PROTOCOL.md), the [target contracts](../architecture/TARGET_ARCHITECTURE.md) and [I03–I04 plan](../planning/IMPLEMENTATION_PLAN.md). No time-based engine has been added by the audit.
+
 ## Decisions to support
 
 Determine whether material arrives in sufficient quantity and condition; identify cycle constraints and overlapping operations; check mould opening, ejection, robot access and deposit orientation; compare layout, cooling, feed and motion changes; distinguish preliminary estimates from results checked against technical references or measurements.

@@ -1,35 +1,36 @@
 # Implementation status
 
-Updated 2026-10-16. **P0 is documented; P1 is incomplete. A browser-AI integration is implemented as a demo experiment; browser inference is verified with self-hosted assets.** Current work is on the development branch `demo/progettazione-stampi-2026-10-15`, not on `main`. This file is the status reference; the [roadmap](ROADMAP.md) describes target deliveries.
+**Hosted preparation update:** the owner requested the full current app online and selected managed hosting. Single-owner server sessions/login, a browser sign-in gate, a digest-pinned container and a Render persistent-disk Blueprint are now implemented. **18 backend tests**, the browser core workflow, full source container build and replacement-container persistence pass. [Hosted evidence](../verification/HOSTED_2026-10-17.md) and [activation guide](../deployment/MANAGED_WEB.md) distinguish verified preparation from deployment: the owner's hosting account and cost approval are still required; no live URL is claimed. Local commands are developer tools, not the intended user installation path.
+
+Updated 2026-10-17. **I01a and a bounded part of I01b run locally; P1 remains incomplete as an online milestone.** The [new runnable workspace](../../web/README.md) adds generic server projects and the original CAD-style UI requested by the user. [Coding evidence](../verification/WORKSPACE_2026-10-17.md) is separate from the earlier [audit baseline](../architecture/CURRENT_STATE.md). Baseline commit remains `0fe5efe3e626edf7c93138efa83be821bfcea8a0`; this increment is uncommitted work on `demo/progettazione-stampi-2026-10-15`. No push, merge or publication occurred.
 
 | Area | Available | Still required |
 | --- | --- | --- |
-| Customer brief | Local forms, market/commercial-unit fields, AI chat/proposal wiring, export, press catalogue | Generic empty projects, complete commercial home and server persistence |
-| Product | Example shell, OBJ/STL viewer with units/bounds, photo references | Generic model, STEP solids, extensible features and assisted reconstruction |
-| Mould | Example requirements only | Cavities, geometry, ejection, cooling and alternatives |
-| Cell | Candidate press records | Press/mould/Cartesian robot/end-effector/conveyor/auxiliary layout and kinematics |
-| Process | No complete time-based engine | Events, material flow, parameters, animation and L0/L1/L2 models |
-| Data/ML | Original Python PCA library and notebook | Verification/correction, PLS and application integration |
-| Distribution | Local HTML demo and development sources | Hosted application, persistence and project access |
-| AI | Transformers.js + Qwen browser-worker integration, review/apply, typed fields, provenance and stale-request checks | Broader model evaluation, server orchestration and module tools |
-| Languages | English source/documentation; demo EN/IT/FR/ES with English default | Reuse this policy in the P1 application |
+| Customer brief | Generic empty server projects, commercial units/quantities/currency/exact quote amounts, shared manual/AI preview/approval/undo and durable revisions | Full BOM semantics, more typed technical requirements, legacy-v4 import and production identity/recovery |
+| Product | Worker-parsed OBJ/STL with explicit units, retained original bytes/hash, recoverable display offset, optional original flange; earlier shell/photo demo preserved | Rich feature/ejection frames, new-workspace photo flow, STEP/B-rep and supported CAD operations |
+| Workspace | Original dark React/TypeScript CAD ribbon/icons, ten-module rail, persistent Three.js canvas/camera/selection, right copilot, collapsible/resizable panels and revision drawer | Run-driven timeline/charts and broader usability/accessibility evaluation |
+| Mould | Example requirements only | Supported cavity/envelope alternatives, ejection/feed/cooling configuration and declared checks; later verified CAD families |
+| Cell | Press catalogue fields | Actual press/mould/XYZ robot/end-effector/belt/auxiliary frames, capabilities and paths |
+| Process/economics | No complete time-based or cost engine | L0 events/inventories/resources, shared-clock playback, capacity/cost accounting; later L1/L2 |
+| Data/ML | Separate NIPALS/preprocessing/monitoring/plots library | Correctness fixes/reference tests, admitted real datasets, PLS and application integration |
+| AI | Actual pinned Qwen worker reused in the new workspace; server-validated commercial previews, exact-effect approval, monotonic revisions, provenance and durable undo; non-mutating conversation | Further typed tools, broader accuracy/domain/language evaluation and production inference policy |
+| Security/distribution | Loopback-only API, local principal boundary, Host/origin/write-token checks, strict bounded requests, bounded mesh worker, transactional failure/replay tests, pinned/hash-locked dependencies and browser notices | Native advisory triage, production authentication/ACL/isolation, restore/recovery, release-specific rights/notice review and hosted application |
+| Languages/licence | English source policy; EN/IT/FR/ES UI with English default; MIT | Preserve these while addressing legacy Italian Python comments when code is touched; no relicense approved |
 
-The original PCA Q-limit normalisation issue found during onboarding must be reproduced and corrected before production recommendations.
+## Evidence refreshed on 17 October
 
-## Current increment: browser AI and CAD-style demo
+New increment: 12 API/storage tests; TypeScript/build; Chromium end-to-end checks across two generic projects, source units and original bytes, persistent scene/camera/selection/chat, four languages, actual process restart, mobile layout and the real AI → server preview → approval → revision path. An actual conversation leaves the database unchanged. Full results, build limits and packaging/startup evidence are [recorded separately](../verification/WORKSPACE_2026-10-17.md). New `web` npm graph audit reports zero advisories; this does not clear the reused legacy/native graph or constitute Python CVE scanning.
 
-This contributes an experimental client-side slice of P1/B04. It verifies browser inference for one commercial update, but does not pass B04 as a whole or complete P1: B01 generic projects, B02 server data and B03 commercial application remain outstanding. Existing shell defaults are demo limitations, not the platform specification.
+28 unit tests, development Chromium, reproducible standalone build (identical to the tracked HTML), offline core standalone workflows, and actual self-hosted-assets Chromium WASM AI all pass. The real model performs a reviewed demand/market update with persistence and a non-mutating material conversation. These are narrow software/inference checks, not complete platform acceptance, universal AI accuracy or engineering validation. Default remote browser asset downloads have a previously diagnosed managed-Chromium certificate-store limitation; they are not reclassified as passed. Direct `file://` opening is not tested by the managed browser.
 
-The AI is an actual model pipeline, not the deterministic Commands parser. No hosted inference key is needed. Loading is explicit, and failed loading is shown honestly. Structured changes require review/apply, current project revision and valid geometry. Accepted values retain model provenance. Chat is session-only.
+New numerical comparison reproduced covariance-scale defects in both T² and Q limits, a Q residual-spectrum fallback and a wholly missing sample reported with zero indices/no flag. Do not integrate trusted recommendations until I00-N correction/reference gates pass. `npm audit` reports six affected dependency entries (two high/four moderate), including inherited native chains; reachability/remediation is open. `pip check` passes but Python CVE scanning is unrun.
 
-FreeCAD 1.1.4 was researched as an open-source UI reference. The new light workbench includes an explorer, contextual properties, standard views, real wireframe/grid/fit controls and Lucide SVG icons. FreeCAD code/kernel/assets are not embedded. Supported geometry is unchanged.
+Four requested public dataset records are blocked at the primary metadata hosts by the egress proxy; no file/licence/DOI/author is assumed and no data is imported. Dataset D remains excluded under the supplied embargo restriction. MIT and existing application/dependency files are preserved. See the [full current-state report](../architecture/CURRENT_STATE.md) and [verification evidence](../verification/AUDIT_2026-10-17.md).
 
-Verification: 28 unit checks pass, covering geometry/import/localisation plus strict AI proposals, atomic application, provenance, stale revisions and worker state handling. Worker unit checks use a test double and do not demonstrate model inference. Core Chromium development and standalone checks cover four languages, user/pending input, actual WebGL and files; packaged core interactions run with networking disconnected. The real self-hosted-assets check passes actual Chromium WASM inference, review/apply and persistence. The remote-host route is blocked by the cloud Chromium certificate store; this is distinct from the successful same-origin test. See [precise evidence and access requirements](../../prototype/OPEN_SOURCE.md).
+## Next work
 
-The ZIP and preview are refreshed on the development branch; main is unchanged. Delivery links and remote archive bytes are checked when publishing the increment. This is not a hosted platform release.
+Close the remaining [I01b](../planning/IMPLEMENTATION_PLAN.md) migration/source/evaluation and hosted-security gates as appropriate; the next engineering engine is **I02: restricted mould cavity/envelope alternatives and preliminary press checks**. Follow with I03 event/resources/material inventory/robot poses and I04 shared-clock playback/capacity/costs. The new module rail exposes planned modules without pretending their engines exist.
 
-The legacy schema and example are documented in [archive/DEMO_02_SPECIFICATION.md](archive/DEMO_02_SPECIFICATION.md) and [REFERENCE_CASE.md](REFERENCE_CASE.md). Neither defines mandatory fields for new platform projects.
+The first complete eleven-step flow spans I01a–I04 with supported meshes, explicitly preliminary mould/press checks and a real configured L0 engine. STEP/kernel families and L1/L2 remain separate gates; a successful first flow does not validate polymer physics or arbitrary mould design. Early online/private deployment additionally requires the security/rights/access/recovery gates and explicit authorisation.
 
-## Next implementation
-
-P1/B01–B04: generic project data → API/server storage → commercial chat UI → evaluated open-source AI tools, reusing the browser experiment where appropriate. The completion evidence is A01–A05 and A14 from [BACKLOG.md](BACKLOG.md). Hosting decisions follow a concrete runnable deployment.
+The old schema/example is [archived](archive/DEMO_02_SPECIFICATION.md) and [recorded as a reference case](REFERENCE_CASE.md), not the global product contract. The legacy ZIP remains the previously published demo; this audit does not redistribute it.

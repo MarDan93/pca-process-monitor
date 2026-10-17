@@ -1,5 +1,7 @@
 # Online platform user experience
 
+Current design authority (2026-10-17): [ORIGINAL_UI_SPEC.md](../design/ORIGINAL_UI_SPEC.md), two independent studies with Process spine selected. Require original dark design, persistent 3D/copilot and collapsible/resizable panels; this document retains earlier workflow context, not an implemented UI claim.
+
 Updated 2026-10-16. Start from the customer request and develop technical/economic production scenarios. Geometry is a project view; the initial home prioritises enquiry, market, demand and objectives.
 
 ## Start a project

@@ -1,0 +1,11 @@
+{
+  "image": "sha256:4e25513edd470dd71d9c41eba695da08b4712fabaf64ff156314a849d9a1eccf",
+  "mode": "hosted",
+  "memory_budget_mib": 512,
+  "cpu_budget": 0.5,
+  "application_uid": 10001,
+  "authenticated_commercial_flow": true,
+  "original_asset_persistence": true,
+  "replacement_container_restores_data_and_session": true,
+  "logout_revokes_access": true
+}

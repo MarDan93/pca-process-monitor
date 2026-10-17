@@ -1,0 +1,36 @@
+// Original line glyphs, drawn for this workspace. No competitor artwork.
+const paths: Record<string, string> = {
+  brief: 'M5 3h10l4 4v14H5z M14 3v5h5 M8 12h8 M8 16h6',
+  product: 'm12 2 9 5v10l-9 5-9-5V7z M3 7l9 5 9-5 M12 12v10',
+  mould: 'M3 4h7v16H3z M14 4h7v16h-7z M10 8h4 M10 16h4',
+  press: 'M3 3h18 M5 3v18 M19 3v18 M3 21h18 M8 7h8v3H8z M8 14h8v3H8z M12 10v4',
+  automation: 'M3 21h18 M7 21v-5l4-4-3-5 4-4 7 4-3 4 M7 16l4 2 5-7 M16 11l3 2 2-3',
+  material: 'M8 3h8 M10 3v6l-6 10q-1 2 2 2h12q3 0 2-2L14 9V3 M7 15h10 M9 18h1 M14 17h1',
+  process: 'M3 8h4v8H3z M10 4h4v16h-4z M17 10h4v4h-4z M7 12h3 M14 12h3',
+  quality: 'm4 5 8-3 8 3v7q0 6-8 10-8-4-8-10z m4 6 3 3 5-6',
+  costs: 'M4 21V11h4v10 M10 21V7h4v14 M16 21V3h4v18 M2 21h20',
+  reports: 'M5 3h14v18H5z M8 7h8 M8 11h8 M8 15h3 M14 15h2 M8 18h8',
+  chat: 'M3 4h18v13H9l-6 4z M7 8h10 M7 12h7',
+  spark: 'm12 2 2.5 7.5L22 12l-7.5 2.5L12 22l-2.5-7.5L2 12l7.5-2.5z',
+  import: 'M12 3v12 m-5-5 5 5 5-5 M4 15v6h16v-6',
+  plus: 'M12 4v16 M4 12h16',
+  fit: 'M8 3H3v5 M16 3h5v5 M3 16v5h5 M21 16v5h-5 M8 8h8v8H8z',
+  grid: 'M3 3h18v18H3z M9 3v18 M15 3v18 M3 9h18 M3 15h18',
+  wire: 'M4 5h12v12H4z m0 0 4-3h12v12l-4 3 M16 5l4-3 M16 17V5 M4 17l4-3 M8 2v12h12',
+  eye: 'M2 12q10-14 20 0-10 14-20 0 M15 12a3 3 0 1 0-6 0 3 3 0 0 0 6 0',
+  undo: 'M4 4v7h7 M4 11q5-9 12-5 9 7-1 14',
+  history: 'M4 5v6h6 M4 11a8 8 0 1 1 2 7 M12 7v5l4 2',
+  save: 'M4 3h13l4 4v14H3V3z M7 3v6h10V3 M7 21v-8h10v8',
+  check: 'm4 12 5 5L20 6',
+  arrow: 'M4 12h16 m-6-6 6 6-6 6',
+  chevron: 'm9 5 7 7-7 7',
+  close: 'm5 5 14 14 M19 5 5 19',
+  panel: 'M3 4h18v16H3z M15 4v16 M6 8h6 M6 12h6',
+  play: 'm8 4 12 8-12 8z',
+  lock: 'M5 10h14v11H5z M8 10V6a4 4 0 0 1 8 0v4 M12 14v3',
+  folder: 'M3 6h7l2 3h9v12H3z M3 6V3h7l2 3h9v3',
+  download: 'M12 3v12 m-5-5 5 5 5-5 M4 18v3h16v-3',
+};
+export function Icon({ name, size = 20 }: { name: string; size?: number }) {
+  return <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d={paths[name] || paths.product}/></svg>;
+}

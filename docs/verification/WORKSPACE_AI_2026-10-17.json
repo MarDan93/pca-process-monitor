@@ -1,0 +1,10 @@
+{
+  "model": "onnx-community/Qwen2.5-0.5B-Instruct",
+  "revision": "22942cb7d7ba4cc81bb4673549ca4d4614469b5e",
+  "generation_ms": 32659,
+  "actual_browser_inference": true,
+  "preview_before_write": true,
+  "approved_revision": 5,
+  "conversation_nonmutating": true,
+  "answer": "To select a polymer grade for your mould, we need to know the specific requirements of your mould design, such as the required mechanical properties (e.g., tensile strength, elongation) and environmental factors like temperature and humidity control. Additionally, we should consider the compatibility of the chosen polymer with the materials used in your moulds, which may include plastics, metals, or other materials that can affect the performance and durability of the mould. It's also important to ensure that the selected polymer meets the requirements of your mould design specifications."
+}

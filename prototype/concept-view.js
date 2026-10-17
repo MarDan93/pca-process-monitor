@@ -1,10 +1,12 @@
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 
-export function mountConceptViewer(container, concept, { finish = 'unspecified' } = {}) {
+/** @type {(name: string | null) => void} */
+const ignoreSelection = () => {};
+export function mountConceptViewer(container, concept, { finish = 'unspecified', dark = false, onSelection = ignoreSelection } = {}) {
   const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false });
   renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
-  renderer.setClearColor(0xd9e1eb);
+  renderer.setClearColor(dark ? 0x151f2b : 0xd9e1eb);
   renderer.outputColorSpace = THREE.SRGBColorSpace;
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
   const canvas = renderer.domElement;
@@ -32,8 +34,8 @@ export function mountConceptViewer(container, concept, { finish = 'unspecified' 
   }
   const group = new THREE.Group();
   scene.add(group);
-  const material = new THREE.MeshPhysicalMaterial({ color: 0xadc2dc, metalness: 0.12, roughness: finish === 'glossy' ? 0.2 : 0.48, clearcoat: finish === 'glossy' ? 1 : 0, side: concept.model_kind === 'imported_mesh' ? THREE.DoubleSide : THREE.FrontSide });
-  const edgeMaterial = new THREE.LineBasicMaterial({ color: 0x334b68, transparent: true, opacity: 0.7 });
+  const material = new THREE.MeshPhysicalMaterial({ color: dark ? 0x9cb9d1 : 0xadc2dc, metalness: dark ? 0.32 : 0.12, roughness: finish === 'glossy' ? 0.2 : 0.48, clearcoat: finish === 'glossy' ? 1 : 0, side: concept.model_kind === 'imported_mesh' ? THREE.DoubleSide : THREE.FrontSide });
+  const edgeMaterial = new THREE.LineBasicMaterial({ color: dark ? 0x233b51 : 0x334b68, transparent: true, opacity: 0.7 });
   const meshes = [];
   for (const component of concept.components) {
     const indexed = new THREE.BufferGeometry();
@@ -49,21 +51,45 @@ export function mountConceptViewer(container, concept, { finish = 'unspecified' 
     group.add(mesh);
     meshes.push(mesh);
   }
-  const grid = new THREE.GridHelper(extent * 5, 40, 0x9dabbc, 0xc1cad5);
+  const grid = new THREE.GridHelper(extent * 5, 40, dark ? 0x3c5267 : 0x9dabbc, dark ? 0x243547 : 0xc1cad5);
   grid.rotation.x = Math.PI / 2;
   grid.position.z = -extent * 0.16;
   scene.add(grid);
   let disposed = false;
+  let selection = null;
+  const selectionBox = new THREE.Box3Helper(new THREE.Box3(), 0x69d5c5);
+  selectionBox.visible = false;
+  scene.add(selectionBox);
+  function select(name) {
+    selection = meshes.find((mesh) => mesh.name === name) ?? null;
+    selectionBox.visible = Boolean(selection);
+    if (selection) selectionBox.box.setFromObject(selection);
+    container.dataset.selection = selection?.name ?? '';
+    onSelection(selection?.name ?? null);
+    draw();
+  }
+  const raycaster = new THREE.Raycaster();
+  let pointerStart;
+  function pointerDown(event) { pointerStart = [event.clientX, event.clientY]; }
+  function pointerUp(event) {
+    if (!pointerStart || Math.hypot(event.clientX - pointerStart[0], event.clientY - pointerStart[1]) > 4) return;
+    const bounds = canvas.getBoundingClientRect();
+    raycaster.setFromCamera(new THREE.Vector2((event.clientX - bounds.left) / bounds.width * 2 - 1, -(event.clientY - bounds.top) / bounds.height * 2 + 1), camera);
+    select(raycaster.intersectObjects(meshes, false)[0]?.object.name);
+  }
+  canvas.addEventListener('pointerdown', pointerDown);
+  canvas.addEventListener('pointerup', pointerUp);
   function draw() {
     if (disposed) return;
     renderer.render(scene, camera);
     container.dataset.renderStatus = 'ready';
     container.dataset.drawCalls = String(renderer.info.render.calls);
+    container.dataset.camera = JSON.stringify([...camera.position.toArray(), ...controls.target.toArray()]);
   }
   function setView(view = 'iso') {
     const directions = { iso: [1.15, -1.3, 1.2], front: [0, -0.001, 2.1], rear: [0, -0.001, -2.1], side: [-2.1, 0.2, 0.3] };
     const direction = new THREE.Vector3(...(directions[view] ?? directions.iso));
-    const sphere = new THREE.Box3().setFromObject(group).getBoundingSphere(new THREE.Sphere());
+    const sphere = meshes.length ? new THREE.Box3().setFromObject(group).getBoundingSphere(new THREE.Sphere()) : new THREE.Sphere(new THREE.Vector3(0, 0, 0), extent * 0.5);
     const verticalHalf = THREE.MathUtils.degToRad(camera.fov / 2);
     const horizontalHalf = Math.atan(Math.tan(verticalHalf) * camera.aspect);
     const distance = sphere.radius / Math.sin(Math.min(verticalHalf, horizontalHalf)) * 1.08;
@@ -88,6 +114,7 @@ export function mountConceptViewer(container, concept, { finish = 'unspecified' 
   setView();
   return {
     setView,
+    select,
     setWireframe(value) { material.wireframe = value; material.needsUpdate = true; container.dataset.wireframe = String(value); draw(); },
     setGridVisible(value) { grid.visible = value; container.dataset.gridVisible = String(value); draw(); },
     setTransparent(value) {
@@ -100,16 +127,20 @@ export function mountConceptViewer(container, concept, { finish = 'unspecified' 
     setExploded(value) {
       const gap = value && concept.components.length === 2 ? extent * 0.18 : 0;
       meshes.forEach((mesh, i) => { mesh.position.z = i === 0 ? gap / 2 : -gap / 2; });
+      if (selection) selectionBox.box.setFromObject(selection);
       draw();
     },
     dispose() {
       disposed = true;
       observer.disconnect();
       controls.dispose();
+      canvas.removeEventListener('pointerdown', pointerDown);
+      canvas.removeEventListener('pointerup', pointerUp);
       scene.traverse((object) => { object.geometry?.dispose(); });
       material.dispose();
       edgeMaterial.dispose();
       grid.material.dispose();
+      selectionBox.material.dispose();
       renderer.dispose();
       renderer.forceContextLoss();
     },

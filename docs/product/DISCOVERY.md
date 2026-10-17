@@ -79,3 +79,10 @@ Implement P1/B01–B04: generic commercial brief, shared chat/properties and ser
 ## Working rules
 
 Retain confirmed requirements without repeatedly asking them. Mark assumptions and missing information explicitly. Keep measured production data separate from examples/simulation. Use verifiable tools for geometry/calculations. Compare alternative scenarios and retain versions/sources. Hosting, hardware, AI model and budget remain concrete deployment decisions, not reasons to postpone independent implementation.
+
+
+## 2026-10-17 — Master-request audit baseline
+
+The new master request makes original dark design, persistent 3D/copilot, collapsible/resizable panels, authorised typed AI operations, public/permitted validation data and explicit legal/security gates authoritative. It supersedes any interpretation of the earlier CAD-style request as a competitor clone. Retain the viewer/geometry/import/AI work and EN/IT/FR/ES; do not restart the project or relicense MIT automatically. No push, merge, publication, protected binary investigation or employer/private validation data is authorised.
+
+The [audit index](../README.md) links the seven requested documents. I01a generic projects/brief/approved revisioned operations is the next concrete increment; the complete eleven-step L0 flow spans I01a–I04. STEP/B-rep/kernel families and physical validation remain explicit later gates. Public dataset metadata is blocked and no record is admitted; D remains excluded under the supplied embargo. Audit findings include PCA scale/missingness defects and reported native dependency advisories. This is documentation/evidence, not implementation of those future engines or a compliance/security certificate.

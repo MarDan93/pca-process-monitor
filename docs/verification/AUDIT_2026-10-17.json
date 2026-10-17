@@ -1,0 +1,83 @@
+{
+  "audit_id": "AUD-2026-10-17",
+  "audit_date": "2026-10-17",
+  "user_timezone": "Europe/Rome",
+  "baseline_commit": "0fe5efe3e626edf7c93138efa83be821bfcea8a0",
+  "application_modified": false,
+  "push_merge_publication_performed": false,
+  "unit_tests": {
+    "passed": 28,
+    "failed": 0
+  },
+  "browser_source": "passed",
+  "standalone_build_identical_to_tracked_html": true,
+  "standalone_offline_core": "passed",
+  "real_browser_ai": {
+    "passed": true,
+    "runtime": "Chromium WebAssembly, one thread",
+    "self_hosted_assets": true,
+    "reply": "YouSet annual_volume to 80000 and market to Appliances. Reply briefly in English.AssistantReview the proposed demand and market.",
+    "generation_ms": 36300
+  },
+  "real_browser_conversation": "Please provide the specific material grade details needed for ABS, PC/ABS, PP, and PE materials.",
+  "pca_numerical_observations": {
+    "audit_id": "AUD-2026-10-17",
+    "data": "repository synthetic continuous generator, seed 42; no measured/private data",
+    "n_calibration": 300,
+    "retained_components": 2,
+    "fitted_components": 6,
+    "all_converged": true,
+    "T2_current_max": 0.03314704417765954,
+    "T2_limit_current": 6.0926516277654486,
+    "T2_reference_max": 9.910959881604466,
+    "T2_reference_to_current_median_ratio": 299.0000056562014,
+    "T2_expected_covariance_scale_factor": 299,
+    "Q_current_max": 13.060295995625296,
+    "Q_limit_current": 1036.0966428222048,
+    "Q_limit_rescaled_full_spectrum": 3.465206163284966,
+    "Q_reference_max_abs_difference": 1.062110030236596e-05,
+    "T2_normalized_reference_max_abs_difference": 7.5969816695220516e-06,
+    "current_injected_thermal_spike_flags": 0,
+    "Q_rescaled_injected_thermal_spike_flags": 11,
+    "Q_limit_two_components_fitted": 3.746763842783964e-06,
+    "all_missing_sample": {
+      "T2": [
+        0.0
+      ],
+      "Q": [
+        0.0
+      ],
+      "anomaly_any": [
+        false
+      ]
+    },
+    "rmsecv_example": [
+      1.9700617870468198,
+      0.7991708191829064,
+      0.5450615595086409
+    ],
+    "rmsecv_selected_components": 3,
+    "interpretation": "Diagnostic comparison only. Rescaled values are not deployed fixes or experimental validation. Inspect outputs again after any correction."
+  },
+  "python_pip_check": "passed",
+  "python_cve_scan": "not_run",
+  "npm_audit": {
+    "info": 0,
+    "low": 0,
+    "moderate": 4,
+    "high": 2,
+    "critical": 0,
+    "total": 6
+  },
+  "default_remote_browser_ai": "previously_blocked_certificate_store_not_retested",
+  "public_datasets": "primary_metadata_proxy_403_none_admitted",
+  "pinned_model_sha256_checked": "09235a3b1c135cd04ef570e5053b5c079e028078a2cc5f76ba6a251e91bf3296",
+  "documentation_validation": {
+    "required_documents": 7,
+    "relative_links_checked": 125,
+    "json_parse": "passed",
+    "protected_implementation_paths_unchanged": true,
+    "baseline_head_unchanged": true,
+    "original_design_board": "both variants and controls passed"
+  }
+}

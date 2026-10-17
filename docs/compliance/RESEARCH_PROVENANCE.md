@@ -1,0 +1,51 @@
+# Research provenance and independent implementation log
+
+Audit `AUD-2026-10-17`. Scope authorised by the user's master request: inspect the existing development branch, public open-source sources/licences and the named dataset metadata; produce an original architecture/UI and implementation plan. No permission is inferred for proprietary binaries/assets, employer data, paywalls, embargoed files, external messages, push, merge or publication.
+
+This ledger records observations and limits, not a professional legal clearance. Machine-readable URLs/statuses/hashes are in [RESEARCH_PROVENANCE.json](RESEARCH_PROVENANCE.json). Downloaded public reference texts/metadata remain under ignored `.cache/audit-2026-10-17`; no target application binaries or private datasets were acquired.
+
+## Research records
+
+| ID | Source / version | Licence or rights evidence | Technique and actual result | Reuse / limitation |
+| --- | --- | --- | --- | --- |
+| OWN-01 | [Project source](https://github.com/MarDan93/pca-process-monitor), `0fe5efe3e626edf7c93138efa83be821bfcea8a0` | Existing MIT; owner authorised repository audit; contribution ownership not proved by Git labels | Read tracked specification/architecture/simulation/status/roadmap, source/manifests/tests and selected history; run existing checks and independent synthetic numerical comparison | Reuse current code within existing terms; preserve MIT; record gaps instead of rewriting/publishing |
+| REA-01 | [README](https://github.com/morluto/rea/blob/f1edf0da0c6c897e68664a6ab2637f8f33368bf8/README.md), package 6.5.0 and MCP contracts | [MIT licence](https://github.com/morluto/rea/blob/f1edf0da0c6c897e68664a6ab2637f8f33368bf8/LICENSE), copyright 2026 morluto | Public HTTPS source/metadata reads and `git ls-remote` to pin HEAD. No installation, MCP registration, provider launch or target analysis | Evidence-oriented workflow is useful; ordinary source inspection is sufficient here. No REA code/assets copied. Framework licence does not authorise analysis of arbitrary targets |
+| UI-01 | [FreeCAD 1.1.4 licence](https://github.com/FreeCAD/FreeCAD/blob/1.1.4/LICENSE); historical demo reference | LGPL-2.1 text inspected; original FreeCAD app/assets not redistributed | Licence/source-document observation only; existing demo/history reviewed | Historical conventional CAD reference, not the new design specification; no competitor screenshot/icon tracing |
+| UI-02 | Existing Three.js/Lucide browser dependencies | Installed MIT/ISC texts and pinned manifest/lockfile | Inspect imports, licences and build inclusion; rerun actual viewer/ribbon tests | Keep existing lawful library use; original future module icons/layout are authored separately |
+| CAD-01 | [OCCT LGPL-2.1](https://github.com/Open-Cascade-SAS/OCCT/blob/master/LICENSE_LGPL_21.txt) and [exception v1.0](https://github.com/Open-Cascade-SAS/OCCT/blob/master/OCCT_LGPL_EXCEPTION.txt) | Official licence/exception texts | Public source-file reads, hashes retained | Candidate only; exact release/native/linking/distribution review and execution benchmark required |
+| CAD-02 | [CadQuery licence](https://github.com/CadQuery/cadquery/blob/master/LICENSE), [build123d licence](https://github.com/gumyr/build123d/blob/dev/LICENSE) and PyPI metadata | Apache-2.0 wrapper texts; underlying OCCT/OCP is separate | Public source/metadata inspection, no installation/code reuse | Compare wrappers on identical permitted STEP fixtures; no generic kernel capability claimed |
+| SIM-01 | PyPI metadata for SimPy, CoolProp, PyBullet, pymoo, Pyomo, scikit-learn | MIT / MIT / zlib / Apache-2.0 / BSD-3-Clause / BSD-3-Clause metadata respectively | Public version/licence/project-link metadata reads | Candidates, not executed or adopted engines. Fluid properties are not polymer data; optimisation/robotics libraries do not supply physics/limits automatically |
+| SIM-02 | [OpenFOAM COPYING](https://github.com/OpenFOAM/OpenFOAM-dev/blob/master/COPYING) | GPL v3 text | Public read only | Later optional solver candidate; no injection-specific installation/reference verified |
+| SIM-03 | [Elmer README](https://github.com/ElmerCSC/elmerfem/blob/devel/README.adoc) and [licence policy](https://github.com/ElmerCSC/elmerfem/blob/devel/license_texts/ElmerLicensePolicy.md) | Mixed GPL/LGPL; policy contains inconsistent version wording | Public document reads; guessed root `LICENSE`/`COPYING` paths returned 404, resolved to linked policy | Exact module licence/header review remains open. No suite-wide clearance or integration |
+| AI-01 | [Upstream Qwen licence](https://huggingface.co/Qwen/Qwen2.5-0.5B-Instruct/raw/main/LICENSE) and [pinned conversion metadata](https://huggingface.co/api/models/onnx-community/Qwen2.5-0.5B-Instruct/revision/22942cb7d7ba4cc81bb4673549ca4d4614469b5e) | Upstream Apache-2.0 text; conversion metadata has no licence field or licence/notice file | Public metadata/licence read; existing cached actual model tested through existing browser worker. Selected weights previously verified against upstream SHA-256 | Local inference evidence, not full open-source AI provenance or conversion redistribution clearance. Future hosting needs a complete rights/notice record; a permitted own conversion from official weights is an alternative to investigate |
+| SEC-01 | npm lock/installed manifests and `npm audit --json` | Package licence metadata, registry advisory records | Read local manifests/installed metadata and invoke read-only registry audit; no automatic package upgrade | Six affected dependency entries, including inherited reports. Reachability/native artefact obligations remain separate |
+| SEC-02 | [OWASP ASVS 5.0.0](https://github.com/OWASP/ASVS/blob/v5.0.0/README.md) | Observed CC BY-SA 4.0 documentation licence | Public official tagged README read; original security requirements/mapping written | Reference, not copied standard text or ASVS certification |
+| SEC-03 | [OWASP historical pointer](https://github.com/OWASP/www-project-top-10-for-large-language-model-applications), [active 2026 source](https://github.com/GenAI-Security-Project/GenAI-LLM-Top10) | Observed CC BY-SA 4.0; active README identifies 2026 release and ordering | Followed official move/current-release pointer; canonical final-folder README path returned 404, active README is the ordering evidence | Original risk mapping uses 2026 numbering; full requirement-by-requirement assessment is future work |
+| DATA-A | [Zenodo 22967320](https://zenodo.org/records/22967320) | Unverified | Primary API metadata request denied by proxy tunnel 403; no files | Supplied planning description remains a claim; not admitted |
+| DATA-B | [T&F Figshare 29039676](https://tandf.figshare.com/articles/dataset/29039676) | Unverified | Primary Figshare API metadata request denied by proxy tunnel 403; no files | No measured/simulated/rights assumption; not admitted |
+| DATA-C | [Zenodo 20744054](https://zenodo.org/records/20744054) | Unverified | Primary API metadata request denied by proxy tunnel 403; no files | No conventional-process/coverage assumption; not admitted |
+| DATA-D | [Zenodo 20309380](https://zenodo.org/records/20309380) | Unverified plus user-supplied embargo restriction through 2027-12-31 | Metadata-only request denied; **no file attempt** | Excluded under the user's restriction until actual release/rights are checked; no date-based automatic permission |
+| SYN-01 | Repository `data/generate_datasets.py`, seed 42; original analytic fixtures | Existing project MIT for code; explicitly synthetic data | Independent PCA/SVD comparison and missingness/threshold probes | Numerical evidence only; no experimental process calibration or employer data |
+| DESIGN-01 | `ORIGINAL_UI_SPEC.md` and `ORIGINAL_UI_VARIANTS.html` | Original project-authored design text, CSS and vector paths | Two schematic layout alternatives derived from this user's requirements; selected Process spine | No CAD/AI/simulation running in the board. Only variant/panel layout controls work; no competitor assets/copied UI or engine claims |
+
+Public source inspection is scoped to the named material. The licence of a framework/library does not override a target application's contract or the rights of assets/data found with it. If a target lacks a clear permitted basis, do not inspect/extract it; use a documented open-source/independent alternative.
+
+## Key immutable evidence
+
+REA README SHA-256: `d138aa55fb20e2d7fa63a0e4f811b93a0c451db604c167e0b0c3a8e6fd9eea11`.
+
+REA licence SHA-256: `798f9e4d18e49b30bf2f12696c8ced73dc4e1413da375a333d01281543a1ea8b`.
+
+Qwen ONNX selected file SHA-256: `09235a3b1c135cd04ef570e5053b5c079e028078a2cc5f76ba6a251e91bf3296` (pinned conversion revision above). Source text/metadata hashes for the other successful reads are in the JSON ledger. Mutable `main`/`master` licence/metadata URLs are identified by retrieval date/hash; those observations are not version pins for future installation.
+
+Initial full PyPI metadata reads for NumPy/SQLAlchemy exceeded the chosen read size and produced truncated JSON. Specific-version metadata was then read successfully; this is recorded rather than reclassified as a missing package. No unverified source was executed.
+
+## Independent-design process record
+
+1. Observe our source and permitted public documentation/metadata; preserve exact scope/results/limitations.
+2. Express neutral requirements: persistent 3D, generic projects, approved typed operations, one run clock and verifiable model/data provenance.
+3. Author two original workspace studies and a modular architecture without competitor screenshots or protected source/assets.
+4. Retain current licensed implementations; propose incremental adapters/new domain services. No application rewrite or proprietary reverse engineering occurs in this audit.
+5. Rerun regression/actual inference checks, reproduce scientific defects against a separate SVD reference and record open legal/security/data gates. Future implementation must add independent domain/engine tests, not claim this documentation already passes them.
+
+The process is documented independent development, not a legal assertion of a formally separated two-team clean room. No public release, push, merge, paid commitment or external message was made.

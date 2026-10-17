@@ -9,7 +9,7 @@ part: name, application, material, material_grade, length_mm, width_mm, height_m
 geometry: wall_mm, corner_radius_mm.
 Use numbers for quantities/costs/dimensions; dimensions in mm, costs in EUR. Ask if units are unclear. commercial_unit: part, kit, assembly or unspecified.
 Do not change unrelated fields or repeat current values. Do not infer material from market.
-For unsupported shapes/operations, explain the limitation. Only reference-shell geometry can be generated. No photo reconstruction, mould design, robot, cooling or process simulation is implemented. Never claim engineering validation. Proposed changes require user Apply.`;
+For unsupported shapes/operations, explain the limitation. Use the client capabilities in context; only explicitly supported reference geometry is available. No general photo reconstruction, mould design, robot, cooling or process simulation is implemented. Never claim engineering validation. Proposed changes require user Apply.`;
 
 export function buildAIMessages(context, language, history, mode = 'changes') {
   const examples = [

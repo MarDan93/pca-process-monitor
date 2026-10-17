@@ -1,8 +1,8 @@
 # Injection moulding feasibility and simulation platform
 
-Updated 2026-10-16. **Customer-first, online, generic products and open-source AI across modules.** Chat and contextual properties operate on the same project.
+Updated 2026-10-17. Read the [seven-document audit and implementation index](../README.md) for the latest current/target state and gates. **Customer-first, online, generic products and open-source AI across modules.** Chat and contextual properties operate on the same project.
 
-**Current position: P0 documentation complete; P1 incomplete; a browser-AI demo experiment is implemented, with browser inference verified with self-hosted assets.** The existing demo is a local geometry/requirements experiment. [Implementation status](IMPLEMENTATION_STATUS.md) and [roadmap](ROADMAP.md) are the progress references.
+**Current position: I01a and a bounded part of I01b run locally; P1 remains incomplete as an online milestone.** The new [CAD-style workspace](../../web/README.md) has generic server projects, commercial preview/approval/undo, original mesh persistence, a persistent scene and a right copilot tested with actual browser inference. The earlier shell-specific demo is preserved. [Implementation status](IMPLEMENTATION_STATUS.md) and [roadmap](ROADMAP.md) distinguish implemented features from upcoming mould/cell/process engines.
 
 ```mermaid
 flowchart LR

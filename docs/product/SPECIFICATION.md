@@ -1,6 +1,6 @@
-# Platform specification — revision 4
+# Platform specification — revision 5
 
-Updated 2026-10-16. This is the target product specification. [Implementation status](IMPLEMENTATION_STATUS.md) records what actually works; [the roadmap](ROADMAP.md) records delivery order.
+Updated 2026-10-17 after the master-request audit. This is the target product specification. [Implementation status](IMPLEMENTATION_STATUS.md) records what actually works; [the roadmap](ROADMAP.md) records delivery order.
 
 ## Purpose and boundaries
 
@@ -20,6 +20,14 @@ Models need functional detail sufficient for decisions about orientations, strok
 - Every value records units, source, revision and whether it was provided, extracted, assumed, estimated, simulated or measured. Requested, proposed and verified are different states.
 - Missing inputs block only dependent operations. They are not silently filled with invented measurements.
 - Changes mark dependent results as requiring recalculation. Historical results retain their original inputs.
+
+## Original workspace, authorised operations and validation gates
+
+The [current-state audit](../architecture/CURRENT_STATE.md), [target architecture](../architecture/TARGET_ARCHITECTURE.md), [original UI specification](../design/ORIGINAL_UI_SPEC.md), [threat model](../security/THREAT_MODEL.md) and [increment plan](../planning/IMPLEMENTATION_PLAN.md) make these requirements concrete. The interface must be original: one persistent 3D scene across modules, an always-accessible copilot, collapsible/resizable context panels and a shared-clock lower results/timeline drawer. Choose the dark Process spine variant from two original studies; do not clone a competitor or expose unimplemented commands as functioning.
+
+AI tools use validated/unit-aware/authorised inputs, exact effect previews, explicit user approval, atomic versioned execution, provenance and compensating undo. No free execution of model-generated code or arbitrary commands. Public demo and private projects are isolated; unbounded unauthenticated numerical endpoints are prohibited. New dependencies/engines need reproducible install, representative execution, API/licence checks, references and measured resource limits before adoption.
+
+Use only permitted development/validation data with separate measured/simulated/synthetic/assumed status. The four supplied public dataset candidates are unverified and not admitted; D is excluded under the supplied embargo. No employer/private data, protected binary investigation or legal/security/engineering-certification claim is authorised. Preserve the current MIT licence; investigate alternatives including AGPL without changing it automatically. No push, merge or publication without explicit approval.
 
 ## M01 — Customer, market and commercial feasibility
 
@@ -95,6 +103,6 @@ Object references are stable IDs. A visual exploded view is not an operational p
 
 ## Delivery and acceptance
 
-The first application increment is a generic commercial brief through chat and contextual properties, with server persistence and no implicit sample data. The first simulation increment links imported geometry, simplified mould/cell models and a complete parametric sequence. Different product geometries test extensibility from the beginning.
+The first implementable increment I01a establishes generic project/commercial data, durable API/storage and approved revisioned operations; I01b integrates actual chat, contextual properties, original assets and the persistent workspace, with no implicit sample data. The first simulation increment links imported geometry, simplified mould/cell models and a complete parametric sequence. Different product geometries test extensibility from the beginning.
 
 Acceptance criteria and implementation order are defined in [BACKLOG.md](BACKLOG.md) and [ROADMAP.md](ROADMAP.md). Requirements do not imply that a module is implemented.

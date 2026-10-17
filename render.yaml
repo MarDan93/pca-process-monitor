@@ -1,0 +1,28 @@
+# Managed single-owner pilot. Activating Starter and its persistent disk incurs
+# provider charges: review the Render checkout before creating the service.
+services:
+  - type: web
+    name: mould-studio
+    runtime: docker
+    plan: starter
+    region: frankfurt
+    branch: deploy/web-pilot
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
+    healthCheckPath: /api/health
+    autoDeploy: false
+    disk:
+      name: workspace-data
+      mountPath: /var/data
+      sizeGB: 1
+    envVars:
+      - key: MOULD_RUNTIME
+        value: hosted
+      - key: MOULD_WORKSPACE_DB
+        value: /var/data/projects.sqlite3
+      - key: MOULD_ADMIN_USER
+        value: owner
+      - key: MOULD_ADMIN_PASSWORD
+        generateValue: true
+      - key: MOULD_AUTH_SECRET
+        generateValue: true

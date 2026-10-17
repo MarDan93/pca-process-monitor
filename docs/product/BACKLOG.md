@@ -1,6 +1,6 @@
 # Implementation backlog and acceptance
 
-Updated 2026-10-16. Platform criteria below are **planned, not passed tests**. P1 is incomplete. A client-side B04 AI experiment and CAD-style demo are implemented; B04 acceptance is pending broader evaluation and platform integration; actual browser inference is verified. Progress is tracked in [implementation status](IMPLEMENTATION_STATUS.md).
+Updated 2026-10-17. The [increment plan](../planning/IMPLEMENTATION_PLAN.md) now defines I01a–I08 and the first eleven-step integrated flow; platform criteria remain planned. Platform criteria below are **planned, not passed tests**. P1 is incomplete. A client-side B04 AI experiment and CAD-style demo are implemented; B04 acceptance is pending broader evaluation and platform integration; actual browser inference is verified. Progress is tracked in [implementation status](IMPLEMENTATION_STATUS.md).
 
 ## Ordered work
 
@@ -11,7 +11,7 @@ Updated 2026-10-16. Platform criteria below are **planned, not passed tests**. P
 | B03 | Customer/market home, primary chat, contextual properties | B01–B02 | Commercial brief without starting in a geometry editor |
 | B04 | Actual open-source inference and brief tools | B02–B03 | Real conversation, sources, corrections and declared model |
 | B05 | CAD/mesh input, frames and extensible features | B02, B04 | Different products and unit-aware measurements |
-| B06 | Mould alternatives, cavities/ejection and geometric cooling paths | B05 | Concepts linked to demand/product |
+| B06 | Mould alternatives, cavities/ejection and geometric cooling paths | B05a for preliminary envelopes; B05b for solid CAD/cooling checks | Concepts linked to demand/product |
 | B07 | Press/Cartesian robot/end-effector/conveyor/auxiliary cell | B05–B06 | Explicit poses, axes and available access/compatibility checks |
 | B08 | Events, inventories and L0 recipes | B06–B07 | Material-to-conveyor sequence, waiting and overlap |
 | B09 | Synchronous animation/charts and pose analysis | B08 | Reproducible timeline and explained constraints |
@@ -19,6 +19,8 @@ Updated 2026-10-16. Platform criteria below are **planned, not passed tests**. P
 | B11 | Verified reduced thermal/plasticisation models | B08–B09, references | Estimates compared to known cases within explicit limits |
 | B12 | Real data, PCA/PLS and constrained optimisation | B02, B10, datasets | Validated predictions and constrained trial plans |
 | B13 | Online deployment, access and recovery | B02; progressive | Reachable HTTPS and recoverable persistent data |
+
+B05 is split into B05a (durable mesh/files/frames and persistent scene) and B05b (verified STEP/B-rep kernel/operations). A restricted configured L0 loop can follow B05a; B05b remains required for solid-CAD claims. The first increment I01a implements data/API operations, not the whole platform.
 
 A test deployment can accompany B01–B04; detailed physics is not a prerequisite for online commercial briefing. Every future UI follows English-default EN/IT/FR/ES support and English repository conventions.
 
@@ -41,6 +43,16 @@ A test deployment can accompany B01–B04; detailed physics is not a prerequisit
 | A13 | Multicavity pickup/release on moving belt | Preserve each part identity/cavity/pose without support-transfer jumps |
 | A14 | AI unavailable or unsupported operation | Honest state and retained data; no fabricated AI/calculation |
 | A15 | Economic comparison or real-data prediction | Source, commercial unit, input/model versions and validity; visible missing/stale results |
+
+Additional master-request criteria (planned, not passed):
+
+| ID | Required evidence |
+| --- | --- |
+| A16 | Same canvas/camera/selection across modules; copilot availability; panels fully close/resize; original dark design and keyboard/locale checks |
+| A17 | Exact typed effect preview, principal/revision/digest-bound approval, replay/idempotency rejection and compensating undo |
+| A18 | Authenticated project/asset/job isolation, bounded compute/parsing, CSRF/CORS/session controls and tested recovery before online/private use |
+| A19 | Recorded dependency/model/data rights and original design provenance; no unchecked/embargoed/private validation sources or automatic relicense |
+| A20 | PCA covariance/residual/missingness reference tests and independent grouped validation before statistical production recommendations |
 
 ## Cross-module scenarios
 

@@ -1,0 +1,104 @@
+[
+  {
+    "name": "annotated-doc",
+    "version": "0.0.5",
+    "licence": "MIT",
+    "metadata_source": "https://pypi.org/pypi/annotated-doc/0.0.5/json"
+  },
+  {
+    "name": "annotated-types",
+    "version": "0.8.0",
+    "licence": "MIT",
+    "metadata_source": "https://pypi.org/pypi/annotated-types/0.8.0/json"
+  },
+  {
+    "name": "anyio",
+    "version": "4.15.1",
+    "licence": "MIT",
+    "metadata_source": "https://pypi.org/pypi/anyio/4.15.1/json"
+  },
+  {
+    "name": "certifi",
+    "version": "2026.7.22",
+    "licence": "MPL-2.0",
+    "metadata_source": "https://pypi.org/pypi/certifi/2026.7.22/json"
+  },
+  {
+    "name": "click",
+    "version": "8.5.0",
+    "licence": "BSD-3-Clause",
+    "metadata_source": "https://pypi.org/pypi/click/8.5.0/json"
+  },
+  {
+    "name": "fastapi",
+    "version": "0.143.3",
+    "licence": "MIT",
+    "metadata_source": "https://pypi.org/pypi/fastapi/0.143.3/json"
+  },
+  {
+    "name": "h11",
+    "version": "0.16.0",
+    "licence": "MIT",
+    "metadata_source": "https://pypi.org/pypi/h11/0.16.0/json"
+  },
+  {
+    "name": "httpcore",
+    "version": "1.0.9",
+    "licence": "BSD-3-Clause",
+    "metadata_source": "https://pypi.org/pypi/httpcore/1.0.9/json"
+  },
+  {
+    "name": "httpx",
+    "version": "0.28.1",
+    "licence": "BSD-3-Clause",
+    "metadata_source": "https://pypi.org/pypi/httpx/0.28.1/json"
+  },
+  {
+    "name": "idna",
+    "version": "3.20",
+    "licence": "BSD-3-Clause",
+    "metadata_source": "https://pypi.org/pypi/idna/3.20/json"
+  },
+  {
+    "name": "opentelemetry-api",
+    "version": "1.45.1",
+    "licence": "Apache-2.0",
+    "metadata_source": "https://pypi.org/pypi/opentelemetry-api/1.45.1/json"
+  },
+  {
+    "name": "pydantic",
+    "version": "2.14.1",
+    "licence": "MIT",
+    "metadata_source": "https://pypi.org/pypi/pydantic/2.14.1/json"
+  },
+  {
+    "name": "pydantic_core",
+    "version": "2.50.1",
+    "licence": "MIT",
+    "metadata_source": "https://pypi.org/pypi/pydantic_core/2.50.1/json"
+  },
+  {
+    "name": "starlette",
+    "version": "1.8.0",
+    "licence": "BSD-3-Clause",
+    "metadata_source": "https://pypi.org/pypi/starlette/1.8.0/json"
+  },
+  {
+    "name": "typing-inspection",
+    "version": "0.4.4",
+    "licence": "MIT",
+    "metadata_source": "https://pypi.org/pypi/typing-inspection/0.4.4/json"
+  },
+  {
+    "name": "typing_extensions",
+    "version": "4.16.0",
+    "licence": "PSF-2.0",
+    "metadata_source": "https://pypi.org/pypi/typing_extensions/4.16.0/json"
+  },
+  {
+    "name": "uvicorn",
+    "version": "0.54.0",
+    "licence": "BSD-3-Clause",
+    "metadata_source": "https://pypi.org/pypi/uvicorn/0.54.0/json"
+  }
+]
