@@ -32,7 +32,7 @@ def main():
         origin = "https://synthetic-verification-8000.app.github.dev"
         def request(path, body=None, authenticated=True):
             connection = http.client.HTTPConnection("127.0.0.1", 8000, timeout=160)
-            headers = {"Host": "synthetic-verification-8000.app.github.dev", "Origin": origin}
+            headers = {"Host": "synthetic-verification-8000.app.github.dev", "Origin": "http://localhost:8000", "X-Forwarded-Host": "synthetic-verification-8000.app.github.dev", "Sec-Fetch-Site": "same-origin"}
             if authenticated:
                 headers.update({"Cookie": cookie, "X-Workspace-Token": token})
             data = None if body is None else json.dumps(body)
@@ -67,6 +67,7 @@ def main():
                 raise AssertionError("Owned API process did not stop.")
         try:
             launch()
+            assert request('/api/health')[1]['codespaces_proxy'] is True
             assert request('/api/projects', authenticated=False)[0] == 401
             private = json.loads((root / '.cache/codespaces/owner-credentials.json').read_text())
             status, _, headers = request('/api/auth/login', {"username": private['username'], "password": private['password']}, authenticated=False)
@@ -94,12 +95,16 @@ def main():
             project = apply(answer['process'], answer['source'], 1)
             status, updated, _ = request(path + '/process/runs', {"base_revision": project['revision']})
             assert status == 200 and updated['duration_s'] == 104 and updated['summary']['output_parts'] == 6
-            stop(); launch()
+            # Exercise the actual safe restart path, preserving credentials/session/data.
+            restart_code = "import importlib.util,pathlib,sys; s=importlib.util.spec_from_file_location('launcher'," + repr(str(ROOT / "scripts/start_codespaces.py")) + "); m=importlib.util.module_from_spec(s); s.loader.exec_module(m); m.ROOT=pathlib.Path(" + repr(str(root)) + "); sys.argv=['start_codespaces.py','--restart']; m.main()"
+            restarted = subprocess.run([sys.executable, '-c', restart_code], env={**os.environ, 'CODESPACE_NAME': 'synthetic-verification'}, capture_output=True, text=True, timeout=45)
+            assert restarted.returncode == 0, restarted.stderr
+            pid = int((root / '.cache/codespaces/workspace.pid').read_text())
             assert request(path + '/process/latest')[1] == updated
             assert request(path)[1]['process']['cycles'] == 3
             assert request('/api/auth/logout', {})[0] == 200
             assert request('/api/projects')[0] == 401
-            evidence = {"actual_codespace": False, "synthetic_codespaces_environment": True, "launcher": "passed", "authenticated_process_ai_workflow": "passed", "restart_persistence": "passed", "logout_revocation": "passed", "actual_server_cpu_inference_s": round(elapsed, 3), "initial_duration_s": 126, "updated_duration_s": 104, "github_port_forwarding": "unrun: Codespaces API scope unavailable"}
+            evidence = {"actual_codespace": False, "synthetic_codespaces_environment": True, "launcher": "passed", "rewritten_origin_with_bound_host_and_fetch_metadata": "passed", "authenticated_process_ai_workflow": "passed", "safe_restart_persistence": "passed", "logout_revocation": "passed", "actual_server_cpu_inference_s": round(elapsed, 3), "initial_duration_s": 126, "updated_duration_s": 104, "github_port_forwarding": "owner observed login rejection; external post-fix verification pending"}
             target = ROOT / '.cache/verification/codespaces-process.json'
             target.parent.mkdir(parents=True, exist_ok=True)
             target.write_text(json.dumps(evidence, indent=2))

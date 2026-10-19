@@ -7,6 +7,8 @@ const legacy: Record<string, Record<string, string>> = { en: {}, it, fr, es };
 // Additive catalogue: English remains the repository/source language.
 const entries: Record<string, [string, string, string]> = {
   ...processEntries,
+  'Open the secure workspace address to sign in.': ['Apri l’indirizzo sicuro dell’app per accedere.', 'Ouvrez l’adresse sécurisée de l’application pour vous connecter.', 'Abre la dirección segura de la aplicación para iniciar sesión.'],
+  'Open secure workspace': ['Apri l’app all’indirizzo sicuro', 'Ouvrir l’application sécurisée', 'Abrir la aplicación segura'],
   'Online workspace': ['Ambiente online', 'Espace en ligne', 'Entorno en línea'],
   'Server storage': ['Salvataggio sul server', 'Stockage sur le serveur', 'Almacenamiento en el servidor'],
   'Your engineering workspace.': ['Il tuo ambiente di ingegneria.', 'Votre espace d’ingénierie.', 'Tu entorno de ingeniería.'],

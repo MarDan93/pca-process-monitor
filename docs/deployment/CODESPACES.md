@@ -18,6 +18,22 @@ python scripts/start_codespaces.py
 
 The startup log is `.cache/codespaces/workspace.log`. Node 24 and Python 3.12 are provisioned by `.devcontainer/devcontainer.json`. Setup/start commands were exercised in this development environment, and the actual launcher was tested under synthetic Codespaces variables. GitHub's external provisioning/forwarding is **not yet verified**: the current integration receives HTTP 403 for the Codespaces API. The owner must create the Codespace from their account.
 
+## Updating an existing Codespace after a sign-in origin error
+
+Run these commands one at a time from the repository root in the Codespaces terminal. Stop if a command reports an error; do not discard local source changes to force an update.
+
+```sh
+git pull --ff-only
+npm --prefix web run build
+python scripts/start_codespaces.py --restart
+```
+
+The restart preserves generated credentials and the project database. It stops only the recorded PID after checking its exact command and checkout directory; unrelated processes are left untouched. Open the HTTPS address printed by the launcher and reload the app. `python scripts/start_codespaces.py --url` prints that address without reading or printing credentials. Login remains `owner` with the same private password.
+
+Codespaces can rewrite the browser's `Origin` header to its loopback forwarding target. The launcher now enables an explicit Codespaces-only compatibility path, bound to the exact current forwarded HTTPS hostname. A rewritten loopback origin is accepted only with both that exact `X-Forwarded-Host` and the browser's `Sec-Fetch-Site: same-origin`. Ordinary hosted deployments retain their existing exact-origin policy. Foreign/sibling origins, other ports, cross-site/same-site or missing fetch metadata, missing forwarded host, CSRF-token failures and unauthenticated private API requests remain rejected. There is no wildcard Codespaces allowlist or general CORS bypass.
+
+The login page detects a different configured address and provides a link to the secure workspace. A remaining login mismatch reports expected/received origins without exposing credentials, so proxy differences can be diagnosed precisely. See [fix evidence](../verification/CODESPACES_ORIGIN_FIX_2026-10-19.md).
+
 ## First observable process run
 
 1. Choose **New project**, enter any product/project name, and create it. Commercial and product values start unknown.

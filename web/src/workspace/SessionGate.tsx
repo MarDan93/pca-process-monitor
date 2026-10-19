@@ -5,7 +5,7 @@ import { Icon } from '../ui/Icon';
 import { WorkspaceShell } from './WorkspaceShell';
 
 export function SessionGate() {
-  const [status, setStatus] = useState<{ required: boolean; authenticated: boolean } | null>(null);
+  const [status, setStatus] = useState<{ required: boolean; authenticated: boolean; public_origin?: string | null } | null>(null);
   const [error, setError] = useState('');
   const [busy, setBusy] = useState(false);
   const [username, setUsername] = useState('owner');
@@ -18,7 +18,7 @@ export function SessionGate() {
   }
   useEffect(() => {
     void check();
-    const expired = () => { setStatus({ required: true, authenticated: false }); setPassword(''); };
+    const expired = () => { setStatus(old => ({ ...old, required: true, authenticated: false })); setPassword(''); };
     window.addEventListener('mould-auth-required', expired);
     return () => window.removeEventListener('mould-auth-required', expired);
   }, []);
@@ -30,10 +30,11 @@ export function SessionGate() {
   }
   async function signOut() {
     setBusy(true);
-    try { await api.logout(); setStatus({ required: true, authenticated: false }); }
+    try { await api.logout(); setStatus(old => ({ ...old, required: true, authenticated: false })); }
     catch { await check(); }
     finally { setBusy(false); }
   }
-  if (status?.authenticated) return <WorkspaceShell hosted={status.required} onSignOut={() => { void signOut(); }}/>;
-  return <main className="sign-in-page"><section className="sign-in-card"><div className="sign-in-brand"><span className="brand-mark"><Icon name="mould" size={28}/></span><strong>MOULD STUDIO</strong><select className="language-picker" aria-label="Language" value={language} onChange={e => { const value = e.target.value as Language; setLanguage(value); document.documentElement.lang = value; try { localStorage.setItem('mould-studio-language', value); } catch { /* Preference only. */ } }}><option value="en">English</option><option value="it">Italiano</option><option value="fr">Français</option><option value="es">Español</option></select></div><p className="eyebrow">{t('Online workspace')}</p><h1>{t('Your engineering workspace.')}</h1><p className="help">{t('Sign in to access your projects, geometry and AI copilot.')}</p>{error && <p className="inline-error" role="alert">{t(error)}</p>}{status?.required ? <form onSubmit={signIn}><label className="field"><span>{t('Username')}</span><input id="sign-in-username" autoComplete="username" maxLength={64} value={username} onChange={e => setUsername(e.target.value)} required autoFocus/></label><label className="field"><span>{t('Password')}</span><input id="sign-in-password" type="password" autoComplete="current-password" maxLength={512} value={password} onChange={e => setPassword(e.target.value)} required/></label><button id="sign-in-submit" className="primary full" disabled={busy || !username || !password}><Icon name="lock" size={17}/>{t('Sign in')}</button></form> : <button className="secondary full" disabled={busy} onClick={() => { void check(); }}>{t(error ? 'Retry' : 'Connecting to workspace…')}</button>}<p className="sign-in-note"><Icon name="save" size={14}/>{t('Projects are saved on the server. No installation required.')}</p></section></main>;
+  const secureAddress = status?.required && status.public_origin && status.public_origin !== window.location.origin ? status.public_origin : null;
+  if (status?.authenticated && !secureAddress) return <WorkspaceShell hosted={status.required} onSignOut={() => { void signOut(); }}/>;
+  return <main className="sign-in-page"><section className="sign-in-card"><div className="sign-in-brand"><span className="brand-mark"><Icon name="mould" size={28}/></span><strong>MOULD STUDIO</strong><select className="language-picker" aria-label="Language" value={language} onChange={e => { const value = e.target.value as Language; setLanguage(value); document.documentElement.lang = value; try { localStorage.setItem('mould-studio-language', value); } catch { /* Preference only. */ } }}><option value="en">English</option><option value="it">Italiano</option><option value="fr">Français</option><option value="es">Español</option></select></div><p className="eyebrow">{t('Online workspace')}</p><h1>{t('Your engineering workspace.')}</h1><p className="help">{t('Sign in to access your projects, geometry and AI copilot.')}</p>{error && <p className="inline-error" role="alert">{t(error)}</p>}{secureAddress ? <div className="workspace-address-help"><p className="inline-error" role="alert">{t('Open the secure workspace address to sign in.')}</p><a className="primary full" id="secure-workspace-link" href={secureAddress}>{t('Open secure workspace')}</a></div> : status?.required ? <form onSubmit={signIn}><label className="field"><span>{t('Username')}</span><input id="sign-in-username" autoComplete="username" maxLength={64} value={username} onChange={e => setUsername(e.target.value)} required autoFocus/></label><label className="field"><span>{t('Password')}</span><input id="sign-in-password" type="password" autoComplete="current-password" maxLength={512} value={password} onChange={e => setPassword(e.target.value)} required/></label><button id="sign-in-submit" className="primary full" disabled={busy || !username || !password}><Icon name="lock" size={17}/>{t('Sign in')}</button></form> : <button className="secondary full" disabled={busy} onClick={() => { void check(); }}>{t(error ? 'Retry' : 'Connecting to workspace…')}</button>}<p className="sign-in-note"><Icon name="save" size={14}/>{t('Projects are saved on the server. No installation required.')}</p></section></main>;
 }

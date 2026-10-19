@@ -73,7 +73,10 @@ def create_app(database=None, principal="local-developer", testing=False, settin
         if request.method not in ("GET", "HEAD", "OPTIONS"):
             origin = request.headers.get("origin")
             expected_origin = settings.public_origin if settings.hosted else f"{request.url.scheme}://{request.url.netloc}"
-            if (settings.hosted and origin != expected_origin) or (origin and origin != expected_origin):
+            allowed = settings.accepts_origin(origin, request.headers) if settings.hosted else not origin or origin == expected_origin
+            if not allowed:
+                if settings.hosted and request.url.path == "/api/auth/login":
+                    return JSONResponse({"detail": "The sign-in request address differs from the configured workspace address.", "code": "workspace_origin_mismatch", "public_origin": settings.public_origin, "received_origin": origin}, 403)
                 return JSONResponse({"detail": "Cross-origin writes are disabled."}, 403)
             token = request.headers.get("x-workspace-token", "")
             expected_token = auth.csrf(raw_cookie) if settings.hosted else app.state.csrf
@@ -105,7 +108,7 @@ def create_app(database=None, principal="local-developer", testing=False, settin
 
     @app.get("/api/auth/status")
     def auth_status(request: Request):
-        return {"required": settings.hosted, "authenticated": not settings.hosted or auth.principal(request.cookies.get(COOKIE, "")) == principal}
+        return {"required": settings.hosted, "authenticated": not settings.hosted or auth.principal(request.cookies.get(COOKIE, "")) == principal, "public_origin": settings.public_origin if settings.hosted else None}
 
     @app.post("/api/auth/login")
     def login(request: Request, body: LoginRequest):
@@ -130,7 +133,7 @@ def create_app(database=None, principal="local-developer", testing=False, settin
 
     @app.get("/api/health")
     def health():
-        return {"status": "ok", "mode": settings.mode, "storage": "sqlite", "schema": 1}
+        return {"status": "ok", "mode": settings.mode, "storage": "sqlite", "schema": 1, "codespaces_proxy": settings.codespaces_proxy}
 
     @app.get("/api/process/example")
     def process_example():

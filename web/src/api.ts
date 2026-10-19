@@ -35,10 +35,14 @@ export const api = {
     if (!response.ok) throw new Error((await response.json()).detail || 'Server AI failed.');
     return response.json();
   },
-  authStatus: () => request<{ required: boolean; authenticated: boolean }>('/auth/status'),
+  authStatus: () => request<{ required: boolean; authenticated: boolean; public_origin?: string | null }>('/auth/status'),
   async login(username: string, password: string) {
     const response = await fetch('/api/auth/login', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ username, password }) });
-    if (!response.ok) throw new Error((await response.json()).detail || 'Sign-in failed.');
+    if (!response.ok) {
+      const error = await response.json();
+      if (error.code === 'workspace_origin_mismatch') throw new Error(`${error.detail} Expected: ${error.public_origin}. Received: ${error.received_origin ?? '(missing)'}.`);
+      throw new Error(error.detail || 'Sign-in failed.');
+    }
   },
   logout: () => request('/auth/logout', {}),
   async session() { const session = await request<{ write_token: string; ai_assets_local: boolean }>('/session'); token = session.write_token; return session; },
