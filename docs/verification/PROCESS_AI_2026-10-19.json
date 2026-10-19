@@ -1,0 +1,15 @@
+{
+  "actual_server_cpu_inference": true,
+  "generation_ms": 9939,
+  "source": {
+    "kind": "ai",
+    "model": "onnx-community/Qwen2.5-0.5B-Instruct",
+    "model_revision": "22942cb7d7ba4cc81bb4673549ca4d4614469b5e",
+    "operation_id": "74a3599b-3a60-4616-a663-6fb3c6e3dd6f",
+    "request": "Set cooling_s to 12 seconds and cycles to 3.",
+    "tool": "configure_process"
+  },
+  "old_revision": 5,
+  "new_revision": 6,
+  "nonmutating_until_approval": true
+}

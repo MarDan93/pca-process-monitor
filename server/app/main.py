@@ -13,6 +13,8 @@ from .auth import Authentication, COOKIE
 from .schemas import ApprovalRequest, AssetRequest, ExecuteRequest, LoginRequest, NewProject, PreviewRequest, UndoRequest
 from .settings import Settings
 from .store import DomainError, Store
+from .process import ProcessPreviewRequest, RunRequest, example
+from . import assistant
 
 ROOT = Path(__file__).resolve().parents[2]
 
@@ -129,6 +131,34 @@ def create_app(database=None, principal="local-developer", testing=False, settin
     @app.get("/api/health")
     def health():
         return {"status": "ok", "mode": settings.mode, "storage": "sqlite", "schema": 1}
+
+    @app.get("/api/process/example")
+    def process_example():
+        return example().model_dump()
+
+    @app.post("/api/projects/{project_id}/process/preview")
+    def preview_process(project_id: str, request: ProcessPreviewRequest):
+        return store.preview_process(project_id, request)
+
+    @app.post("/api/projects/{project_id}/process/runs")
+    def run_process(project_id: str, request: RunRequest):
+        return store.run_process(project_id, request.base_revision)
+
+    @app.get("/api/projects/{project_id}/process/latest")
+    def latest_run(project_id: str):
+        return store.latest_run(project_id)
+
+    @app.get("/api/assistant/status")
+    def assistant_status():
+        return assistant.status()
+
+    @app.post("/api/projects/{project_id}/assistant")
+    async def generate_assistant(project_id: str, body: assistant.AssistantRequest, request: Request):
+        project = store.get(project_id)
+        store._current(project, body.base_revision)
+        result = await assistant.generate(body, project, request.is_disconnected, store.latest_run(project_id))
+        store._current(store.get(project_id), body.base_revision)
+        return result
 
     @app.get("/api/projects")
     def projects():

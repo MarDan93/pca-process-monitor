@@ -1,5 +1,7 @@
 # Managed web application — single-owner pilot
 
+**Earlier deployment option:** this guide records the Render preparation. The current requested trial is [GitHub Codespaces with process simulation and server CPU AI](CODESPACES.md). The Render image below keeps browser inference; it does not include the new optional Node server inference runtime/model cache. No Render service has been activated.
+
 The user-facing product runs **only in a web browser**, with the current Python backend and server-persisted projects/assets/revisions. It is the current application, not a separate static demonstration or an installable desktop package. Local commands in developer guides remain engineering tools only.
 
 ## Proposed service

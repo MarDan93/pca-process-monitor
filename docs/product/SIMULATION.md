@@ -1,5 +1,7 @@
 # Simulation specification: granules to conveyor
 
+**Implementation update, 19 October:** the [Codespaces trial](../deployment/CODESPACES.md) now includes a bounded configured L0 scheduler, discrete mass ledger, shared-clock illustrative cell/timeline, persisted runs and approved AI settings. [Executed evidence](../verification/PROCESS_CODESPACES_2026-10-19.md) defines its limits. The detailed specification below remains the target; moisture/thermal/flow fields, real geometric clearances and cost accounting are not implemented.
+
 Technical proposal for M03–M05, updated 2026-10-16. These models are planned, not an implemented simulation engine.
 
 Audit update 2026-10-17: follow the model-specific gates in [VALIDATION_PROTOCOL.md](../data/VALIDATION_PROTOCOL.md), the [target contracts](../architecture/TARGET_ARCHITECTURE.md) and [I03–I04 plan](../planning/IMPLEMENTATION_PLAN.md). No time-based engine has been added by the audit.

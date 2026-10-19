@@ -33,6 +33,12 @@ in web/dist/THIRD_PARTY_NOTICES.txt. See web/README.md and
 docs/compliance/WORKSPACE_DEPENDENCIES.md for the incremental inventory.
 No proprietary SolidWorks/Fusion artwork or implementation is included.
 
+The 19 October Codespaces trial optionally executes the same pinned
+Transformers.js/ONNX Runtime Node CPU packages with separately downloaded,
+checksum-verified model weights. No native binaries or weights are committed.
+See docs/deployment/CODESPACES.md and the dependency supplement for execution
+boundaries and remaining native advisory/model redistribution review.
+
 Source/rights/limitation records: docs/compliance/RESEARCH_PROVENANCE.md.
 This preliminary notice neither grants rights we do not hold nor states
 that the entire platform is legally cleared. LICENSE remains unchanged.

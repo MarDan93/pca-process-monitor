@@ -1,0 +1,12 @@
+{
+  "actual_codespace": false,
+  "synthetic_codespaces_environment": true,
+  "launcher": "passed",
+  "authenticated_process_ai_workflow": "passed",
+  "restart_persistence": "passed",
+  "logout_revocation": "passed",
+  "actual_server_cpu_inference_s": 8.377,
+  "initial_duration_s": 126,
+  "updated_duration_s": 104,
+  "github_port_forwarding": "unrun: Codespaces API scope unavailable"
+}

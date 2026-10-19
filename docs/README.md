@@ -1,5 +1,7 @@
 # Engineering platform documentation
 
+**Latest increment, 19 October:** [Codespaces trial instructions](deployment/CODESPACES.md) and [configured process/server AI evidence](verification/PROCESS_CODESPACES_2026-10-19.md). A bounded L0 engine and run-driven cell/timeline now exist; the dated audit below remains the earlier baseline. Mould/press checks, economics, physical solvers and integrated corrected ML remain open.
+
 Current audit: **AUD-2026-10-17**, based on application commit `0fe5efe3e626edf7c93138efa83be821bfcea8a0` on `demo/progettazione-stampi-2026-10-15`. The audit preserves the implementation and MIT licence. No push, merge or publication is authorised/performed.
 
 **Subsequent implementation:** [I01a and part of I01b now run locally](verification/WORKSPACE_2026-10-17.md): generic server projects, durable commercial requirements, approved/revisioned operations and an original CAD-style workspace with persistent 3D and right copilot. [Start the app](../web/README.md). The dated audit below remains the pre-implementation baseline. Mould/cell/process/economic engines and a production hosted service are still unimplemented.

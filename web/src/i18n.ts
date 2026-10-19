@@ -1,10 +1,12 @@
 import it from '../../prototype/locales/it.json';
 import fr from '../../prototype/locales/fr.json';
 import es from '../../prototype/locales/es.json';
+import { processEntries } from './simulation/locales';
 export type Language = 'en' | 'it' | 'fr' | 'es';
 const legacy: Record<string, Record<string, string>> = { en: {}, it, fr, es };
 // Additive catalogue: English remains the repository/source language.
 const entries: Record<string, [string, string, string]> = {
+  ...processEntries,
   'Online workspace': ['Ambiente online', 'Espace en ligne', 'Entorno en línea'],
   'Server storage': ['Salvataggio sul server', 'Stockage sur le serveur', 'Almacenamiento en el servidor'],
   'Your engineering workspace.': ['Il tuo ambiente di ingegneria.', 'Votre espace d’ingénierie.', 'Tu entorno de ingeniería.'],

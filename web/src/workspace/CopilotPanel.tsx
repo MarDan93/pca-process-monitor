@@ -1,11 +1,20 @@
 import { useEffect, useRef, useState } from 'react';
 import { LocalAI } from '../../../prototype/ai-client.js';
 import { AI_MODEL, AI_MODEL_REVISION } from '../../../prototype/ai-contract.js';
-import type { Commercial, Project, Source } from '../api';
+import { api, type Commercial, type Project, type Source } from '../api';
+import type { Scenario } from '../simulation/types';
+import { ServerCopilotPanel } from './ServerCopilotPanel';
 import type { Language } from '../i18n';
 import { Icon } from '../ui/Icon';
 type AIState = { status: string; messages: { role: string; content: string }[]; mode: string; progress: number | null; file: string; error: string; proposal: Record<string, Record<string, unknown>> | null; baseRevision: number | null };
-export function CopilotPanel({ project, t, language, busy, onPreview, onError }: { project: Project | null; t: (s: string) => string; language: Language; busy: boolean; onPreview: (patch: Partial<Commercial>, source: Source) => void; onError: (error: string) => void }) {
+type Props = { project: Project | null; t: (s: string) => string; language: Language; busy: boolean; onPreview: (patch: Partial<Commercial>, source: Source) => void; onError: (error: string) => void; onProcessPreview: (s: Scenario, source: Source) => void };
+export function CopilotPanel(props: Props) {
+  const [server, setServer] = useState<{ enabled: boolean; ready: boolean } | null>(null);
+  useEffect(() => { let active = true; api.assistantStatus().then(s => { if (active) setServer(s); }).catch(() => { if (active) setServer({ enabled: false, ready: false }); }); return () => { active = false; }; }, []);
+  if (server === null) return <div className="help">{props.t('Connecting to workspace…')}</div>;
+  return server.enabled ? <ServerCopilotPanel {...props} ready={server.ready}/> : <BrowserCopilotPanel {...props}/>;
+}
+function BrowserCopilotPanel({ project, t, language, busy, onPreview, onError }: Props) {
   const client = useRef<LocalAI | null>(null);
   if (!client.current) client.current = new LocalAI(() => new Worker('/ai-worker.js'));
   const ai = client.current;

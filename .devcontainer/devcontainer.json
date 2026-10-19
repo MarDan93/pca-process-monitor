@@ -1,0 +1,16 @@
+{
+  "name": "Mould Studio — process simulation",
+  "image": "mcr.microsoft.com/devcontainers/base:bookworm",
+  "features": {
+    "ghcr.io/devcontainers/features/python:1": { "version": "3.12" },
+    "ghcr.io/devcontainers/features/node:1": { "version": "24" }
+  },
+  "forwardPorts": [8000],
+  "portsAttributes": {
+    "8000": { "label": "Mould Studio", "onAutoForward": "openBrowser", "protocol": "http" }
+  },
+  "customizations": { "codespaces": { "openFiles": ["docs/deployment/CODESPACES.md"] } },
+  "postCreateCommand": "python scripts/setup_codespaces.py --with-ai",
+  "postStartCommand": "python scripts/start_codespaces.py",
+  "remoteUser": "vscode"
+}

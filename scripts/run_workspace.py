@@ -18,6 +18,7 @@ ROOT = Path(__file__).resolve().parents[1]
 def main():
     parser = argparse.ArgumentParser(description="Run the local Mould Studio workspace. Never binds to the public network.")
     parser.add_argument("--setup", action="store_true", help="Install locked dependencies and build the source checkout first.")
+    parser.add_argument("--prepare-only", action="store_true", help="Finish setup without starting the server.")
     parser.add_argument("--open", action="store_true", help="Open the workspace in your computer's browser after readiness.")
     parser.add_argument("--port", type=int, default=8123)
     args = parser.parse_args()
@@ -39,6 +40,8 @@ def main():
             subprocess.run([npm, "run", "build"], cwd=ROOT / "web", check=True)
     if not python.exists() or not (ROOT / "web/dist/index.html").exists():
         parser.error("Run python scripts/run_workspace.py --setup first.")
+    if args.prepare_only:
+        return 0
     if args.open:
         def open_when_ready():
             for _ in range(100):

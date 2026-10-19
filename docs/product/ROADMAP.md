@@ -4,7 +4,7 @@ Updated 2026-10-17 after [AUD-2026-10-17](../architecture/CURRENT_STATE.md). Goa
 
 ## Current position
 
-The product is to be accessed **only through the hosted web application**. The current server-backed version now has a protected single-owner container and a managed persistent-disk configuration; owner hosting activation is pending. See [hosted evidence](../verification/HOSTED_2026-10-17.md). A static/browser-only demo does not satisfy this delivery. The next engineering module remains I02 after access to the current app is established.
+**19 October update:** the current trial is the server-backed app in [GitHub Codespaces](../deployment/CODESPACES.md), including a bounded L0 process and server CPU AI. This follows the owner's request to prioritise a visible working process run; it does not imply I02 mould/press checks or the full V1 are complete. Actual Codespaces provisioning needs the owner's account because the available integration lacks API scope. The earlier managed container remains optional; local development remains supported. [Current evidence](../verification/PROCESS_CODESPACES_2026-10-19.md).
 
 | Milestone | Scope | Actual status / delivery mapping |
 | --- | --- | --- |
@@ -12,7 +12,7 @@ The product is to be accessed **only through the hosted web application**. The c
 | P1 | Generic projects, durable commercial brief, approved AI operations and web foundation | I01a and bounded I01b implemented locally; real AI/server approval path passes. Wider evaluation, migration and online identity/recovery remain open |
 | P2a | Persistent original geometry assets, supported meshes, frames and scene | Original OBJ/STL bytes/units/hash, worker parsing and persistent CAD scene implemented. Rich frame/ejection features, STEP and legacy migration remain open |
 | P3a | Restricted mould configurations and preliminary press/cell checks | Not implemented; I02 followed by cell/pose work in I03 |
-| P4 | Complete L0 material-to-belt events, playback, capacity and costs | Not implemented; I03–I04, first bounded integrated flow |
+| P4 | Complete L0 material-to-belt events, playback, capacity and costs | First bounded events/inventory/XYZ/belt/clock/run persistence and configured output implemented; complete geometric/capability checks and cost accounting remain open |
 | P2b/P3b | STEP/B-rep, supported CAD/parametric mould families, cooling geometry | Not implemented; kernel installation/licence/reference spike and I05 |
 | P5 | Reduced L1 material/plasticisation/cooling models | Not implemented; equations/data/reference/performance gates, I06 |
 | P6 | Corrected PCA, PLS, licensed real data and constrained trials | Original PCA library has reproduced correctness defects; I00-N then I07 |
@@ -45,6 +45,8 @@ The CAD shell, generic projects, original mesh persistence, four UI languages an
 Implement a bounded family of cavity/envelope alternatives and declared dimensional/shot/clamp/stroke checks. Distinguish failed/incomplete/performed checks and unsupported undercut/mouldability/CAD operations. Changes invalidate downstream results. No automatic universal mould design or arbitrary cooling optimum is promised.
 
 ### I03–I04 — first complete L0/economic path
+
+**Implemented subset, 19 October:** configured single-feed/single-press/ganged-XYZ/belt scheduling, batch drying, material balances, overlapping resources/waits, basic fixed-yaw rejection, persistent runs and shared-clock 3D/timeline controls. Actual server AI proposes reviewed scenario changes. [Trial guide](../deployment/CODESPACES.md). This precedes I02 at the owner's request; functional envelopes and configured times are explicit assumptions. Richer resource/geometry checks, trajectories, commissioning data and economic totals remain unimplemented.
 
 Actual event/resource/inventory/motion/part-support engine across configured material-to-conveyor phases; one clock for run-driven animation/charts/events; valid axis/orientation constraints; capacity by article/commercial unit; documented rate/energy/material/investment accounting. Use explicit analytical/synthetic benchmarks and configured times, never invented physics fields.
 

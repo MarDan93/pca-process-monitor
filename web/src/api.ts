@@ -1,3 +1,4 @@
+import type { Scenario, ProcessRun, AssistantReply } from './simulation/types';
 export type Commercial = {
   customer: string | null; reference: string | null; market: string | null;
   commercial_unit: 'part' | 'kit' | 'assembly' | null;
@@ -6,10 +7,10 @@ export type Commercial = {
   mould_budget: string | null; notes: string | null;
 };
 export type Asset = { id: string; name: string; source_units: string; sha256: string; size_bytes: number; source: string; frame: string };
-export type Project = { id: string; name: string; revision: number; commercial: Commercial; asset: Asset | null; updated_at: number };
+export type Project = { id: string; name: string; revision: number; commercial: Commercial; asset: Asset | null; process: Scenario | null; updated_at: number };
 export type ProjectSummary = Pick<Project, 'id' | 'name' | 'revision'>;
 export type Source = { kind: 'manual' | 'ai'; request?: string; model?: string; model_revision?: string };
-export type Preview = { id: string; project_id: string; base_revision: number; digest: string; expires_at: number; effects: { field: keyof Commercial; before: string | number | null; after: string | number | null }[]; source: Source };
+export type Preview = { id: string; project_id: string; base_revision: number; digest: string; expires_at: number; effects: { field: string; before: unknown; after: unknown }[]; source: Source };
 export type Revision = { revision: number; created_at: number; source: { kind: string; operation_id?: string; model?: string; tool?: string } };
 let token = '';
 const approvals = new Map<string, { approval_token: string }>();
@@ -24,6 +25,16 @@ async function request<T>(path: string, body?: unknown): Promise<T> {
   return response.json();
 }
 export const api = {
+  processExample: () => request<Scenario>('/process/example'),
+  previewProcess: (project: Project, changes: Scenario, source: Source) => request<Preview>(`/projects/${project.id}/process/preview`, { base_revision: project.revision, changes, source }),
+  runProcess: (project: Project) => request<ProcessRun>(`/projects/${project.id}/process/runs`, { base_revision: project.revision }),
+  latestRun: (project: Project) => request<ProcessRun | null>(`/projects/${project.id}/process/latest`),
+  assistantStatus: () => request<{ enabled: boolean; ready: boolean; runtime: string }>('/assistant/status'),
+  async assistant(project: Project, message: string, mode: string, language: string, signal?: AbortSignal): Promise<AssistantReply> {
+    const response = await fetch(`/api/projects/${project.id}/assistant`, { method: 'POST', signal, headers: { 'Content-Type': 'application/json', 'X-Workspace-Token': token }, body: JSON.stringify({ base_revision: project.revision, message, mode, language }) });
+    if (!response.ok) throw new Error((await response.json()).detail || 'Server AI failed.');
+    return response.json();
+  },
   authStatus: () => request<{ required: boolean; authenticated: boolean }>('/auth/status'),
   async login(username: string, password: string) {
     const response = await fetch('/api/auth/login', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ username, password }) });

@@ -12,12 +12,14 @@ const temp = await mkdtemp(join(tmpdir(), 'mould-workspace-test-'));
 const profile = join(temp, 'chromium');
 const database = join(temp, 'projects.sqlite3');
 const realAI = process.argv.includes('--ai-real');
+const serverAI = process.argv.includes('--server-ai');
+const processFlow = process.argv.includes('--process') || serverAI;
 let service, browser, socket, origin, serviceLog = '', browserLog = '';
 const pause = ms => new Promise(resolve => setTimeout(resolve, ms));
 const pass = text => process.stdout.write(`PASS ${text}\n`);
 async function start(port = 0) {
   serviceLog = '';
-  service = spawn(join(root, '.venv-app/bin/python'), ['-m', 'uvicorn', 'app.main:app', '--app-dir', 'server', '--host', '127.0.0.1', '--port', String(port), '--no-use-colors'], { cwd: root, env: { ...process.env, MOULD_WORKSPACE_DB: database }, stdio: ['ignore', 'ignore', 'pipe'] });
+  service = spawn(join(root, '.venv-app/bin/python'), ['-m', 'uvicorn', 'app.main:app', '--app-dir', 'server', '--host', '127.0.0.1', '--port', String(port), '--no-use-colors'], { cwd: root, env: { ...process.env, MOULD_WORKSPACE_DB: database, MOULD_SERVER_AI: serverAI ? '1' : '0' }, stdio: ['ignore', 'ignore', 'pipe'] });
   service.stderr.on('data', data => { serviceLog = (serviceLog + data).slice(-4000); });
   for (let i = 0; i < 100; i++) {
     if (service.exitCode !== null) throw new Error(`API exited: ${serviceLog}`);
@@ -169,6 +171,65 @@ try {
   assert.equal((await stored()).commercial.annual_volume, 50000);
   pass('actual API process restart and browser reload restore the project and geometry');
 
+  if (processFlow) {
+    await click('#module-process'); await click('#load-process-example');
+    await until('Boolean(document.querySelector("#process-cycles"))');
+    const before = await stored();
+    assert.equal(before.process, null);
+    await click('#preview-process'); await until('Boolean(document.querySelector("#approve-operation"))');
+    assert.equal((await stored()).process, null);
+    await click('#approve-operation'); await until('!document.querySelector("dialog") && !document.querySelector("#run-process").disabled');
+    await click('#run-process'); await until('document.querySelector("#process-cell")?.dataset.renderStatus==="ready"');
+    let run = await evaluate(`fetch('/api/projects/${firstId}/process/latest').then(r=>r.json())`);
+    assert.equal(run.summary.output_parts, 10); assert.equal(run.duration_s, 126);
+    await fill('#process-seek', 46); await until('document.querySelector("#process-cell").dataset.time==="46.000"');
+    assert.equal(await evaluate('document.querySelector("#deposited-count").textContent'), '2');
+    assert.equal(await evaluate('document.querySelector("#output-count").textContent'), '0');
+    await fill('#process-seek', 58); await until('document.querySelector("#output-count").textContent==="2"');
+    await click('#process-play'); await pause(250); await click('#process-play');
+    const paused = await evaluate('document.querySelector("#process-cell").dataset.time');
+    await pause(200); assert.equal(await evaluate('document.querySelector("#process-cell").dataset.time'), paused);
+    await fill('#process-seek', 126); await until('document.querySelector("#output-count").textContent==="10"');
+    await screenshot('process-cycle.png');
+    pass('actual L0 run drives WebGL, shared-clock seek/play/pause, material ledger and deposited/output counts');
+    if (serverAI) {
+      await click('#ai-process-example'); const originalProject = await stored(), started = Date.now();
+      await click('#send-ai'); await until('Boolean(document.querySelector("#preview-ai"))', 180000);
+      assert.deepEqual(await stored(), originalProject);
+      await click('#preview-ai'); await until('Boolean(document.querySelector("#approve-operation"))');
+      assert.deepEqual(await stored(), originalProject);
+      await click('#approve-operation'); await until('!document.querySelector("dialog")');
+      const changed = await stored();
+      assert.deepEqual(changed.process, { ...originalProject.process, cooling_s: 12, cycles: 3 });
+      assert.deepEqual(changed.commercial, originalProject.commercial);
+      assert.equal(changed.asset.sha256, originalProject.asset.sha256);
+      const revisions = await evaluate(`fetch('/api/projects/${firstId}/revisions').then(r=>r.json())`);
+      assert.equal(revisions[0].source.kind, 'ai'); assert.equal(revisions[0].source.tool, 'configure_process');
+      await writeFile(join(output, 'process-ai.json'), JSON.stringify({ actual_server_cpu_inference: true, generation_ms: Date.now()-started, source: revisions[0].source, old_revision: originalProject.revision, new_revision: changed.revision, nonmutating_until_approval: true }, null, 2));
+      pass('real server CPU model proposes only cooling/cycles; reviewed approval records provenance without browser weights');
+    } else {
+      await evaluate('document.querySelectorAll(".process-group").forEach(e=>e.open=true)');
+      await fill('#process-cooling_s', 12); await fill('#process-cycles', 3);
+      await click('#preview-process'); await until('Boolean(document.querySelector("#approve-operation"))'); await click('#approve-operation'); await until('!document.querySelector("dialog")');
+    }
+    assert.ok((await evaluate('document.querySelector(".process-results").innerText')).includes('Outdated result'));
+    await click('#run-process'); await until('document.querySelector("#process-seek")?.max==="104"');
+    run = await evaluate(`fetch('/api/projects/${firstId}/process/latest').then(r=>r.json())`);
+    assert.equal(run.summary.output_parts, 6); assert.equal(run.duration_s, 104);
+    await fill('#process-seek', 92); await until('document.querySelector("#deposited-count").textContent==="6"');
+    await screenshot('process-updated.png');
+    await stop(service); await start(servicePort); await call('Page.reload'); await until('Boolean(document.querySelector("#module-process"))'); await click('#module-process');
+    await until('document.querySelector("#process-seek")?.max==="104"');
+    assert.deepEqual(await evaluate(`fetch('/api/projects/${firstId}/process/latest').then(r=>r.json())`), run);
+    pass('changed settings mark the old result stale; rerun changes timing/output and survives actual service replacement');
+    await evaluate('document.querySelectorAll(".process-group").forEach(e=>e.open=true)');
+    await fill('#process-belt_orientation_deg', 180); await click('#preview-process'); await until('Boolean(document.querySelector("#approve-operation"))'); await click('#approve-operation'); await until('!document.querySelector("dialog")');
+    await click('#run-process'); await until('document.querySelector(".process-results")?.innerText.includes("cannot change orientation")');
+    assert.equal((await evaluate(`fetch('/api/projects/${firstId}/process/latest').then(r=>r.json())`)).status, 'blocked');
+    for (const language of ['it','fr','es','en']) { await fill('.language-picker', language); await until(`document.documentElement.lang===${JSON.stringify(language)}`); }
+    pass('XYZ orientation mismatch blocks the run; new process screens switch across all four languages');
+  }
+
   if (realAI) {
     assert.equal(await evaluate('document.querySelector("meta[name=ai-model-host]")?.content'), '/ai-assets/');
     await click('#load-ai'); await until('document.querySelector(".chat-composer .muted").textContent==="Ready"', 240000);
@@ -193,7 +254,7 @@ try {
     assert.equal(await evaluate('Boolean(document.querySelector("#preview-ai"))'), false);
     await writeFile(join(output, 'ai-result.json'), JSON.stringify({ model: revisions[0].source.model, revision: revisions[0].source.model_revision, generation_ms: generationMs, actual_browser_inference: true, preview_before_write: true, approved_revision: after.revision, conversation_nonmutating: true, answer: await evaluate('[...document.querySelectorAll(".message.assistant p")].at(-1).textContent') }, null, 2));
     pass(`real pinned browser AI → server preview → approval → durable revision (${generationMs} ms); conversation does not mutate`);
-  } else {
+  } else if (!serverAI) {
     assert.equal(await evaluate('document.querySelector("#send-ai").disabled'), true);
     pass('AI remains explicitly unloaded and send is disabled until actual inference is ready');
   }

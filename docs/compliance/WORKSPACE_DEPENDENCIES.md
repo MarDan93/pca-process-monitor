@@ -1,5 +1,7 @@
 # Local workspace dependency supplement — 17 October 2026
 
+**19 October execution-path update:** the Codespaces trial reuses the same pinned Transformers.js/ONNX Node CPU packages in `prototype/server-ai.mjs`; the earlier statement that no server LLM service exists is historical. No dependency/lock version was changed. The model accepts text only, uses a pinned checksum-verified model, runs in a bounded short-lived process and cannot load user models/images or execute generated tools/code. Existing native package advisories and broader reachability/release review remain open; this is not a security clearance. Weights are downloaded by the user's setup, not committed or bundled. [Verification](../verification/PROCESS_CODESPACES_2026-10-19.md).
+
 This records the subsequent I01 implementation, not a revision of the immutable pre-coding audit. Source remains MIT. No relicensing, proprietary assets, model weights, Python wheels or solver binaries are distributed in the local review ZIP. It contains prebuilt browser JavaScript and the required browser licence texts; Python packages are separately installed from the locked requirements.
 
 | Component | Pinned version | Reported licence | Use/evidence |

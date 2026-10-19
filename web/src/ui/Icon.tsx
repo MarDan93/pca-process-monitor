@@ -27,6 +27,7 @@ const paths: Record<string, string> = {
   close: 'm5 5 14 14 M19 5 5 19',
   panel: 'M3 4h18v16H3z M15 4v16 M6 8h6 M6 12h6',
   play: 'm8 4 12 8-12 8z',
+  stop: 'M8 4v16 M16 4v16',
   lock: 'M5 10h14v11H5z M8 10V6a4 4 0 0 1 8 0v4 M12 14v3',
   folder: 'M3 6h7l2 3h9v12H3z M3 6V3h7l2 3h9v3',
   download: 'M12 3v12 m-5-5 5 5 5-5 M4 18v3h16v-3',
