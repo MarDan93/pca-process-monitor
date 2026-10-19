@@ -1,0 +1,14 @@
+import { useMemo, useState } from 'react';
+import { channels, signalValue, traceTimes, traceCSV } from './signals.js';
+import type { ProcessRun } from './types';
+export function SignalPlot({run,time,t,onSeek}:{run:ProcessRun;time:number;t:(s:string)=>string;onSeek:(n:number)=>void}){
+ const [selected,setSelected]=useState('mass_hopper');
+ const channel=channels.find(c=>c.id===selected)!,points=useMemo(()=>traceTimes(run).map(x=>[x,signalValue(run,selected,x)??0]),[run.id,selected]);
+ const max=Math.max(1,...points.map(p=>p[1])),width=720,height=106,left=46,bottom=22,top=8,inner=width-left-8,plotHeight=height-bottom-top;
+ const x=(v:number)=>left+v/(run.duration_s||1)*inner,y=(v:number)=>height-bottom-v/max*plotHeight;
+ const path=points.map(([a,b],i)=>`${i===0?'M':'L'}${x(a).toFixed(3)},${y(b).toFixed(3)}`).join(' ');
+ const stepPath=points.map(([a,b],i)=>i===0?`M${x(a)},${y(b)}`:`H${x(a)}V${y(b)}`).join(' ');
+ function download(){const url=URL.createObjectURL(new Blob([traceCSV(run)],{type:'text/csv'}));const a=document.createElement('a');a.href=url;a.download=`${run.id}-l0-traces.csv`;a.click();URL.revokeObjectURL(url);}
+ return <section className="signal-panel" aria-label={t('Time series')}><div className="signal-heading"><strong>{t('Time series')}</strong><select id="signal-select" aria-label={t('Signal')} value={selected} onChange={e=>setSelected(e.target.value)}>{channels.map(c=><option key={c.id} value={c.id}>{t(c.label)} · {c.unit}{c.unavailable?' · '+t('Unavailable'):''}</option>)}</select><b id="signal-value">{channel.unavailable?'—':signalValue(run,selected,time)?.toFixed(2)} {channel.unit}</b><button id="export-traces" onClick={download}>{t('Export CSV')}</button></div>
+ <p className="signal-source">{t(channel.source)}</p>{channel.unavailable?<div className="signal-unavailable">{t(channel.source)}. {t('No simulated values are available for this signal.')}</div>:<svg id="signal-plot" viewBox={`0 0 ${width} ${height}`} role="img" aria-label={`${t(channel.label)} (${channel.unit})`} onClick={e=>{const r=e.currentTarget.getBoundingClientRect();onSeek(Math.max(0,Math.min(run.duration_s,((e.clientX-r.left)/r.width*width-left)/inner*run.duration_s)));}}><line x1={left} y1={top} x2={left} y2={height-bottom} stroke="#546b7c"/><line x1={left} y1={height-bottom} x2={width-8} y2={height-bottom} stroke="#546b7c"/><text x={left-5} y={top+8} textAnchor="end">{max.toFixed(1)}</text><text x={left-5} y={height-bottom} textAnchor="end">0</text><text x={left} y={height-4}>0 s</text><text x={width-8} y={height-4} textAnchor="end">{run.duration_s.toFixed(1)} s</text><path d={channel.interpolation==='step'?stepPath:path} fill="none" stroke="#72d6ce" strokeWidth="1.6"/><line id="signal-cursor" data-time={time.toFixed(3)} x1={x(time)} x2={x(time)} y1={top} y2={height-bottom} stroke="#e6bf7e" strokeDasharray="3 2"/></svg>}</section>;
+}

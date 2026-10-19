@@ -71,7 +71,7 @@ class Store:
         row = db.execute("SELECT * FROM projects WHERE id=? AND owner=?", (project_id, self.principal)).fetchone()
         if row is None:
             raise DomainError(404, "Project not found.")
-        return {"id": row["id"], "revision": row["revision"], "process": None, **json.loads(row["state"]), "updated_at": row["updated"]}
+        return {"id": row["id"], "revision": row["revision"], "process": None, "engineering": None, **json.loads(row["state"]), "updated_at": row["updated"]}
 
     def get(self, project_id):
         with self.connection() as db:
@@ -160,14 +160,14 @@ class Store:
             if op["status"] != "approved" or self.clock() >= op["expires"]:
                 raise DomainError(409, "Approval is expired or has been consumed.")
             self._current(project, op["base_revision"])
-            state = {k: project[k] for k in ("name", "commercial", "asset", "process")}
+            state = {k: project[k] for k in ("name", "commercial", "asset", "process", "engineering")}
             effects = json.loads(op["effects"])
-            process = effects[0]["field"] == "process"
-            if process:
-                state["process"] = effects[0]["after"]
+            domain = effects[0]["field"]
+            if domain in ("process", "engineering"):
+                state[domain] = effects[0]["after"]
             else:
                 state["commercial"] = state["commercial"] | {e["field"]: e["after"] for e in effects}
-            result = self._advance(db, project, state, {**json.loads(op["source"]), "operation_id": operation_id, "tool": "configure_process" if process else "update_commercial_requirements"})
+            result = self._advance(db, project, state, {**json.loads(op["source"]), "operation_id": operation_id, "tool": "configure_" + domain if domain in ("process", "engineering") else "update_commercial_requirements"})
             db.execute("UPDATE operations SET status='executed', idempotency=?, result=? WHERE id=?", (request.idempotency_key, encoded(result), operation_id))
             return result
 
@@ -181,10 +181,10 @@ class Store:
             self._current(project, request.base_revision)
             if project["revision"] != json.loads(op["result"])["revision"]:
                 raise DomainError(409, "A later edit exists. Undo cannot overwrite intervening changes.")
-            state = {k: project[k] for k in ("name", "commercial", "asset", "process")}
+            state = {k: project[k] for k in ("name", "commercial", "asset", "process", "engineering")}
             effects = json.loads(op["effects"])
-            if effects[0]["field"] == "process":
-                state["process"] = effects[0]["before"]
+            if effects[0]["field"] in ("process", "engineering"):
+                state[effects[0]["field"]] = effects[0]["before"]
             else:
                 state["commercial"] = state["commercial"] | {e["field"]: e["before"] for e in effects}
             result = self._advance(db, project, state, {"kind": "undo", "operation_id": operation_id})
@@ -215,7 +215,7 @@ class Store:
             asset_id = str(uuid4())
             manifest = {"id": asset_id, "name": request.name, "source_units": request.units, "sha256": hashlib.sha256(content).hexdigest(), "size_bytes": len(content), "kind": "mesh", "source": request.source, "frame": "Original source coordinates retained; display recentred only"}
             db.execute("INSERT INTO assets VALUES(?,?,?,?)", (asset_id, project_id, encoded(manifest), content))
-            state = {k: project[k] for k in ("name", "commercial", "asset", "process")} | {"asset": manifest}
+            state = {k: project[k] for k in ("name", "commercial", "asset", "process", "engineering")} | {"asset": manifest}
             return self._advance(db, project, state, {"kind": "asset_import", "asset_id": asset_id, "source": request.source})
 
     def asset(self, project_id, asset_id):
@@ -226,16 +226,21 @@ class Store:
                 raise DomainError(404, "Asset not found.")
             return bytes(row["content"])
 
-    def preview_process(self, project_id, request):
+    def preview_process(self, project_id, request, field="process"):
         with self.connection(True) as db:
             project = self._project(db, project_id)
             self._current(project, request.base_revision)
-            after = request.changes.model_dump(mode="json")
-            if after == project["process"]:
+            if field == "engineering":
+                from .engineering import build_layout, press_checks
+                after = build_layout(self, db, project, request.changes)
+                after["checks"] = press_checks(after, project["process"])
+            else:
+                after = request.changes.model_dump(mode="json")
+            if after == project[field]:
                 raise DomainError(422, "No process changes to preview.")
             if db.execute("SELECT count(*) FROM operations WHERE project_id=?", (project_id,)).fetchone()[0] >= 5000:
                 raise DomainError(409, "Local operation limit reached (5,000 per project).")
-            effects = [{"field": "process", "before": project["process"], "after": after}]
+            effects = [{"field": field, "before": project[field], "after": after}]
             source = request.source.model_dump()
             effect_digest = digest({"project_id": project_id, "principal": self.principal, "base_revision": project["revision"], "effects": effects, "source": source})
             operation_id, expires = str(uuid4()), self.clock() + 600
@@ -252,10 +257,24 @@ class Store:
                 raise DomainError(422, "Configure and approve a process scenario first.")
             if db.execute("SELECT count(*) FROM process_runs WHERE project_id=?", (project_id,)).fetchone()[0] >= 30:
                 raise DomainError(409, "Pilot run limit reached (30 per project). Create a new project for further experiments.")
+            layout = project["engineering"]
+            checks = []
+            if layout:
+                from .engineering import press_checks
+                if not project["asset"] or project["asset"]["id"] != layout["asset_id"]:
+                    raise DomainError(409, "The geometry changed. Generate and approve a fresh mould layout.")
+                if project["process"]["cavities"] != layout["spec"]["cavities"]:
+                    raise DomainError(422, "Process cavities must match the approved mould layout.")
+                if project["process"]["mould_orientation_deg"] != 0:
+                    raise DomainError(422, "Linked layouts currently retain their declared extraction frame (mould orientation 0 degrees).")
+                checks = press_checks(layout, project["process"])
+                failed = [c["code"] for c in checks if c["status"] == "failed"]
+                if failed:
+                    raise DomainError(422, "Selected press/layout fails preliminary checks: " + ", ".join(failed))
             scenario = ProcessScenario.model_validate(project["process"])
             result = {**simulate(scenario), "id": str(uuid4()), "project_id": project_id, "project_revision": revision,
-                      "scenario": scenario.model_dump(), "asset": project["asset"], "created_at": self.clock()}
-            result["input_sha256"] = digest({"scenario": result["scenario"], "asset": result["asset"], "engine": result["engine"]})
+                      "scenario": scenario.model_dump(), "asset": project["asset"], "engineering": layout, "press_checks": checks, "created_at": self.clock()}
+            result["input_sha256"] = digest({"scenario": result["scenario"], "asset": result["asset"], "engineering": layout, "engine": result["engine"]})
             db.execute("INSERT INTO process_runs VALUES(?,?,?,?)", (result["id"], project_id, result["created_at"], encoded(result)))
             return result
 

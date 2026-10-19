@@ -1,3 +1,11 @@
+# Roadmap update — 19 October 2026
+
+The active path is customer brief → generic product mesh → preliminary mould envelope/cavity row → reusable press/material selection and necessary checks → configured process run → shared-clock 3D, timeline and traces. [Current implementation and data guide](../data/ENGINEERING_LIBRARY.md). I02 is now **partially implemented**: arbitrary tooling, slides, cooling channels and full mouldability remain open. I03–I04 has synchronized channel plots/CSV in addition to its existing L0 schedule; cost accounting and physical fields remain open. The server copilot is bounded workflow routing and explicit extraction, not an autonomous mould designer.
+
+Next dependencies: verified official machine/grade catalogue and actual user data; richer extraction/tooling/robot constraints and cost alternatives; then independently validated reduced physical models and corrected PCA/PLS. Do not label the full V1 complete or use the earlier illustrative cell as evidence of solved physics.
+
+The dated plan below describes the earlier baseline; its unimplemented I02 references are superseded by this update.
+
 # Product roadmap
 
 Updated 2026-10-17 after [AUD-2026-10-17](../architecture/CURRENT_STATE.md). Goal: an original online open-source engineering platform, with customer/commercial requirements driving product, mould, cell, process, cost and optimisation decisions. [Implementation status](IMPLEMENTATION_STATUS.md) records actual code; [the increment plan](../planning/IMPLEMENTATION_PLAN.md) supplies concrete files/tests/acceptance.

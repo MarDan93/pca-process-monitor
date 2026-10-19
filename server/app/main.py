@@ -15,6 +15,8 @@ from .settings import Settings
 from .store import DomainError, Store
 from .process import ProcessPreviewRequest, RunRequest, example
 from . import assistant
+from .resources import Resources, ResourceRequest, ResourceImport, SOURCE_REGISTER, FAMILIES
+from .engineering import LayoutRequest
 
 ROOT = Path(__file__).resolve().parents[2]
 
@@ -28,6 +30,8 @@ class BodyLimit:
         if scope["type"] != "http":
             return await self.app(scope, receive, send)
         limit = 18 * 1024 * 1024 if scope["path"].endswith("/assets") else 32768
+        if scope["path"] == "/api/library/import":
+            limit = 350000
         total = 0
         messages = []
         while True:
@@ -98,6 +102,7 @@ def create_app(database=None, principal="local-developer", testing=False, settin
         return JSONResponse({"detail": error.message}, error.status)
 
     store = app.state.store
+    library = Resources(store)
 
     @app.exception_handler(RequestValidationError)
     async def validation_error(request, error):
@@ -105,6 +110,57 @@ def create_app(database=None, principal="local-developer", testing=False, settin
             return JSONResponse({"detail": "Invalid sign-in request."}, 422)
         # Do not echo submitted project data or passwords in validation responses.
         return JSONResponse({"detail": [{"loc": list(e["loc"]), "msg": e["msg"]} for e in error.errors()]}, 422)
+
+    from pydantic import ValidationError
+
+    @app.exception_handler(ValidationError)
+    async def nested_validation_error(_request, error):
+        return JSONResponse({"detail": [{"loc": list(e["loc"]), "msg": e["msg"]} for e in error.errors()]}, 422)
+
+    @app.get("/api/library/sources")
+    def library_sources():
+        return {"sources": SOURCE_REGISTER, "families": FAMILIES, "verified_manufacturer_models": 0}
+
+    @app.get("/api/library/{kind}")
+    def list_resources(kind: str):
+        if kind not in ("machine", "material"):
+            raise DomainError(404, "Unknown library kind.")
+        return library.list(kind)
+
+    @app.get("/api/library/{kind}/template")
+    def resource_template(kind: str):
+        if kind not in ("machine", "material"):
+            raise DomainError(404, "Unknown library kind.")
+        return Response(library.template(kind), media_type="text/csv", headers={"Content-Disposition": f'attachment; filename="{kind}-template.csv"'})
+
+    @app.post("/api/library")
+    def save_resource(body: ResourceRequest):
+        return library.save(body.kind, [body.data])[0]
+
+    @app.post("/api/library/import")
+    def import_resources(body: ResourceImport):
+        return library.import_csv(body)
+
+    @app.post("/api/projects/{project_id}/engineering/preview")
+    def preview_layout(project_id: str, body: LayoutRequest):
+        return store.preview_process(project_id, body, field="engineering")
+
+    @app.get("/api/projects/{project_id}/engineering/presses")
+    def compare_presses(project_id: str):
+        from .engineering import press_checks
+        project = store.get(project_id)
+        layout = project['engineering']
+        if not layout:
+            raise DomainError(422, 'Approve a preliminary mould layout first.')
+        if not project['asset'] or project['asset']['id'] != layout['asset_id']:
+            raise DomainError(409, 'Regenerate the layout for the current geometry first.')
+        alternatives = []
+        for machine in library.list('machine'):
+            checks = press_checks({**layout, 'machine': machine}, project['process'])
+            status = 'failed' if any(c['status'] == 'failed' for c in checks) else 'incomplete' if any(c['status'] == 'incomplete' for c in checks) else 'passed'
+            alternatives.append({'machine': machine, 'checks': checks, 'status': status})
+        return {'project_revision': project['revision'], 'alternatives': alternatives,
+                'scope': 'Necessary preliminary checks only. Hourly cost is user-declared; no unit-cost or optimal-press recommendation.'}
 
     @app.get("/api/auth/status")
     def auth_status(request: Request):

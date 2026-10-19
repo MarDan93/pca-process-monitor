@@ -1,0 +1,3 @@
+name,source_kind,clamp_force_kn,tiebar_x_mm,tiebar_y_mm,mould_min_mm,mould_max_mm,opening_stroke_mm,max_daylight_mm,max_shot_cm3,hourly_cost,currency,notes
+Synthetic press A,synthetic,5000,1000,1000,100,1000,500,2000,500,70.123456,EUR,Software fixture only; no manufacturer or production validation
+Synthetic press B too narrow,synthetic,2500,50,500,100,700,300,1200,250,40,EUR,Software failure fixture only; no manufacturer or production validation

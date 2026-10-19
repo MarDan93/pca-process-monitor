@@ -104,7 +104,7 @@ def main():
             assert request(path)[1]['process']['cycles'] == 3
             assert request('/api/auth/logout', {})[0] == 200
             assert request('/api/projects')[0] == 401
-            evidence = {"actual_codespace": False, "synthetic_codespaces_environment": True, "launcher": "passed", "rewritten_origin_with_bound_host_and_fetch_metadata": "passed", "authenticated_process_ai_workflow": "passed", "safe_restart_persistence": "passed", "logout_revocation": "passed", "actual_server_cpu_inference_s": round(elapsed, 3), "initial_duration_s": 126, "updated_duration_s": 104, "github_port_forwarding": "owner observed login rejection; external post-fix verification pending"}
+            evidence = {"actual_codespace": False, "synthetic_codespaces_environment": True, "launcher": "passed", "rewritten_origin_with_bound_host_and_fetch_metadata": "passed", "authenticated_process_ai_workflow": "passed", "safe_restart_persistence": "passed", "logout_revocation": "passed", "actual_server_cpu_inference_s": round(elapsed, 3), "initial_duration_s": 126, "updated_duration_s": 104, "github_port_forwarding": "owner is now using the external app; this increment is not yet verified in their instance"}
             target = ROOT / '.cache/verification/codespaces-process.json'
             target.parent.mkdir(parents=True, exist_ok=True)
             target.write_text(json.dumps(evidence, indent=2))

@@ -1,3 +1,5 @@
+> Current connected workflow (19 October): [load machine/material data, generate a preliminary mould layout and run synchronized 3D/traces](docs/data/ENGINEERING_LIBRARY.md). [Codespaces update instructions](docs/deployment/CODESPACES.md). Official numerical OEM coverage is currently zero (blocked source access); the engine computes configured L0 timing, not polymer physics. See [current status](docs/product/IMPLEMENTATION_STATUS.md).
+
 # pca-process-monitor
 Python library for PCA-based process monitoring — continuous and batch processes. Includes NIPALS, T², Q, contribution plots, and AI-assisted interpretation.
 

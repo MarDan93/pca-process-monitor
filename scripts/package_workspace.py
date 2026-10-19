@@ -16,6 +16,7 @@ def main():
     target = OUTPUT / 'Mould-Studio-Workspace-0.2.0-local.zip'
     paths = [ROOT / file for file in ('LICENSE', 'NOTICE', 'SECURITY.md', 'server/requirements.lock', 'server/requirements.in', 'server/README.md', 'web/README.md', 'scripts/run_workspace.py', 'prototype/OPEN_SOURCE.md', 'docs/product/ROADMAP.md', 'docs/product/IMPLEMENTATION_STATUS.md', 'docs/compliance/WORKSPACE_DEPENDENCIES.md', 'docs/compliance/WORKSPACE_PYTHON_DEPENDENCIES.json', 'docs/compliance/WORKSPACE_WEB_DEPENDENCIES.json', 'docs/verification/WORKSPACE_2026-10-17.md', 'docs/verification/WORKSPACE_AI_2026-10-17.json', 'docs/design/WORKSPACE_0_2_0.png')]
     paths += sorted((ROOT / 'server/app').glob('*.py'))
+    paths += sorted((ROOT / 'server/app').glob('*.json'))
     paths += sorted((ROOT / 'server/tests').glob('*.py'))
     paths += sorted(path for path in (ROOT / 'web/dist').rglob('*') if path.is_file())
     intro = """# Mould Studio — local review build 0.2.0

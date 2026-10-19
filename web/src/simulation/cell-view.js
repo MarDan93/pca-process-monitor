@@ -2,27 +2,12 @@
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 
+import { robotPosition, partPosition, mouldOpenness } from './kinematics.js';
+export { robotPosition, partPosition } from './kinematics.js';
 const mix = (a, b, u) => a.map((v, i) => v + (b[i] - v) * Math.max(0, Math.min(1, u)));
-export function robotPosition(run, time) {
-  for (const c of run.cycles) {
-    if (time >= c.pick_start_s && time < c.pick_end_s) return mix([0, 0, 0], [0, 0, 220], (time - c.pick_start_s) / (c.pick_end_s - c.pick_start_s || 1));
-    if (time >= c.pick_end_s && time < c.transfer_end_s) return mix([0, 0, 220], [900, 0, 20], (time - c.pick_end_s) / (c.transfer_end_s - c.pick_end_s));
-    if (time >= c.transfer_end_s && time < c.deposit_s) return [900, 0, 20];
-    if (time >= c.deposit_s && time < c.return_end_s) return mix([900, 0, 20], [0, 0, 350], (time - c.deposit_s) / (c.return_end_s - c.deposit_s || 1));
-  }
-  return [0, 0, 350];
-}
-export function partPosition(run, cycle, lane, time) {
-  const s = run.scenario;
-  if (time < cycle.injection_start_s + s.injection_s || time >= cycle.exit_s) return null;
-  const y = (lane - (s.cavities - 1) / 2) * 80;
-  if (time < cycle.pick_start_s) return [0, y, 0];
-  if (time < cycle.deposit_s) { const p = robotPosition(run, time); return [p[0], p[1] + y, p[2]]; }
-  return [900 + (time - cycle.deposit_s) * s.belt_speed_mm_s, y, 20];
-}
 
 export function mountProcessCell(container, run, concept, t) {
-  const s = run.scenario, span = Math.max(240, s.cavities * 80 + 80);
+  const s = run.scenario, layout = run.engineering, span = Math.max(240, layout?.mould.width_mm ?? s.cavities * 80 + 80), plateHeight = layout?.mould.height_mm ?? 240, plate = layout?.spec.plate_thickness_mm ?? 100, partDepth = layout?.part_cell_bounds_mm[0] ?? 50;
   const renderer = new THREE.WebGLRenderer({ antialias: true });
   renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.5));
   renderer.setClearColor(0x111c28); renderer.outputColorSpace = THREE.SRGBColorSpace;
@@ -50,8 +35,8 @@ export function mountProcessCell(container, run, concept, t) {
   cylinder(-740, 0, 230, 110, 260, steel);
   cylinder(-1250, 0, 80, 160, 440, frame);
   box(-1020, 0, 340, 470, 40, 40, steel);
-  box(75, 0, -5, 100, span, 240, steel);
-  const moving = box(-100, 0, -5, 100, span, 240, frame);
+  box(partDepth / 2 + plate / 2, 0, 0, plate, span, plateHeight, steel);
+  const moving = box(-partDepth / 2 - plate / 2, 0, 0, plate, span, plateHeight, frame);
   box(900 + s.belt_length_mm / 2, 0, -35, s.belt_length_mm, span, 45, belt);
   for (const x of [930, 900 + s.belt_length_mm - 30]) box(x, 0, -150, 55, span, 200, frame);
   box(450, span / 2 + 90, 250, 70, 70, 700, frame);
@@ -67,6 +52,8 @@ export function mountProcessCell(container, run, concept, t) {
     const positions = [];
     for (const component of concept.components) for (const tri of component.triangles) for (const i of tri) positions.push(...component.vertices[i]);
     geometry = new THREE.BufferGeometry(); geometry.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3)); geometry.computeVertexNormals(); geometry.center();
+    if (layout?.spec.ejection_axis === "y") geometry.rotateZ(-Math.PI / 2);
+    if (layout?.spec.ejection_axis === "z") geometry.rotateY(Math.PI / 2);
   } else geometry = new THREE.BoxGeometry(70, 45, 18);
   const pieces = new THREE.InstancedMesh(geometry, teal, Math.max(1, run.cycles.length * s.cavities)); pieces.frustumCulled = false; scene.add(pieces);
   const transform = new THREE.Object3D();
@@ -83,12 +70,7 @@ export function mountProcessCell(container, run, concept, t) {
     if (!index) { transform.scale.setScalar(0); transform.updateMatrix(); pieces.setMatrixAt(0, transform.matrix); }
     pieces.instanceMatrix.needsUpdate = true;
     const p = robotPosition(run, time); tool.position.set(...p); ram.position.set(p[0], 0, (p[2] + 600) / 2); ram.scale.z = (600 - p[2]) / 400;
-    let openness = 0;
-    for (const e of run.events) {
-      if (e.phase === 'closing' && time >= e.start_s) openness = time >= e.end_s ? 0 : 1 - (time - e.start_s) / (e.end_s - e.start_s || 1);
-      if (e.phase === 'opening' && time >= e.start_s) openness = time >= e.end_s ? 1 : (time - e.start_s) / (e.end_s - e.start_s || 1);
-    }
-    moving.position.x = -100 - openness * 230;
+    moving.position.x = -partDepth / 2 - plate / 2 - mouldOpenness(run, time) * (layout?.spec.opening_mm ?? 230);
     const active = run.events.filter(e => e.start_s <= time && time < e.end_s);
     for (const [mat, phase] of [[amber, 'plasticising'], [steel, 'injection'], [violet, 'pickup'], [belt, 'conveying']]) {
       mat.emissive.set(active.some(e => e.phase === phase) ? 0x183d3b : 0x000000);
@@ -109,5 +91,10 @@ export function mountProcessCell(container, run, concept, t) {
   controls.addEventListener('change', draw);
   const observer = new ResizeObserver(resize); observer.observe(container);
   camera.position.set(3100, -3600, 2600); controls.update(); resize(); sample(0);
-  return { sample, dispose() { disposed = true; observer.disconnect(); controls.dispose(); scene.traverse(o => o.geometry?.dispose()); materials.forEach(m => m.dispose()); textures.forEach(t => t.dispose()); renderer.dispose(); renderer.forceContextLoss(); } };
+  function setView(view='iso') {
+    const directions = {iso:[3100,-3600,2600],front:[0,-1,6000],side:[-6000,0,1]};
+    camera.position.copy(controls.target).add(new THREE.Vector3(...(directions[view] || directions.iso)));
+    controls.update(); resize();
+  }
+  return { sample, setView, dispose() { disposed = true; observer.disconnect(); controls.dispose(); scene.traverse(o => o.geometry?.dispose()); materials.forEach(m => m.dispose()); textures.forEach(t => t.dispose()); renderer.dispose(); renderer.forceContextLoss(); } };
 }

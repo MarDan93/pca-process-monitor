@@ -9,10 +9,10 @@ import { Icon } from '../ui/Icon';
 type AIState = { status: string; messages: { role: string; content: string }[]; mode: string; progress: number | null; file: string; error: string; proposal: Record<string, Record<string, unknown>> | null; baseRevision: number | null };
 type Props = { project: Project | null; t: (s: string) => string; language: Language; busy: boolean; onPreview: (patch: Partial<Commercial>, source: Source) => void; onError: (error: string) => void; onProcessPreview: (s: Scenario, source: Source) => void };
 export function CopilotPanel(props: Props) {
-  const [server, setServer] = useState<{ enabled: boolean; ready: boolean } | null>(null);
+  const [server, setServer] = useState<{ enabled: boolean; ready: boolean; model?: string } | null>(null);
   useEffect(() => { let active = true; api.assistantStatus().then(s => { if (active) setServer(s); }).catch(() => { if (active) setServer({ enabled: false, ready: false }); }); return () => { active = false; }; }, []);
   if (server === null) return <div className="help">{props.t('Connecting to workspace…')}</div>;
-  return server.enabled ? <ServerCopilotPanel {...props} ready={server.ready}/> : <BrowserCopilotPanel {...props}/>;
+  return server.enabled ? <ServerCopilotPanel {...props} ready={server.ready} model={server.model ?? 'CPU'}/> : <BrowserCopilotPanel {...props}/>;
 }
 function BrowserCopilotPanel({ project, t, language, busy, onPreview, onError }: Props) {
   const client = useRef<LocalAI | null>(null);

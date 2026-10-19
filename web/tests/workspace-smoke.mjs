@@ -230,6 +230,52 @@ try {
     pass('XYZ orientation mismatch blocks the run; new process screens switch across all four languages');
   }
 
+  if (process.argv.includes('--engineering')) {
+    // Real UI authoring, CSV validation/import, approved layout and linked run.
+    await click('#module-press');
+    await evaluate('document.querySelectorAll(".engineering-panel .process-group").forEach(e=>e.open=true)');
+    await fill('#resource-machine-name', 'Synthetic press fixture');
+    await fill('.engineering-panel form select', 'synthetic');
+    for (const [field,value] of Object.entries({clamp_force_kn:5000,tiebar_x_mm:1000,tiebar_y_mm:1000,mould_min_mm:100,mould_max_mm:1000,opening_stroke_mm:500,max_daylight_mm:2000,max_shot_cm3:500,hourly_cost:'70.123456'})) await fill('#resource-'+field,value);
+    await evaluate('window.machineCurrency=[...document.querySelectorAll(".engineering-panel form select")].find(s=>[...s.options].some(o=>o.value==="EUR"));void 0');
+    await evaluate('Object.getOwnPropertyDescriptor(HTMLSelectElement.prototype,"value").set.call(window.machineCurrency,"EUR");window.machineCurrency.dispatchEvent(new Event("change",{bubbles:true}))');
+    await click('#save-resource'); await until('document.querySelector(".library-items").textContent.includes("Synthetic press fixture")');
+    await click('#module-material');
+    await evaluate('document.querySelectorAll(".engineering-panel .process-group").forEach(e=>e.open=true)');
+    const sheet=join(temp,'materials.csv');await writeFile(sheet,'name,source_kind,family,melt_density_kg_m3\nSynthetic polymer fixture,synthetic,Unspecified,800\n');
+    const {root:csvDoc}=await call('DOM.getDocument');const csvNode=await call('DOM.querySelector',{nodeId:csvDoc.nodeId,selector:'#library-csv'});
+    await call('DOM.setFileInputFiles',{nodeId:csvNode.nodeId,files:[sheet]});
+    await until('[...document.querySelectorAll(".engineering-panel button")].find(b=>b.textContent==="Validate CSV")?.disabled===false');
+    await evaluate('[...document.querySelectorAll(".engineering-panel button")].find(b=>b.textContent==="Validate CSV").click()');
+    await until('document.querySelector("#import-library").disabled===false');
+    assert.equal(await evaluate('document.querySelector(".library-items").textContent.includes("Synthetic polymer fixture")'),false);
+    await click('#import-library');await until('document.querySelector(".library-items").textContent.includes("Synthetic polymer fixture")');
+    await click('#module-mould');await until('document.querySelector("#layout-machine").options.length===2 && document.querySelector("#layout-material").options.length===2');
+    await evaluate('window.mach=document.querySelector("#layout-machine").options[1].value;window.mat=document.querySelector("#layout-material").options[1].value');
+    await fill('#layout-machine',await evaluate('window.mach'));await fill('#layout-material',await evaluate('window.mat'));
+    await fill('#layout-projected_area_mm2',1000);await fill('#layout-cavity_pressure_mpa',40);
+    await click('#generate-layout');await until('Boolean(document.querySelector("#approve-operation"))');
+    assert.equal((await stored()).engineering,null);
+    await click('#approve-operation');await until('!document.querySelector("dialog") && document.querySelector("#layout-view")?.dataset.renderStatus==="ready"');
+    const layout=(await stored()).engineering;assert.equal(layout.spec.cavities,2);assert.equal(layout.machine.data.hourly_cost,'70.123456');
+    assert.equal(layout.checks.some(c=>c.status==='failed'),false);
+    await screenshot('engineering-layout.png');
+    await click('#module-process');
+    await evaluate('document.querySelectorAll(".process-group").forEach(e=>e.open=true)');
+    await fill('#process-belt_orientation_deg',0);await click('#preview-process');await until('Boolean(document.querySelector("#approve-operation"))');await click('#approve-operation');await until('!document.querySelector("dialog")');
+    await click('#run-process');await until('document.querySelector("#process-seek")?.max==="104" && document.querySelector("#process-cell")?.dataset.renderStatus==="ready"');
+    const linked=await evaluate(`fetch('/api/projects/${firstId}/process/latest').then(r=>r.json())`);assert.equal(linked.engineering.asset_id,(await stored()).asset.id);
+    const middle=(linked.cycles[0].pick_end_s+linked.cycles[0].transfer_end_s)/2;
+    await fill('#signal-select','robot_x');await fill('#process-seek',middle);
+    await until('document.querySelector("#signal-value").textContent.includes("450.00")');
+    assert.equal(await evaluate('document.querySelector("#signal-cursor").dataset.time'),await evaluate('document.querySelector("#process-cell").dataset.time'));
+    await screenshot('engineering-linked-process.png');
+    await fill('#signal-select','cavity_pressure');await until('Boolean(document.querySelector(".signal-unavailable"))');
+    assert.equal(await evaluate('Boolean(document.querySelector("#signal-plot"))'),false);
+    await fill('#signal-select','mass_hopper');
+    pass('UI library entry + staged CSV import + geometry-bound layout + press checks + linked run; trace cursor matches 3D and unavailable physics has no fabricated curve');
+  }
+
   if (realAI) {
     assert.equal(await evaluate('document.querySelector("meta[name=ai-model-host]")?.content'), '/ai-assets/');
     await click('#load-ai'); await until('document.querySelector(".chat-composer .muted").textContent==="Ready"', 240000);

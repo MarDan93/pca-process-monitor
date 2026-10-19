@@ -1,3 +1,13 @@
+# Current increment — 19 October 2026
+
+Implemented and tested: single left module navigation; owner-scoped reusable machine/material records with exact hourly costs, explicit units and sources; atomic CSV validation/import; source coverage register (zero verified OEM models because access was blocked); mesh-derived cavity-row/plate envelopes; declared extraction frame; press dimensional, clamp and shot-volume screens with passed/failed/incomplete states; comparison of the machine park; approved immutable layout/library snapshots and geometry invalidation; linked L0 runs; selectable mass/XYZ/opening/output time series synchronized with 3D and CSV export. Server AI now receives bounded conversation history, routes checked workflow advice, labels guided fallbacks and rejects unsupported/unstated update values.
+
+Not implemented: actual cavity machining/parting/slides/ejection/cooling design, automatic mouldability, geometric collision/reach verification, STEP/photo reconstruction, full cost model, thermal/pressure/flow/plasticisation/moisture solvers, measured-series ingestion and integrated corrected PCA/PLS. Stored thermal properties are future model inputs; pressure/temperature/torque/moisture curves are unavailable. The optional larger model is evaluated separately and never removes these capability boundaries.
+
+[Data and model coverage](../data/ENGINEERING_LIBRARY.md) · [Verification](../verification/ENGINEERING_WORKFLOW_2026-10-19.md) · [Codespaces guide](../deployment/CODESPACES.md).
+
+Earlier dated delivery details follow; this current status supersedes claims that all mould/press functions were still planned.
+
 # Implementation status
 
 **Codespaces/process update, 19 October:** the current trial target is [Codespaces with server CPU AI](../deployment/CODESPACES.md). A first bounded L0 engine is implemented: configured drying/feed/plasticising/injection/holding/cooling/open/eject/robot/belt events, discrete mass inventory, unchanged-orientation XYZ constraints, overlapping resources, shared-clock 3D/timeline/seek, persisted input/run snapshots and approved AI process settings. **22 backend tests**, 28 prototype tests, browser process/real-server-AI flows and the actual authenticated launcher under synthetic Codespaces variables pass. [Evidence](../verification/PROCESS_CODESPACES_2026-10-19.md). Actual GitHub provisioning/forwarding is unrun because the integration's Codespaces API call returns 403; the owner must create the Codespace. No complete V1, cost engine, mould/press checks, validated paths or polymer solver is claimed. Earlier dated status below records prior increments and is superseded on these points.

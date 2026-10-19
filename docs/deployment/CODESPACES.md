@@ -16,14 +16,14 @@ python scripts/setup_codespaces.py --with-ai
 python scripts/start_codespaces.py
 ```
 
-The startup log is `.cache/codespaces/workspace.log`. Node 24 and Python 3.12 are provisioned by `.devcontainer/devcontainer.json`. Setup/start commands were exercised in this development environment, and the actual launcher was tested under synthetic Codespaces variables. GitHub's external provisioning/forwarding is **not yet verified**: the current integration receives HTTP 403 for the Codespaces API. The owner must create the Codespace from their account.
+The startup log is `.cache/codespaces/workspace.log`. Node 24 and Python 3.12 are provisioned by `.devcontainer/devcontainer.json`. Setup/start commands were exercised in this development environment, and the actual launcher was tested under synthetic Codespaces variables. The owner has now opened the real Codespace and tested the application. This agent still cannot manage or directly verify their instance: the integration receives HTTP 403 for the Codespaces API.
 
 ## Updating an existing Codespace after a sign-in origin error
 
 Run these commands one at a time from the repository root in the Codespaces terminal. Stop if a command reports an error; do not discard local source changes to force an update.
 
 ```sh
-git pull --ff-only
+git pull --ff-only origin trial/codespaces-process
 npm --prefix web run build
 python scripts/start_codespaces.py --restart
 ```
@@ -34,12 +34,18 @@ Codespaces can rewrite the browser's `Origin` header to its loopback forwarding 
 
 The login page detects a different configured address and provides a link to the secure workspace. A remaining login mismatch reports expected/received origins without exposing credentials, so proxy differences can be diagnosed precisely. See [fix evidence](../verification/CODESPACES_ORIGIN_FIX_2026-10-19.md).
 
+## Connected engineering workflow
+
+See [Load your data and follow product → mould → press → process](../data/ENGINEERING_LIBRARY.md). The current increment adds an owner-scoped machine/material library (manual/CSV), mesh-bound plate/cavity-row envelopes, necessary press checks and comparisons, and synchronized signal plots/export. It is a preliminary layout and configured-time engine, not an automatic production mould or a polymer solver. The left rail is the single module navigation; the top workflow path is read-only.
+
+The copilot's Conversation mode now routes a bounded workflow using checked localized advice templates instead of displaying unconstrained model claims. Up to six prior messages are sent as context. If model routing fails validation, the UI labels the guided response. Structured process/commercial updates reject absent numbers/names and ambiguous annual-volume extraction; preview and approval remain mandatory. This prevents the reported invented budgets/prices from being shown as advice. It is not a general engineering question-answering model.
+
 ## First observable process run
 
 1. Choose **New project**, enter any product/project name, and create it. Commercial and product values start unknown.
 2. Optionally import an OBJ/STL with explicit units or choose **Reference flange**. The reference is an original synthetic visual fixture. Geometry is not used to infer shot mass or physical mouldability.
 3. Choose **Process** on the left. In Properties choose **Load synthetic example**, then **Preview changes → Approve and apply**. The example uses arbitrary demonstration times; its 20-second drying stage is not a material qualification recommendation.
-4. Choose **Run process**. The illustrative cell, timeline and material inventory now sample one stored L0 run. Use **Play**, pause, **Next event**, the time slider and playback speed. Select timeline bars to inspect their timestamps.
+4. Choose **Run process**. The illustrative cell, timeline and selectable time-series plots now sample one stored L0 run. Mass inventories are available in the signal selector; the trace CSV includes available channels and units. Use **Play**, pause, **Next event**, the time slider and playback speed. Select timeline bars to inspect their timestamps.
 5. The initial configured example produces **10 parts in 126 seconds**, with two cavities over five cycles. The first deposit is at 46 seconds. At 58 seconds the first two parts have exited the belt. Runner mass is accounted for separately.
 6. In the right copilot choose **Process** and use **Try: cooling 12 s, three cycles**, then send. The actual pinned model runs on the Codespace CPU, with no model download/inference on your PC. Inspect **Preview changes**, approve, then choose **Run process** again. The old result is marked outdated until recalculation. The tested proposal produces **6 parts in 104 seconds**.
 7. Change **Required orientation at belt** to 180° while the mould remains at 0°, approve and run: the scenario is blocked because the configured XYZ robot has no rotary axis. Reset to the supported matching orientation to continue.
@@ -55,7 +61,20 @@ The examples above are a repeatable software check, not experimental process val
 - Cavity/part IDs, configured unchanged yaw orientation, linear XYZ transfer and belt travel, shared-clock animation/seek, run duration, injection intervals and configured output rate.
 - Immutable input/run snapshots, asset references, input hash, source/revision, outdated-result indication and latest-result restoration after app restart.
 
-The cell envelopes and paths are illustrative. Actual strokes, mould/robot collisions, acceleration, clamp/shot compatibility, undercuts, mould construction and cooling circuits are not checked. The displayed mesh uses original declared millimetre dimensions but is recentered for illustration; cell envelopes are not fitted or validated against it. No moisture, melt temperature, pressure/flow field, shrinkage, quality or production-cost solution is computed. There is no STEP/photo-to-tooling implementation or integrated PCA/PLS in this increment.
+Without an approved layout, the cell is an independent timing example. With one, product positions, extraction frame, plate dimensions/opening and preliminary press checks use its snapshot. Paths remain illustrative: tooling interfaces, mould/robot collisions, acceleration, reach, undercuts, finished mould construction and cooling circuits are not validated. Passing necessary checks does not establish full clamp/shot suitability or production readiness. No moisture, melt temperature, pressure/flow field, shrinkage, quality or production-cost solution is computed. There is no STEP/photo-to-tooling implementation or integrated PCA/PLS in this increment.
+
+## Experimental larger CPU model (not recommended for this trial)
+
+The default remains the existing pinned compact Qwen2.5 0.5B. A pinned 1.5B ONNX q4 profile is optional, using approximately 1.79 GB of weights. Initial three-case native execution/containment checks completed (~19–34 seconds), but a stricter routing assertion FAILED: it emitted unrequested action values, including interpreting the quantity as a total order. The validator rejects this output and displays labelled guided advice. Default compact passed the first-request routing assertion and explicit process extraction; a follow-up can still use a guided fallback. The larger model is not promoted, and higher parameter count is not evidence of engineering accuracy. Peak native child RSS was about 5.25 GiB for 1.5B versus 2.87 GiB for compact here. These are development measurements, not Codespaces performance guarantees.
+
+For developer experiments only, the explicit profile remains available:
+
+```sh
+python scripts/setup_codespaces.py --with-ai --ai-profile advisor
+MOULD_AI_PROFILE=advisor python scripts/start_codespaces.py --restart
+```
+
+The profile environment variable must also be supplied on later starts; automatic Codespaces startup continues to use compact by default. To return: `MOULD_AI_PROFILE=compact python scripts/start_codespaces.py --restart`. No API key or GPU is required. Weights stay in ignored cache and are SHA-256 verified; upstream model licence and conversion provenance are recorded, and redistribution review remains open.
 
 ## Persistence, limits and stopping
 
@@ -70,7 +89,7 @@ PYTHONPATH=server .venv-app/bin/python -m unittest discover -s server/tests -v
 cd web
 npm run build
 npm run test:browser -- --process
-npm run test:browser -- --server-ai
+npm run test:browser -- --server-ai --engineering
 cd ..
 .venv-app/bin/python scripts/test_codespaces.py
 ```

@@ -1,0 +1,2 @@
+name,source_kind,family,melt_density_kg_m3,notes
+Synthetic polymer fixture,synthetic,Unspecified,800,Arbitrary density for unit-conversion software checks; not a real material grade

@@ -1,0 +1,4 @@
+{
+  "compact": {"model":"onnx-community/Qwen2.5-0.5B-Instruct","revision":"22942cb7d7ba4cc81bb4673549ca4d4614469b5e","bytes":786156820,"sha256":"09235a3b1c135cd04ef570e5053b5c079e028078a2cc5f76ba6a251e91bf3296"},
+  "advisor": {"model":"onnx-community/Qwen2.5-1.5B-Instruct","revision":"d54957e3af1be04546436e874a60fe386041b244","bytes":1787566590,"sha256":"70c24509f760fed9a8f50391165c46a87660197028a42c4547763f1c173ddea6"}
+}

@@ -4,7 +4,7 @@ import type { Language } from '../i18n';
 import { Icon } from '../ui/Icon';
 import type { AssistantReply, Scenario } from '../simulation/types';
 
-export function ServerCopilotPanel({ project, language, t, busy, onPreview, onProcessPreview, ready }: { project: Project | null; language: Language; t: (s: string) => string; busy: boolean; onPreview: (patch: Partial<Commercial>, source: Source) => void; onProcessPreview: (s: Scenario, source: Source) => void; ready: boolean }) {
+export function ServerCopilotPanel({ project, language, t, busy, onPreview, onProcessPreview, ready, model }: { project: Project | null; language: Language; t: (s: string) => string; busy: boolean; onPreview: (patch: Partial<Commercial>, source: Source) => void; onProcessPreview: (s: Scenario, source: Source) => void; ready: boolean; model: string }) {
   const [messages, setMessages] = useState<{ role: string; content: string }[]>([]), [draft, setDraft] = useState(''), [mode, setMode] = useState('chat');
   const [answer, setAnswer] = useState<AssistantReply | null>(null), [working, setWorking] = useState(false), [error, setError] = useState('');
   const controller = useRef<AbortController | null>(null), generation = useRef(0), currentId = useRef(project?.id);
@@ -15,7 +15,7 @@ export function ServerCopilotPanel({ project, language, t, busy, onPreview, onPr
     const id = ++generation.current, message = draft.trim(); controller.current = new AbortController();
     setDraft(''); setWorking(true); setError(''); setAnswer(null); setMessages(old => [...old.slice(-8), { role: 'user', content: message }]);
     try {
-      const result = await api.assistant(project, message, mode, language, controller.current.signal);
+      const result = await api.assistant(project, message, mode, language, controller.current.signal, messages);
       if (id !== generation.current || currentId.current !== project.id) return;
       setAnswer(result); setMessages(old => [...old, { role: 'assistant', content: result.reply }]);
       if (result.validation_error) setError(result.validation_error);
@@ -28,11 +28,11 @@ export function ServerCopilotPanel({ project, language, t, busy, onPreview, onPr
     if (answer.process) onProcessPreview(answer.process, answer.source);
     else if (answer.commercial) onPreview(answer.commercial as Partial<Commercial>, answer.source);
   }
-  return <><div className="panel-heading copilot-heading"><Icon name="spark" size={20}/><div><strong>{t('AI copilot')}</strong><small>Qwen 2.5 · 0.5B</small></div><span className={`status-dot ${ready ? 'ready' : ''}`}/></div>
+  return <><div className="panel-heading copilot-heading"><Icon name="spark" size={20}/><div><strong>{t('AI copilot')}</strong><small>{model.split('/').at(-1)}</small></div><span className={`status-dot ${ready ? 'ready' : ''}`}/></div>
     <div className="server-ai-tag">{t('Server CPU inference · no model download on your PC')}</div><div className="copilot-scope"><span>{project?.name ?? t('No project selected')}</span><span>{project ? `r${project.revision}` : '—'}</span></div>
     <div className="server-ai-modes">{[['chat', 'Conversation'], ['commercial', 'Customer brief'], ['process', 'Process']].map(([key, label]) => <button key={key} className={mode === key ? 'selected' : ''} disabled={working} onClick={() => { setMode(key); setAnswer(null); }}>{t(label)}</button>)}</div>
-    <div className="chat-messages" aria-live="polite">{!messages.length && <div className="chat-welcome"><span className="ai-orb"><Icon name="spark" size={29}/></span><h2>{t('Configure the process in your own words.')}</h2><p>{t('Use Process mode to propose cycle settings. Review and approve before running.')}</p><p className="server-ai-mode-note">{t('Small CPU model: verify every answer. It does not calculate polymer physics.')}</p></div>}{messages.map((m, i) => <article key={i} className={`message ${m.role}`}><small>{t(m.role === 'user' ? 'Request' : 'AI copilot')}</small><p>{m.content}</p></article>)}
-      {working && <div className="ai-progress"><span className="spinner"/>{t('Thinking…')}</div>}{error && <p className="inline-error">{error}</p>}{answer && (answer.process || answer.commercial) && <button className="proposal-button" id="preview-ai" disabled={busy || working} onClick={preview}><Icon name="eye" size={16}/>{t('Preview changes')}</button>}
+    <div className="chat-messages" aria-live="polite">{!messages.length && <div className="chat-welcome"><span className="ai-orb"><Icon name="spark" size={29}/></span><h2>{t('Plan your next engineering step.')}</h2><p>{t('Use Process mode to propose cycle settings. Review and approve before running.')}</p><p className="server-ai-mode-note">{t('AI selects workflow steps. Advice uses checked templates; no generated specifications or prices.')}</p></div>}{messages.map((m, i) => <article key={i} className={`message ${m.role}`}><small>{t(m.role === 'user' ? 'Request' : 'AI copilot')}</small><p>{m.content}</p></article>)}
+      {answer?.response_mode === 'guided_workflow' && <p className="server-ai-mode-note">{t('Guided response: the model routing could not be validated.')}</p>}{working && <div className="ai-progress"><span className="spinner"/>{t('Thinking…')}</div>}{error && <p className="inline-error">{error}</p>}{answer && (answer.process || answer.commercial) && <button className="proposal-button" id="preview-ai" disabled={busy || working} onClick={preview}><Icon name="eye" size={16}/>{t('Preview changes')}</button>}
       {!ready && <p className="inline-error">{t('Server AI is not ready. Finish the Codespaces setup with AI enabled.')}</p>}
     </div>
     <div className="server-ai-example"><button id="ai-process-example" disabled={!project?.process || working} onClick={() => { setMode('process'); setAnswer(null); setDraft('Set cooling_s to 12 seconds and cycles to 3.'); }}>{t('Try: cooling 12 s, three cycles')}</button></div>

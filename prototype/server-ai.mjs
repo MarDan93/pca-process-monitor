@@ -1,17 +1,21 @@
 // Fixed text-in/text-out CPU inference. No generated code or model tools execute.
-import { stat } from 'node:fs/promises';
+import { readFile, stat } from 'node:fs/promises';
 import { createReadStream } from 'node:fs';
 import { createHash } from 'node:crypto';
 import { resolve } from 'node:path';
 import { pipeline, env } from '@huggingface/transformers';
-import { AI_MODEL, AI_MODEL_REVISION, buildAIMessages } from './ai-contract.js';
+import { buildAIMessages } from './ai-contract.js';
+const models = JSON.parse(await readFile(new URL('../server/app/model-manifest.json', import.meta.url), 'utf8'));
+const selected = models[process.env.MOULD_AI_PROFILE || 'compact'];
+if (!selected) throw new Error('Unknown AI profile.');
+const { model: AI_MODEL, revision: AI_MODEL_REVISION } = selected;
 
 const cache = resolve(import.meta.dirname, '../.cache/ai/models');
 const location = resolve(cache, AI_MODEL, AI_MODEL_REVISION);
 const weight = resolve(location, 'onnx/model_q4.onnx');
-const expected = '09235a3b1c135cd04ef570e5053b5c079e028078a2cc5f76ba6a251e91bf3296';
+const expected = selected.sha256;
 async function verify() {
-  if ((await stat(weight)).size !== 786156820) throw new Error('Incomplete pinned model. Run python scripts/setup_codespaces.py --with-ai.');
+  if ((await stat(weight)).size !== selected.bytes) throw new Error('Incomplete pinned model. Run python scripts/setup_codespaces.py --with-ai.');
   const hash = createHash('sha256');
   for await (const chunk of createReadStream(weight)) hash.update(chunk);
   if (hash.digest('hex') !== expected) throw new Error('Pinned model checksum failed.');
@@ -29,7 +33,7 @@ if (process.argv.includes('--prepare')) {
   process.stdout.write(JSON.stringify({ ready: true, model: AI_MODEL, revision: AI_MODEL_REVISION }) + '\n');
 } else {
   let source = '';
-  for await (const chunk of process.stdin) { source += chunk; if (source.length > 32768) throw new Error('Input is too large.'); }
+  for await (const chunk of process.stdin) { source += chunk; if (source.length > 131072) throw new Error('Input is too large.'); }
   const input = JSON.parse(source);
   let messages;
   if (input.mode === 'process') {
@@ -38,11 +42,12 @@ if (process.argv.includes('--prepare')) {
       { role: 'assistant', content: '{"reply":"Proposed injection time and cycle count.","changes":{"injection_s":2,"cycles":4}}' },
       { role: 'user', content: input.message }];
   } else if (input.mode === 'chat') {
-    messages = [{ role: 'system', content: `You are a requirements assistant for injection moulding. Reply briefly in ${input.language}. Use only supplied project facts: ${JSON.stringify(input.context)}. Process results, if supplied, are L0 configured scheduling, not measured production or polymer physics. Never invent material properties, temperatures, quality validation or capabilities. Ask for missing information. Conversation cannot modify a project.` }, { role: 'user', content: input.message }];
+    messages = [{ role: 'system', content: `You route an injection moulding workflow. Return ONLY JSON: {"actions":[...]}. Choose 1 to 4 UNIQUE actions from: demand, geometry, material, machines, layout, simulation, costs. Do not write facts, prices, recommendations, prose or new action names. Demand means annual versus total quantity and duration; geometry means part dimensions/mass; machines means real press specifications; layout means cavity layout; simulation means timing and curves; costs means economic comparison. Project facts: ${JSON.stringify(input.context)}.` },
+      ...(input.history || []).slice(-6), { role: 'user', content: input.message }];
   } else {
     messages = buildAIMessages(input.context, input.language, [{ role: 'user', content: input.message }], input.mode === 'commercial' ? 'changes' : 'chat');
   }
-  const output = await generator(messages, { max_new_tokens: input.mode === 'chat' ? 180 : 250, do_sample: false, return_full_text: false });
+  const output = await generator(messages, { max_new_tokens: input.mode === 'chat' ? 90 : 250, do_sample: false, return_full_text: false });
   const text = output[0].generated_text;
   process.stdout.write(JSON.stringify({ text: Array.isArray(text) ? text.at(-1).content : text, model: AI_MODEL, revision: AI_MODEL_REVISION }) + '\n');
 }

@@ -1,12 +1,14 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useImperativeHandle, useMemo, useRef, useState, type Ref } from 'react';
 import { mountProcessCell } from './cell-view.js';
 import { phaseLabels, type ProcessRun } from './types';
 import type { Concept } from '../geometry/import';
+import { SignalPlot } from './SignalPlot';
 import { Icon } from '../ui/Icon';
 
-export function ProcessView({ run, concept, active, stale, t }: { run: ProcessRun; concept: Concept | null; active: boolean; stale: boolean; t: (s: string) => string }) {
+export function ProcessView({ run, concept, active, stale, t, controlsRef }: { run: ProcessRun; concept: Concept | null; active: boolean; stale: boolean; t: (s: string) => string; controlsRef: Ref<{view:(v:string)=>void}> }) {
   const [time, setTime] = useState(0), [playing, setPlaying] = useState(false), [speed, setSpeed] = useState(1);
   const element = useRef<HTMLDivElement>(null), viewer = useRef<ReturnType<typeof mountProcessCell> | null>(null);
+  useImperativeHandle(controlsRef,()=>({view:(v:string)=>viewer.current?.setView(v)}),[]);
   useEffect(() => { setTime(0); setPlaying(false); }, [run.id]);
   useEffect(() => { if (!active) setPlaying(false); }, [active]);
   useEffect(() => { if (element.current) viewer.current = mountProcessCell(element.current, run, concept, t); return () => { viewer.current?.dispose(); viewer.current = null; }; }, [run.id, concept, t('Drying')]);
@@ -30,6 +32,7 @@ export function ProcessView({ run, concept, active, stale, t }: { run: ProcessRu
     <div className="process-cell"><div id="process-cell" ref={element}/><div className="process-stage-list">{activeEvents.filter(e => !['return', 'conveying'].includes(e.phase)).map(e => <span key={`${e.phase}-${e.cycle}`}>{t(phaseLabels[e.phase])} {e.cycle ? `· C${e.cycle}` : ''}</span>)}</div><div className="process-cell-note">{t('Illustrative cell. Paths and tooling clearances are not validated.')}</div></div>
     <div className="process-live-stats"><span>{t('Deposited')}<b id="deposited-count">{deposited}</b></span><span>{t('Output parts')}<b id="output-count">{out}</b></span><span>{t('Simulation time')}<b id="simulation-time">{time.toFixed(2)} s</b></span></div>
     <div className="process-transport"><button id="process-play" aria-label={t(playing ? 'Pause' : 'Play')} disabled={!run.duration_s} onClick={() => { if (time >= run.duration_s) setTime(0); setPlaying(!playing); }}><Icon name={playing ? 'stop' : 'play'} size={17}/>{t(playing ? 'Pause' : 'Play')}</button><button id="process-step" title={t('Next event')} onClick={() => { setPlaying(false); setTime(boundaries.find(v => v > time + 1e-7) ?? run.duration_s); }}>{t('Next event')}</button><input id="process-seek" aria-label={t('Simulation time')} type="range" min="0" max={run.duration_s || 1} step="0.01" value={time} onChange={e => { setPlaying(false); setTime(Number(e.target.value)); }}/><select aria-label={t('Playback speed')} value={speed} onChange={e => setSpeed(Number(e.target.value))}>{[.25, 1, 4, 10].map(v => <option key={v} value={v}>{v}×</option>)}</select></div>
+    <SignalPlot run={run} time={time} t={t} onSeek={v=>{setPlaying(false);setTime(v);}}/>
     <div className="process-timeline">{['dryer', 'feeder', 'screw', 'press', 'robot', 'belt'].map(resource => <div className="timeline-row" key={resource}><span>{t({ dryer: 'Drying', feeder: 'Feeding', screw: 'Plasticising', press: 'Press', robot: 'Robot', belt: 'Conveyor' }[resource]!)}</span><div>{run.events.filter(e => e.resource === resource).map((e, i) => <button key={i} className={`timeline-event phase-${e.phase}`} title={`${t(phaseLabels[e.phase])} · C${e.cycle} · ${e.start_s.toFixed(2)}–${e.end_s.toFixed(2)} s`} style={{ left: `${e.start_s / (run.duration_s || 1) * 100}%`, width: `${Math.max(.3, (e.end_s - e.start_s) / (run.duration_s || 1) * 100)}%` }} onClick={() => { setPlaying(false); setTime(e.start_s); }}/>) }<i className="timeline-cursor" style={{ left: `${time / (run.duration_s || 1) * 100}%` }}/></div></div>)}</div>
     <div className="process-inventory" aria-label={t('Material inventory')}>{Object.entries(balances).map(([key, value]) => <span key={key}>{t(labels[key])}<b>{Math.max(0, value).toFixed(1)} g</b></span>)}</div>
   </div>;
