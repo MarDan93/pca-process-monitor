@@ -1,3 +1,5 @@
+> **V2 supersedes earlier product/deployment assumptions:** see [the active system-first contract/roadmap](../product/FABRIVRA_V2.md). Dated implementation/audit details below remain historical evidence.
+
 # Incremental implementation plan
 
 **Latest direction, 19 October:** the owner requested Codespaces trials and prioritised a visible working process with AI assistance. The [bounded L0/AI increment](../verification/PROCESS_CODESPACES_2026-10-19.md) now implements a subset of I03–I04 without claiming I02 mould/press checks or full V1 completion. Its functional geometry and times are explicit configured assumptions. The [Codespaces guide](../deployment/CODESPACES.md) is the current trial entry point; local and managed-hosting paths remain alternatives. Close remaining geometry, economics and validation gates progressively.

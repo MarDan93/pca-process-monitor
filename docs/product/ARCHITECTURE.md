@@ -1,3 +1,5 @@
+> **FABRIVRA V2, 26 October 2026:** the owner-supplied V2 package supersedes earlier product/deployment assumptions. The core is the complete **System Simulation Engine**; Mold CAE, Timestral and Packaging Design are separate modules. [Active contract/roadmap](FABRIVRA_V2.md) · [Current browser trial](../deployment/CODESPACES.md). The dated text below is retained history.
+
 # Online platform architecture — revision 4
 
 Historical revision-4 proposal. Updated pointers 2026-10-17: [TARGET_ARCHITECTURE.md](../architecture/TARGET_ARCHITECTURE.md) and [IMPLEMENTATION_PLAN.md](../planning/IMPLEMENTATION_PLAN.md) supersede conflicting proposals below. No service is inferred from this sketch. Proposed architecture for the [specification](SPECIFICATION.md). [Implementation status](IMPLEMENTATION_STATUS.md) separates proposals from working capabilities.

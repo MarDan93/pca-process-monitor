@@ -1,97 +1,94 @@
-# Try the application in GitHub Codespaces
+# FABRIVRA in a private GitHub Codespace
 
-Current trial branch: **`trial/codespaces-process`**. No local installation is required. This is the current server-backed workspace plus a first configured process engine, not the full future engineering platform.
+Current trial: **`trial/codespaces-process`**. FABRIVRA runs as a browser application on the Codespace CPU, with SQLite persistence and the existing compact free model. No desktop installer, new hosting service, GPU or paid API is needed. The implemented V2 increment is a configured L0 **production-system simulator**, not a certified polymer/CAE solver. [Current scope](../product/FABRIVRA_V2.md) · [Verification](../verification/FABRIVRA_V2_2026-10-26.md).
 
-## Open and sign in
+## Update an existing Codespace
 
-1. Open [Create a Codespace for this trial](https://github.com/codespaces/new?repo=1262022691&ref=trial%2Fcodespaces-process). Sign in to your own GitHub account. Verify the branch is `trial/codespaces-process` and choose the smallest two-core machine. Review your remaining Codespaces compute/storage allowance and spending settings; the app cannot guarantee free usage beyond GitHub's quotas.
-2. Create the Codespace. Its dev container installs Python/Node, locked application dependencies, builds the frontend and downloads/verifies the approximately **786 MB** pinned CPU model. First preparation takes longer than later starts. Watch **View → Output → Dev Containers** if preparation is still running.
-3. The app starts automatically and the trial guide opens in the editor. Open **Ports → 8000 → Open in Browser**. GitHub defaults forwarded ports to **Private**; verify and keep that visibility. This forwarded HTTPS address is the application; the creation link above is not a running service.
-4. In the Codespaces Explorer, open `.cache/codespaces/owner-credentials.json`. Copy only the `password` value and sign in to the app as **`owner`**. These private generated credentials remain in the Codespace and survive app restarts. Do not commit, share or paste them into an issue/chat. The application uses its own protected server session in addition to GitHub's private forwarded port.
+Run these commands separately from the repository root. Stop on errors; preserve local changes instead of resetting or cleaning them.
 
-If an automatic step failed, run these commands in the Codespaces terminal:
+```sh
+git pull --ff-only origin trial/codespaces-process
+python scripts/backup_workspace.py
+npm --prefix web run build
+python scripts/start_codespaces.py --restart
+```
+
+No new application dependency is added in V2. The private SQLite backup is verified and saved under ignored `.cache/backups/`; the original database and generated credentials are retained. The restart checks its own recorded PID, exact command and working directory; it refuses to stop unrelated processes.
+
+Open **Ports → 8000 → Open in Browser**. Verify **Visibility: Private**. Use the forwarded **HTTPS** address, not desktop forwarding. To print only that address:
+
+```sh
+python scripts/start_codespaces.py --url
+```
+
+Sign in as **`owner`** with the password already in your private `.cache/codespaces/owner-credentials.json`. Open the file in the Codespaces editor; do not paste it into chat/issues or commit it. V2 does not rotate it. The app keeps its own authenticated session and CSRF/origin checks in addition to GitHub's private port protection.
+
+## If no Codespace exists
+
+Open [the trial creation screen](https://github.com/codespaces/new?repo=1262022691&ref=trial%2Fcodespaces-process), verify the branch, account allowance and spending controls, then choose the smallest two-core machine. This is a creation screen, not a live app link. No Codespace was provisioned by the V2 work: the authenticated list returned zero instances on 26 October.
+
+The dev container provisions Python 3.12/Node 24, installs hash/lock-pinned dependencies, builds the app and prepares/verifies the approximately 786 MB compact model. If automatic preparation fails, use:
 
 ```sh
 python scripts/setup_codespaces.py --with-ai
 python scripts/start_codespaces.py
 ```
 
-The startup log is `.cache/codespaces/workspace.log`. Node 24 and Python 3.12 are provisioned by `.devcontainer/devcontainer.json`. Setup/start commands were exercised in this development environment, and the actual launcher was tested under synthetic Codespaces variables. The owner has now opened the real Codespace and tested the application. This agent still cannot manage or directly verify their instance: the integration receives HTTP 403 for the Codespaces API.
+Preparation can download open-weight files; inference thereafter is cache-only on CPU. Existing setup/model caches are reused. Logs: **Output → Dev Containers** and `.cache/codespaces/workspace.log`. Neither a running PID nor a successful local launcher test proves that GitHub's external forwarded port works.
 
-## Updating an existing Codespace after a sign-in origin error
+## First reproducible complete-system comparison
 
-Run these commands one at a time from the repository root in the Codespaces terminal. Stop if a command reports an error; do not discard local source changes to force an update.
+1. The app opens empty. Choose an existing project in the header, create one, or explicitly choose **Load 2 vs 4 cavity benchmark** in **System Simulation**. No flange or other geometry loads by default. The benchmark creates a *separate* project with an original consumer-tray OBJ, fictional machine/material data and two saved configurations; it retains existing projects.
+2. Choose **Run & compare scenarios**. Both alternatives produce **160 finished parts**: 80 two-cavity shots versus 40 four-cavity shots. The same finite conveyor and operational packaging serve both cells. All input times, capacities, prices and geometry are declared synthetic test inputs.
+3. Inspect the two result cards. The finite-campaign baseline computes approximately **805.7 parts/h** for two cavities and **752.2 parts/h** for four. Configured unit costs are **EUR 0.183540** and **EUR 0.199605**. These figures come from events/cost inputs, not the reference screenshot, and are not production predictions.
+4. Select **Configuration B · 4 cavities** in Properties. Under **Operational packaging**, change **Parts per container** from 12 to **48**. Choose **Preview changes → Approve and apply**. The existing run remains immutable and is marked outdated where dependencies changed.
+5. Rerun the comparison. Four-cavity output increases to approximately **954.0 parts/h** for this campaign. Waiting, finished counts and campaign costs are recalculated. **Undo last change** appends a compensating revision; it does not erase history.
+6. Click a result card to select its saved run. **Play**, **Next event**, timeline bars, the time slider and the time-series cursor sample the same run ID and simulation clock. Container changes animate at the conveyor end. Use **Conveyor buffer occupancy**, material bins, robot XYZ and output counts to inspect the schedule. Expand/collapse **Signals & event timeline** and **Constraints, costs & provenance** as needed.
+7. Unknown pressure, temperature, torque and moisture channels show **Unavailable** without a fabricated curve. Generic equipment, plate envelopes and robot paths are visual interpretations; collision/actual EOAT/container fit and product quality remain unverified.
+8. **System Optimization** exposes the same complete-cell alternatives and configurable downstream constraints. There is no automatic “more cavities is best” selection or validated global optimiser.
 
-```sh
-git pull --ff-only origin trial/codespaces-process
-npm --prefix web run build
-python scripts/start_codespaces.py --restart
+For a counterexample, configure both alternatives with 1000 conveyor slots, zero container-change time and 0.01 s/part handling. Four cavities then outperform two. Do not treat that deliberately unconstrained test as a recommendation for a real buffer or packaging station.
+
+## Import your own information
+
+- **Customer brief:** commercial unit, annual demand, programme duration, target costs and business context. Scenario cost assumptions are separately approved snapshots. **Copy declared customer brief** transfers part demand/duration/currency into a draft; approve it before calculation. Kits/assemblies need an explicit parts conversion.
+- **Product:** OBJ/STL, original source units and retained original bytes/hash. Mass and projected area require declared data; mesh bounding dimensions are not solid volume or projected area. STEP/photo reconstruction is unavailable in this release.
+- **Machine park / Materials:** add owner-scoped records manually or validate/import the CSV template. Maximum injection rate (cm³/s), plasticising capacity (g/s) and actual company hourly costs can be supplied. Selecting a record freezes it into the scenario. No verified numerical OEM/grade catalogue is fabricated.
+- **System Simulation:** create/duplicate a scenario, import its JSON, select the imported machine/material, enter mould envelope/robot/EOAT/conveyor/packaging/timing/cost inputs, then preview/approve/run. Unknown prices remain unknown; an incomplete unit cost stays blank. A changed product geometry requires rebinding/approving the scenario before rerunning.
+- **Benchmark kit:** **Download benchmark files** supplies OBJ, CSVs, both scenario JSON files, README and SHA-256 manifest. The same original files live in [`examples/system-benchmark`](../../examples/system-benchmark). Select your newly imported resource IDs after manual import; JSON files do not assume IDs from somebody else's database.
+
+The earlier cycle-only workflow remains under **Legacy cycle worksheet** for compatibility. Its old numerical oracle is unchanged; it is not the new complete-system comparison.
+
+## AI: optional, bounded and reviewable
+
+In the right copilot, **Conversation** is read-only checked workflow advice. **System settings** selects a saved scenario and extracts an explicit supported field update. Try:
+
+```text
+Set container_change_s to 5 seconds and parts_per_container to 24.
 ```
 
-The restart preserves generated credentials and the project database. It stops only the recorded PID after checking its exact command and checkout directory; unrelated processes are left untouched. Open the HTTPS address printed by the launcher and reload the app. `python scripts/start_codespaces.py --url` prints that address without reading or printing credentials. Login remains `owner` with the same private password.
+Review the proposal, preview its exact effects, approve it, rerun and optionally undo. The model does not execute shell/CAD operations, provision services or silently edit the project. Manual controls complete the entire benchmark without AI. The 50-case native evaluation passed 45 cases: 19/24 requested extractions and 26/26 refusal checks after typed validation. Five malformed/misspelled proposals were rejected, not applied. This is not a broadly reliable autonomous engineering agent.
 
-Codespaces can rewrite the browser's `Origin` header to its loopback forwarding target. The launcher now enables an explicit Codespaces-only compatibility path, bound to the exact current forwarded HTTPS hostname. A rewritten loopback origin is accepted only with both that exact `X-Forwarded-Host` and the browser's `Sec-Fetch-Site: same-origin`. Ordinary hosted deployments retain their existing exact-origin policy. Foreign/sibling origins, other ports, cross-site/same-site or missing fetch metadata, missing forwarded host, CSRF-token failures and unauthenticated private API requests remain rejected. There is no wildcard Codespaces allowlist or general CORS bypass.
+ChatGPT-plan integration remains **blocked/unverified**, not enabled or declared ineligible: there is no accessible Codespace whose private forwarding/eligibility can be confirmed, and current official documentation fetches were denied by this environment's egress proxy. No OAuth client/callback, token sharing or API billing was introduced. [Access evidence and provider decision](AI_CODESPACES_ELIGIBILITY.md).
 
-The login page detects a different configured address and provides a link to the secure workspace. A remaining login mismatch reports expected/received origins without exposing credentials, so proxy differences can be diagnosed precisely. See [fix evidence](../verification/CODESPACES_ORIGIN_FIX_2026-10-19.md).
+## Persistence, limits and costs
 
-## Connected engineering workflow
+The live database is `.cache/workspace/projects.sqlite3`. It survives app/Codespace restarts, **not Codespace deletion**. Git does not store private projects. **Reports → Export project** creates a portable JSON backup of geometry, scenario inputs, revisions and legacy/system runs. **Restore project backup → Approve and restore** creates a separate project with fresh IDs and preserves existing projects. Credentials, sessions and pending approvals are excluded. The checksum checks integrity, not authorship/physical truth. Keep private full SQLite backups/credentials securely outside a Codespace before deleting it.
 
-See [Load your data and follow product → mould → press → process](../data/ENGINEERING_LIBRARY.md). The current increment adds an owner-scoped machine/material library (manual/CSV), mesh-bound plate/cavity-row envelopes, necessary press checks and comparisons, and synchronized signal plots/export. It is a preliminary layout and configured-time engine, not an automatic production mould or a polymer solver. The left rail is the single module navigation; the top workflow path is read-only.
+Trial bounds: 200 projects, 2000 library records, 20 scenarios/project, 1–8 cavities, 1–100 shots/run, up to 6 alternatives/comparison, 120 immutable system runs/project, 32 MiB portable backup. These are explicit software trial bounds, not manufacturer/productivity limits. Use a separate project/campaign and retain exports at the immutable-run limit.
 
-The copilot's Conversation mode now routes a bounded workflow using checked localized advice templates instead of displaying unconstrained model claims. Up to six prior messages are sent as context. If model routing fails validation, the UI labels the guided response. Structured process/commercial updates reject absent numbers/names and ambiguous annual-volume extraction; preview and approval remain mandatory. This prevents the reported invented budgets/prices from being shown as advice. It is not a general engineering question-answering model.
+No new provider charge, GPU, external AI API or hosting resource was activated. Codespaces compute and retained storage can still consume your GitHub allowance or cost money under account billing settings. Current allowance/prices were not verified; no unlimited-free claim is made. Stop the Codespace to stop compute; closing a browser tab is insufficient. Retained storage remains billable according to GitHub/account terms.
 
-## First observable process run
-
-1. Choose **New project**, enter any product/project name, and create it. Commercial and product values start unknown.
-2. Optionally import an OBJ/STL with explicit units or choose **Reference flange**. The reference is an original synthetic visual fixture. Geometry is not used to infer shot mass or physical mouldability.
-3. Choose **Process** on the left. In Properties choose **Load synthetic example**, then **Preview changes → Approve and apply**. The example uses arbitrary demonstration times; its 20-second drying stage is not a material qualification recommendation.
-4. Choose **Run process**. The illustrative cell, timeline and selectable time-series plots now sample one stored L0 run. Mass inventories are available in the signal selector; the trace CSV includes available channels and units. Use **Play**, pause, **Next event**, the time slider and playback speed. Select timeline bars to inspect their timestamps.
-5. The initial configured example produces **10 parts in 126 seconds**, with two cavities over five cycles. The first deposit is at 46 seconds. At 58 seconds the first two parts have exited the belt. Runner mass is accounted for separately.
-6. In the right copilot choose **Process** and use **Try: cooling 12 s, three cycles**, then send. The actual pinned model runs on the Codespace CPU, with no model download/inference on your PC. Inspect **Preview changes**, approve, then choose **Run process** again. The old result is marked outdated until recalculation. The tested proposal produces **6 parts in 104 seconds**.
-7. Change **Required orientation at belt** to 180° while the mould remains at 0°, approve and run: the scenario is blocked because the configured XYZ robot has no rotary axis. Reset to the supported matching orientation to continue.
-8. Reduce available granules, or increase robot-return time/decrease belt speed, to observe starvation or resource waiting. Save/reopen is automatic; the latest run can be downloaded as JSON. There are bounded trial limits: 100 cycles, 8 cavities, 30 saved runs per project.
-
-The examples above are a repeatable software check, not experimental process validation. The model is small and can return invalid or inaccurate proposals. Invalid fields/types are rejected; accepted suggestions still require technical review and explicit approval. You can configure and run the process without AI.
-
-## What this increment computes
-
-- Optional batch drying, shot feeding with delay/rate and hopper capacity, configured plasticising/injection/holding/cooling and press movements.
-- Next-shot screw recovery overlapping cooling; press/robot sharing, robot return, belt batch spacing and waiting.
-- Discrete material balances across raw/conditioned/hopper/melt/mould/robot/belt/output/runner compartments. No negative supplied inventory or shot without configured available mass.
-- Cavity/part IDs, configured unchanged yaw orientation, linear XYZ transfer and belt travel, shared-clock animation/seek, run duration, injection intervals and configured output rate.
-- Immutable input/run snapshots, asset references, input hash, source/revision, outdated-result indication and latest-result restoration after app restart.
-
-Without an approved layout, the cell is an independent timing example. With one, product positions, extraction frame, plate dimensions/opening and preliminary press checks use its snapshot. Paths remain illustrative: tooling interfaces, mould/robot collisions, acceleration, reach, undercuts, finished mould construction and cooling circuits are not validated. Passing necessary checks does not establish full clamp/shot suitability or production readiness. No moisture, melt temperature, pressure/flow field, shrinkage, quality or production-cost solution is computed. There is no STEP/photo-to-tooling implementation or integrated PCA/PLS in this increment.
-
-## Experimental larger CPU model (not recommended for this trial)
-
-The default remains the existing pinned compact Qwen2.5 0.5B. A pinned 1.5B ONNX q4 profile is optional, using approximately 1.79 GB of weights. Initial three-case native execution/containment checks completed (~19–34 seconds), but a stricter routing assertion FAILED: it emitted unrequested action values, including interpreting the quantity as a total order. The validator rejects this output and displays labelled guided advice. Default compact passed the first-request routing assertion and explicit process extraction; a follow-up can still use a guided fallback. The larger model is not promoted, and higher parameter count is not evidence of engineering accuracy. Peak native child RSS was about 5.25 GiB for 1.5B versus 2.87 GiB for compact here. These are development measurements, not Codespaces performance guarantees.
-
-For developer experiments only, the explicit profile remains available:
-
-```sh
-python scripts/setup_codespaces.py --with-ai --ai-profile advisor
-MOULD_AI_PROFILE=advisor python scripts/start_codespaces.py --restart
-```
-
-The profile environment variable must also be supplied on later starts; automatic Codespaces startup continues to use compact by default. To return: `MOULD_AI_PROFILE=compact python scripts/start_codespaces.py --restart`. No API key or GPU is required. Weights stay in ignored cache and are SHA-256 verified; upstream model licence and conversion provenance are recorded, and redistribution review remains open.
-
-## Persistence, limits and stopping
-
-Projects, assets and runs use `.cache/workspace/projects.sqlite3` in the Codespace's persistent workspace. They survive app stop/start and were checked across service replacement. Deleting the Codespace deletes its local data; Git does not back up ignored databases or credentials. A persistent workspace is not a tested independent backup service. Download important run JSON; backup/restore of complete projects remains separate work.
-
-Stop the Codespace from GitHub when finished. Stopping the app or closing the browser tab alone does not stop Codespaces compute billing, and retained storage still counts. Keep within both GitHub compute and storage allowances if a zero-cost trial is required. No GPU or external paid AI API is requested. Heavy later solvers need separate sizing and approval of any paid resources.
-
-## Developer checks
+## Reproduce checks
 
 ```sh
 PYTHONPATH=server .venv-app/bin/python -m unittest discover -s server/tests -v
-cd web
-npm run build
-npm run test:browser -- --process
-npm run test:browser -- --server-ai --engineering
-cd ..
+npm --prefix prototype test
+npm --prefix web run build
+npm --prefix web run test:browser -- --server-ai --engineering
+node web/tests/system-workflow.mjs --server-ai
 .venv-app/bin/python scripts/test_codespaces.py
+.venv-app/bin/python scripts/evaluate_system_assistant.py
 ```
 
-The last command owns temporary credentials/database and launched processes on port 8000, exercises the real startup/authenticated AI/process/restart path, and cleans them up. It fails without stopping unrelated services when port 8000 is already occupied. It does not create a GitHub resource or establish external forwarding readiness. [Verification record](../verification/PROCESS_CODESPACES_2026-10-19.md).
+The last evaluation intentionally returns failure while native model quality is 45/50; full results identify the five rejected extractions. It downloads no weights. The launcher test uses owned temporary data and synthetic Codespaces variables; external forwarding/privacy remains unverified. The [19 October guide](archive/CODESPACES_2026-10-19.md) is retained as historical evidence, not current product direction.

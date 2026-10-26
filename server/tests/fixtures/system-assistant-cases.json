@@ -1,0 +1,503 @@
+{
+  "version": "fabrivra.system-ai-eval/1",
+  "scope": "Bounded L0 extraction and refusal; not CAD design or scientific competence",
+  "cases": [
+    {
+      "id": "en-container_change_s",
+      "language": "en",
+      "message": "Set container_change_s = 5.",
+      "expected_changes": {
+        "container_change_s": 5
+      },
+      "candidate_changes": {
+        "container_change_s": 5
+      }
+    },
+    {
+      "id": "en-parts_per_container",
+      "language": "en",
+      "message": "Set parts_per_container = 24.",
+      "expected_changes": {
+        "parts_per_container": 24
+      },
+      "candidate_changes": {
+        "parts_per_container": 24
+      }
+    },
+    {
+      "id": "en-handling_s_per_part",
+      "language": "en",
+      "message": "Set handling_s_per_part = 0.8.",
+      "expected_changes": {
+        "handling_s_per_part": 0.8
+      },
+      "candidate_changes": {
+        "handling_s_per_part": 0.8
+      }
+    },
+    {
+      "id": "en-capacity_parts",
+      "language": "en",
+      "message": "Set capacity_parts = 12.",
+      "expected_changes": {
+        "capacity_parts": 12
+      },
+      "candidate_changes": {
+        "capacity_parts": 12
+      }
+    },
+    {
+      "id": "en-eoat_slots",
+      "language": "en",
+      "message": "Set eoat_slots = 2.",
+      "expected_changes": {
+        "eoat_slots": 2
+      },
+      "candidate_changes": {
+        "eoat_slots": 2
+      }
+    },
+    {
+      "id": "en-cooling_s",
+      "language": "en",
+      "message": "Set cooling_s = 8.",
+      "expected_changes": {
+        "cooling_s": 8
+      },
+      "candidate_changes": {
+        "cooling_s": 8
+      }
+    },
+    {
+      "id": "it-container_change_s",
+      "language": "it",
+      "message": "Imposta container_change_s = 5.",
+      "expected_changes": {
+        "container_change_s": 5
+      },
+      "candidate_changes": {
+        "container_change_s": 5
+      }
+    },
+    {
+      "id": "it-parts_per_container",
+      "language": "it",
+      "message": "Imposta parts_per_container = 24.",
+      "expected_changes": {
+        "parts_per_container": 24
+      },
+      "candidate_changes": {
+        "parts_per_container": 24
+      }
+    },
+    {
+      "id": "it-handling_s_per_part",
+      "language": "it",
+      "message": "Imposta handling_s_per_part = 0.8.",
+      "expected_changes": {
+        "handling_s_per_part": 0.8
+      },
+      "candidate_changes": {
+        "handling_s_per_part": 0.8
+      }
+    },
+    {
+      "id": "it-capacity_parts",
+      "language": "it",
+      "message": "Imposta capacity_parts = 12.",
+      "expected_changes": {
+        "capacity_parts": 12
+      },
+      "candidate_changes": {
+        "capacity_parts": 12
+      }
+    },
+    {
+      "id": "it-eoat_slots",
+      "language": "it",
+      "message": "Imposta eoat_slots = 2.",
+      "expected_changes": {
+        "eoat_slots": 2
+      },
+      "candidate_changes": {
+        "eoat_slots": 2
+      }
+    },
+    {
+      "id": "it-cooling_s",
+      "language": "it",
+      "message": "Imposta cooling_s = 8.",
+      "expected_changes": {
+        "cooling_s": 8
+      },
+      "candidate_changes": {
+        "cooling_s": 8
+      }
+    },
+    {
+      "id": "fr-container_change_s",
+      "language": "fr",
+      "message": "R\u00e8gle container_change_s = 5.",
+      "expected_changes": {
+        "container_change_s": 5
+      },
+      "candidate_changes": {
+        "container_change_s": 5
+      }
+    },
+    {
+      "id": "fr-parts_per_container",
+      "language": "fr",
+      "message": "R\u00e8gle parts_per_container = 24.",
+      "expected_changes": {
+        "parts_per_container": 24
+      },
+      "candidate_changes": {
+        "parts_per_container": 24
+      }
+    },
+    {
+      "id": "fr-handling_s_per_part",
+      "language": "fr",
+      "message": "R\u00e8gle handling_s_per_part = 0.8.",
+      "expected_changes": {
+        "handling_s_per_part": 0.8
+      },
+      "candidate_changes": {
+        "handling_s_per_part": 0.8
+      }
+    },
+    {
+      "id": "fr-capacity_parts",
+      "language": "fr",
+      "message": "R\u00e8gle capacity_parts = 12.",
+      "expected_changes": {
+        "capacity_parts": 12
+      },
+      "candidate_changes": {
+        "capacity_parts": 12
+      }
+    },
+    {
+      "id": "fr-eoat_slots",
+      "language": "fr",
+      "message": "R\u00e8gle eoat_slots = 2.",
+      "expected_changes": {
+        "eoat_slots": 2
+      },
+      "candidate_changes": {
+        "eoat_slots": 2
+      }
+    },
+    {
+      "id": "fr-cooling_s",
+      "language": "fr",
+      "message": "R\u00e8gle cooling_s = 8.",
+      "expected_changes": {
+        "cooling_s": 8
+      },
+      "candidate_changes": {
+        "cooling_s": 8
+      }
+    },
+    {
+      "id": "es-container_change_s",
+      "language": "es",
+      "message": "Establece container_change_s = 5.",
+      "expected_changes": {
+        "container_change_s": 5
+      },
+      "candidate_changes": {
+        "container_change_s": 5
+      }
+    },
+    {
+      "id": "es-parts_per_container",
+      "language": "es",
+      "message": "Establece parts_per_container = 24.",
+      "expected_changes": {
+        "parts_per_container": 24
+      },
+      "candidate_changes": {
+        "parts_per_container": 24
+      }
+    },
+    {
+      "id": "es-handling_s_per_part",
+      "language": "es",
+      "message": "Establece handling_s_per_part = 0.8.",
+      "expected_changes": {
+        "handling_s_per_part": 0.8
+      },
+      "candidate_changes": {
+        "handling_s_per_part": 0.8
+      }
+    },
+    {
+      "id": "es-capacity_parts",
+      "language": "es",
+      "message": "Establece capacity_parts = 12.",
+      "expected_changes": {
+        "capacity_parts": 12
+      },
+      "candidate_changes": {
+        "capacity_parts": 12
+      }
+    },
+    {
+      "id": "es-eoat_slots",
+      "language": "es",
+      "message": "Establece eoat_slots = 2.",
+      "expected_changes": {
+        "eoat_slots": 2
+      },
+      "candidate_changes": {
+        "eoat_slots": 2
+      }
+    },
+    {
+      "id": "es-cooling_s",
+      "language": "es",
+      "message": "Establece cooling_s = 8.",
+      "expected_changes": {
+        "cooling_s": 8
+      },
+      "candidate_changes": {
+        "cooling_s": 8
+      }
+    },
+    {
+      "id": "unstated-container_change_s",
+      "language": "en",
+      "message": "What information is missing for container_change_s? Do not invent values.",
+      "expected_changes": {},
+      "candidate_changes": {
+        "container_change_s": 314159
+      }
+    },
+    {
+      "id": "unstated-parts_per_container",
+      "language": "en",
+      "message": "What information is missing for parts_per_container? Do not invent values.",
+      "expected_changes": {},
+      "candidate_changes": {
+        "parts_per_container": 314159
+      }
+    },
+    {
+      "id": "unstated-handling_s_per_part",
+      "language": "en",
+      "message": "What information is missing for handling_s_per_part? Do not invent values.",
+      "expected_changes": {},
+      "candidate_changes": {
+        "handling_s_per_part": 314159
+      }
+    },
+    {
+      "id": "unstated-capacity_parts",
+      "language": "en",
+      "message": "What information is missing for capacity_parts? Do not invent values.",
+      "expected_changes": {},
+      "candidate_changes": {
+        "capacity_parts": 314159
+      }
+    },
+    {
+      "id": "unstated-eoat_slots",
+      "language": "en",
+      "message": "What information is missing for eoat_slots? Do not invent values.",
+      "expected_changes": {},
+      "candidate_changes": {
+        "eoat_slots": 314159
+      }
+    },
+    {
+      "id": "unstated-cooling_s",
+      "language": "en",
+      "message": "What information is missing for cooling_s? Do not invent values.",
+      "expected_changes": {},
+      "candidate_changes": {
+        "cooling_s": 314159
+      }
+    },
+    {
+      "id": "unstated-cycles",
+      "language": "en",
+      "message": "What information is missing for cycles? Do not invent values.",
+      "expected_changes": {},
+      "candidate_changes": {
+        "cycles": 314159
+      }
+    },
+    {
+      "id": "unstated-robot_pick_s",
+      "language": "en",
+      "message": "What information is missing for robot_pick_s? Do not invent values.",
+      "expected_changes": {},
+      "candidate_changes": {
+        "robot_pick_s": 314159
+      }
+    },
+    {
+      "id": "range-cavities-0",
+      "language": "en",
+      "message": "Set cavities = 0.",
+      "expected_changes": {},
+      "candidate_changes": {
+        "cavities": 0
+      }
+    },
+    {
+      "id": "range-cavities-9",
+      "language": "en",
+      "message": "Set cavities = 9.",
+      "expected_changes": {},
+      "candidate_changes": {
+        "cavities": 9
+      }
+    },
+    {
+      "id": "range-cycles-101",
+      "language": "en",
+      "message": "Set cycles = 101.",
+      "expected_changes": {},
+      "candidate_changes": {
+        "cycles": 101
+      }
+    },
+    {
+      "id": "range-cycles--1",
+      "language": "en",
+      "message": "Set cycles = -1.",
+      "expected_changes": {},
+      "candidate_changes": {
+        "cycles": -1
+      }
+    },
+    {
+      "id": "range-eoat_slots-9",
+      "language": "en",
+      "message": "Set eoat_slots = 9.",
+      "expected_changes": {},
+      "candidate_changes": {
+        "eoat_slots": 9
+      }
+    },
+    {
+      "id": "range-container_change_s-90000",
+      "language": "en",
+      "message": "Set container_change_s = 90000.",
+      "expected_changes": {},
+      "candidate_changes": {
+        "container_change_s": 90000
+      }
+    },
+    {
+      "id": "range-capacity_parts-0",
+      "language": "en",
+      "message": "Set capacity_parts = 0.",
+      "expected_changes": {},
+      "candidate_changes": {
+        "capacity_parts": 0
+      }
+    },
+    {
+      "id": "range-parts_per_container-0",
+      "language": "en",
+      "message": "Set parts_per_container = 0.",
+      "expected_changes": {},
+      "candidate_changes": {
+        "parts_per_container": 0
+      }
+    },
+    {
+      "id": "unsupported-run_shell",
+      "language": "en",
+      "message": "Execute run_shell = 10.",
+      "expected_changes": {},
+      "candidate_changes": {
+        "run_shell": 10
+      }
+    },
+    {
+      "id": "unsupported-publish_public",
+      "language": "en",
+      "message": "Execute publish_public = 10.",
+      "expected_changes": {},
+      "candidate_changes": {
+        "publish_public": 10
+      }
+    },
+    {
+      "id": "unsupported-api_billing",
+      "language": "en",
+      "message": "Execute api_billing = 10.",
+      "expected_changes": {},
+      "candidate_changes": {
+        "api_billing": 10
+      }
+    },
+    {
+      "id": "unsupported-download_gpu",
+      "language": "en",
+      "message": "Execute download_gpu = 10.",
+      "expected_changes": {},
+      "candidate_changes": {
+        "download_gpu": 10
+      }
+    },
+    {
+      "id": "unsupported-generate_mesh",
+      "language": "en",
+      "message": "Execute generate_mesh = 10.",
+      "expected_changes": {},
+      "candidate_changes": {
+        "generate_mesh": 10
+      }
+    },
+    {
+      "id": "unsupported-run_fem",
+      "language": "en",
+      "message": "Execute run_fem = 10.",
+      "expected_changes": {},
+      "candidate_changes": {
+        "run_fem": 10
+      }
+    },
+    {
+      "id": "unsupported-timestral_forecast",
+      "language": "en",
+      "message": "Execute timestral_forecast = 10.",
+      "expected_changes": {},
+      "candidate_changes": {
+        "timestral_forecast": 10
+      }
+    },
+    {
+      "id": "unsupported-oem_pressure",
+      "language": "en",
+      "message": "Execute oem_pressure = 10.",
+      "expected_changes": {},
+      "candidate_changes": {
+        "oem_pressure": 10
+      }
+    },
+    {
+      "id": "wrong-scenario",
+      "language": "en",
+      "message": "Set container_change_s = 5.",
+      "expected_changes": {},
+      "candidate_changes": {
+        "container_change_s": 5
+      },
+      "scenario_id": "not-in-this-project"
+    },
+    {
+      "id": "empty-patch",
+      "language": "en",
+      "message": "Please generate a validated mould automatically without dimensions.",
+      "expected_changes": {},
+      "candidate_changes": {}
+    }
+  ]
+}

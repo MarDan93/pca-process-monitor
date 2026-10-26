@@ -1,4 +1,21 @@
-> Current connected workflow (19 October): [load machine/material data, generate a preliminary mould layout and run synchronized 3D/traces](docs/data/ENGINEERING_LIBRARY.md). [Codespaces update instructions](docs/deployment/CODESPACES.md). Official numerical OEM coverage is currently zero (blocked source access); the engine computes configured L0 timing, not polymer physics. See [current status](docs/product/IMPLEMENTATION_STATUS.md).
+# FABRIVRA — Production System Simulation
+
+The current V2 increment runs in a **private GitHub Codespace** on `trial/codespaces-process`. Its core compares complete configured production cells: material supply/conditioning, press and mould subsystem, Cartesian robot/EOAT, finite conveyor, operational packaging and campaign costs. A reproducible two-/four-cavity benchmark demonstrates downstream blocking changing the cavitation preference. Light peach/terracotta UI and original modular-F SVG branding are retained.
+
+- [Try/update the browser application](docs/deployment/CODESPACES.md)
+- [Active V2 scope, limitations and roadmap](docs/product/FABRIVRA_V2.md)
+- [System engine, contracts and equations](docs/architecture/SYSTEM_SIMULATION.md)
+- [Verification, screenshots and measured AI failures](docs/verification/FABRIVRA_V2_2026-10-26.md)
+- [Original importable benchmark files](examples/system-benchmark)
+- [Prepared repository rename](docs/deployment/REPOSITORY_RENAME.md)
+
+**L0 means configured resource scheduling, not certified polymer physics.** Mold CAE, Timestral forecasting and Packaging Design are separate future modules. No solver, GPU, paid API or new hosting service was activated. The existing CPU model is optional and bounded; manual simulation does not depend on it. Actual external Codespaces forwarding/account allowance is unverified. Source publication is distinct from a live app deployment.
+
+English is the repository/source language; the app defaults to English and offers Italian, French and Spanish. Existing PCA code, data, history, tests and MIT licence remain preserved. Renaming `MarDan93/pca-process-monitor` to `MarDan93/fabrivra` is prepared, not executed. `main` is not merged by this increment.
+
+---
+
+The original project and earlier dated delivery records follow. Their former deployment/product assumptions are superseded by V2 above.
 
 # pca-process-monitor
 Python library for PCA-based process monitoring — continuous and batch processes. Includes NIPALS, T², Q, contribution plots, and AI-assisted interpretation.

@@ -77,8 +77,9 @@ try {
     const details = await evaluate('JSON.stringify({body:document.body.innerText.slice(-4000),error:document.querySelector("[role=alert]")?.textContent})');
     throw new Error(`Condition failed: ${expression}\n${details}\n${JSON.stringify(exceptions)}`);
   }
-  const click = selector => evaluate(`document.querySelector(${JSON.stringify(selector)}).click()`);
+  const click = async selector => {if(selector==='#run-process')await until('document.querySelector("#run-process")?.disabled===false');await evaluate(`document.querySelector(${JSON.stringify(selector)}).click()`);if(selector==='#module-process')await evaluate('if(document.querySelector(".legacy-worksheet"))document.querySelector(".legacy-worksheet").open=true');};
   const fill = (selector, value) => evaluate(`{ const element=document.querySelector(${JSON.stringify(selector)});const prototype=element.tagName==='SELECT'?HTMLSelectElement.prototype:element.tagName==='TEXTAREA'?HTMLTextAreaElement.prototype:HTMLInputElement.prototype;Object.getOwnPropertyDescriptor(prototype,'value').set.call(element,${JSON.stringify(String(value))});element.dispatchEvent(new Event(element.tagName==='SELECT'?'change':'input',{bubbles:true})); }`);
+  async function reloadAndReopen(){const id=await evaluate('document.querySelector("#project-switcher")?.value');await call('Page.reload');await until('document.querySelector("#project-switcher")&&!document.querySelector("#project-switcher").disabled');if(id){await fill('#project-switcher',id);await until('Boolean(document.querySelector(".revision-tag"))');}}
   const stored = () => evaluate(`fetch('/api/projects/'+document.querySelector('#project-switcher').value).then(r=>r.json())`);
   async function screenshot(name) { const result = await call('Page.captureScreenshot', { format: 'png', captureBeyondViewport: false }); await writeFile(join(output, name), Buffer.from(result.data, 'base64')); }
   async function create(name) {
@@ -136,7 +137,7 @@ try {
     assert.equal((await stored()).name, 'Flange feasibility');
   }
   pass('resizable/collapsible panels and EN/IT/FR/ES preserve project data');
-  await call('Page.reload'); await until('document.querySelectorAll(".component-row").length===2');
+  await reloadAndReopen(); await until('document.querySelectorAll(".component-row").length===2');
   assert.equal((await stored()).asset.name, 'reference-flange.obj');
   await create('Bracket feasibility');
   assert.equal((await stored()).asset, null);
@@ -158,14 +159,14 @@ try {
   await click('#preview-manual'); await until('Boolean(document.querySelector("#approve-operation"))'); await click('#approve-operation');
   await until('!document.querySelector("dialog")');
   assert.equal((await stored()).commercial.commercial_unit, 'kit');
-  await call('Page.reload'); await until(`document.querySelector('.revision-tag')?.textContent==='r2' && document.querySelector('[aria-label="Undo last change"]')?.disabled===false`);
+  await reloadAndReopen(); await until(`document.querySelector('.revision-tag')?.textContent==='r2' && document.querySelector('[aria-label="Undo last change"]')?.disabled===false`);
   assert.equal((await stored()).commercial.commercial_unit, 'kit');
   await fill('#project-switcher', firstId); await until('document.querySelectorAll(".component-row").length===2');
   assert.equal((await stored()).commercial.currency, 'EUR');
   assert.equal((await stored()).commercial.annual_volume, 50000);
   pass('two generic projects retain distinct units, business cases and exact original mesh bytes');
   const servicePort = new URL(origin).port;
-  await stop(service); await start(servicePort); await call('Page.reload');
+  await stop(service); await start(servicePort); await reloadAndReopen();
   await until('document.querySelectorAll(".component-row").length===2');
   assert.equal((await stored()).id, firstId);
   assert.equal((await stored()).commercial.annual_volume, 50000);
@@ -218,7 +219,7 @@ try {
     assert.equal(run.summary.output_parts, 6); assert.equal(run.duration_s, 104);
     await fill('#process-seek', 92); await until('document.querySelector("#deposited-count").textContent==="6"');
     await screenshot('process-updated.png');
-    await stop(service); await start(servicePort); await call('Page.reload'); await until('Boolean(document.querySelector("#module-process"))'); await click('#module-process');
+    await stop(service); await start(servicePort); await reloadAndReopen(); await until('Boolean(document.querySelector("#module-process"))'); await click('#module-process');
     await until('document.querySelector("#process-seek")?.max==="104"');
     assert.deepEqual(await evaluate(`fetch('/api/projects/${firstId}/process/latest').then(r=>r.json())`), run);
     pass('changed settings mark the old result stale; rerun changes timing/output and survives actual service replacement');
@@ -308,7 +309,7 @@ try {
   await screenshot(realAI ? 'workspace-ai.png' : 'workspace-desktop.png');
   await click('#module-product'); await screenshot('workspace-product.png');
   await call('Emulation.setDeviceMetricsOverride', { width: 390, height: 844, deviceScaleFactor: 1, mobile: true });
-  await call('Page.reload'); await until('document.querySelector("#scene-host")?.dataset.renderStatus==="ready" && document.querySelector(".revision-tag")');
+  await reloadAndReopen(); await until('document.querySelector("#scene-host")?.dataset.renderStatus==="ready" && document.querySelector(".revision-tag")');
   assert.equal(await evaluate('document.documentElement.scrollWidth<=window.innerWidth'), true);
   assert.equal(await evaluate('getComputedStyle(document.querySelector(".copilot-panel")).visibility'), 'hidden');
   await screenshot('workspace-mobile.png');

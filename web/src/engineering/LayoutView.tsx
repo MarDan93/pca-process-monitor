@@ -17,6 +17,6 @@ export function LayoutView({layout,concept,active,t,controlsRef}:{layout:Layout;
  const viewer=useRef<ReturnType<typeof mountConceptViewer> | null>(null);
  useImperativeHandle(controlsRef,()=>({view:(v:string)=>viewer.current?.setView(v)}),[]);
  const host=useRef<HTMLDivElement>(null),mesh=useMemo(()=>layoutConcept(layout,concept),[layout,concept]);
- useEffect(()=>{if(!host.current)return;const v=mountConceptViewer(host.current,mesh,{dark:true});viewer.current=v;v.setTransparent(true);return()=>{v.dispose();viewer.current=null;};},[mesh]);
+ useEffect(()=>{if(!host.current)return;const v=mountConceptViewer(host.current,mesh,{dark:false});viewer.current=v;v.setTransparent(true);return()=>{v.dispose();viewer.current=null;};},[mesh]);
  return <div className="layout-workbench" hidden={!active}><div className="process-view-title"><span className="badge">{t('Preliminary layout')}</span><strong>{t('Product → mould → press')}</strong></div><div id="layout-view" ref={host}/><p className="layout-note">{t('Plate envelopes and product copies. No shaped cavity, slides, cooling or collision validation yet.')}</p></div>;
 }

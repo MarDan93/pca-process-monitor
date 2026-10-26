@@ -35,7 +35,8 @@ class AssistantRequest(StrictModel):
     base_revision: Annotated[int, Field(ge=0)]
     message: Annotated[str, Field(min_length=1, max_length=2000)]
     language: Literal["en", "it", "fr", "es"] = "en"
-    mode: Literal["chat", "commercial", "process"] = "chat"
+    mode: Literal["chat", "commercial", "process", "system"] = "chat"
+    scenario_id: str | None = Field(default=None,max_length=36)
 
 
 def status():
@@ -49,7 +50,7 @@ def status():
 
 
 def validated_result(text, request, project):
-    result = {"reply": text, "process": None, "commercial": None, "base_revision": project["revision"],
+    result = {"reply": text, "process": None, "commercial": None, "system":None,"scenario_id":request.scenario_id, "base_revision": project["revision"],
               "source": {"kind": "ai", "request": request.message, "model": model_config()["model"], "model_revision": model_config()["revision"]}}
     if request.mode == "chat":
         from .advisor import workflow_reply
@@ -66,9 +67,21 @@ def validated_result(text, request, project):
         # Do not expose free model prose as engineering/commercial facts.
         result["reply"] = {"en": "Review the proposed fields before saving.", "it": "Verifica i campi proposti prima di salvare.",
                            "fr": "Vérifiez les champs proposés avant d’enregistrer.", "es": "Revisa los campos propuestos antes de guardar."}[request.language]
-        changes = proposal["changes"] if request.mode == "process" else proposal["changes"].get("brief", {})
+        changes = proposal["changes"] if request.mode in ("process","system") else proposal["changes"].get("brief", {})
         ground_explicit_changes(changes, request.message)
-        if request.mode == "process":
+        if request.mode == "system":
+            scenario=next((s for s in (project.get('production_system') or {}).get('scenarios',[]) if s['id']==request.scenario_id),None)
+            if scenario is None:raise ValueError('Choose a saved production-system scenario before proposing changes.')
+            patch=proposal['changes']
+            if not patch or any(key not in SYSTEM_FIELDS for key in patch):raise ValueError('Unsupported production-system field or empty proposal.')
+            import copy
+            from .system.schemas import ProductionSystemScenario
+            cfg=copy.deepcopy(scenario['configuration'])
+            for key,value in patch.items():
+                if key.casefold() not in request.message.casefold():raise ValueError('Mention the exact system field to avoid ambiguous assignments.')
+                group,field=SYSTEM_FIELDS[key];cfg[group][field]=value
+            result['system']=ProductionSystemScenario.model_validate(cfg).model_dump(mode='json')
+        elif request.mode == "process":
             if not project["process"]:
                 raise ValueError("Load and approve the process example or configure a scenario first.")
             patch = proposal["changes"]
@@ -96,7 +109,7 @@ def validated_result(text, request, project):
                            "it": "Non ho estratto un aggiornamento supportato ed esplicito. Specifica campo e valore oppure usa il pannello proprietà.",
                            "fr": "Aucune modification explicite prise en charge n’a été extraite. Précisez champ et valeur ou utilisez les propriétés.",
                            "es": "No he extraído una actualización explícita admitida. Indica campo y valor o usa las propiedades."}[request.language]
-        result["process"] = result["commercial"] = None
+        result["system"]=result["process"] = result["commercial"] = None
         result["validation_error"] = str(error)[:600]
     return result
 
@@ -144,6 +157,13 @@ def ground_explicit_changes(patch, message):
             raise ValueError('Confirm annual versus total quantity before setting annual volume.')
 
 
+SYSTEM_FIELDS={
+    'cavities':('recipe','cavities'),'cycles':('recipe','cycles'),'cooling_s':('recipe','cooling_s'),
+    'robot_pick_s':('recipe','robot_pick_s'),'robot_transfer_s':('recipe','robot_transfer_s'),'robot_return_s':('recipe','robot_return_s'),
+    'eoat_slots':('robot','eoat_slots'),'reindex_s':('robot','reindex_s'),
+    'capacity_parts':('conveyor','capacity_parts'),
+    'parts_per_container':('packaging','parts_per_container'),'handling_s_per_part':('packaging','handling_s_per_part'),'container_change_s':('packaging','container_change_s')}
+
 async def generate(request, project, disconnected, run=None):
     if not status()["ready"]:
         raise DomainError(503, "Server AI is not prepared. Run python scripts/setup_codespaces.py --with-ai.")
@@ -152,11 +172,12 @@ async def generate(request, project, disconnected, run=None):
     process = None
     try:
         fields = {k: ({"enum": v["enum"]} if "enum" in v else {"type": v["type"]}) for k, v in ProcessScenario.model_json_schema()["properties"].items() if k not in ("name", "basis", "material")}
+        if request.mode=='system':fields={k:{'type':'number','section':v[0]} for k,v in SYSTEM_FIELDS.items()}
         payload = {"history": [m.model_dump() for m in request.history], "mode": request.mode, "message": request.message, "language": request.language, "fields": fields,
-                   "context": {"brief": project["commercial"], "part": {}, "geometry": {"asset": project["asset"]}, "process": project["process"],
+                   "context": {"brief": project["commercial"], "part": {}, "geometry": {"asset": project["asset"]}, "process": project["process"],"production_system":{"scenario_names":[s["configuration"]["name"] for s in (project.get("production_system") or {}).get("scenarios",[])]},
                                "layout": {k: project["engineering"][k] for k in ('spec', 'checks', 'machine', 'material')} if project.get('engineering') else None,
                                "latest_run": {"summary": run["summary"], "stale": run["project_revision"] != project["revision"]} if run else None,
-                               "capabilities": "Commercial fields and configured L0 process settings only; no CAD or polymer physics operations."}}
+                               "capabilities": "Commercial and approved system L0 settings only. Central system includes packaging/backpressure; mould is a subsystem. No CAD, physics, CAE or forecasts."}}
         process = await asyncio.create_subprocess_exec(shutil.which("node"), str(ROOT / "prototype/server-ai.mjs"),
             cwd=ROOT, stdin=asyncio.subprocess.PIPE, stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.PIPE)
         task = asyncio.create_task(process.communicate(json.dumps(payload).encode()))

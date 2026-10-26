@@ -1,3 +1,5 @@
+> **V2 supersedes earlier product/deployment assumptions:** see [the active system-first contract/roadmap](../product/FABRIVRA_V2.md). Dated implementation/audit details below remain historical evidence.
+
 # Current-state audit
 
 Audit `AUD-2026-10-17`, 17 October 2026. Examined branch: `demo/progettazione-stampi-2026-10-15`, commit `0fe5efe3e626edf7c93138efa83be821bfcea8a0`. The working tree was clean before the audit. This report describes that baseline; the audit adds documentation and reproducibility helpers, not application features. Nothing is pushed, merged or published by this increment.

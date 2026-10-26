@@ -1,0 +1,22 @@
+{
+  "actual_codespace": false,
+  "synthetic_codespaces_environment": true,
+  "launcher": "passed",
+  "rewritten_origin_with_bound_host_and_fetch_metadata": "passed",
+  "authenticated_process_ai_workflow": "passed",
+  "safe_restart_persistence": "passed",
+  "complete_system_comparison": "passed",
+  "sampled_peak_rss": {
+    "largest_process_kib": 73184,
+    "aggregate_owned_kib": 73184,
+    "observed_process_count": 1
+  },
+  "sample_period_s": 0.1,
+  "memory_scope": "API RSS observed; native-child /proc RSS was not observable (one process sampled). Standalone wait/rusage memory is recorded separately. Runner-only, not external Codespace.",
+  "portable_backup_restore": "passed",
+  "logout_revocation": "passed",
+  "actual_server_cpu_inference_s": 13.843,
+  "initial_duration_s": 126,
+  "updated_duration_s": 104,
+  "github_port_forwarding": "unverified; no Codespaces instances returned by the authenticated API on 2026-10-26"
+}

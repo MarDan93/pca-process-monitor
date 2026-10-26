@@ -71,7 +71,7 @@ class Store:
         row = db.execute("SELECT * FROM projects WHERE id=? AND owner=?", (project_id, self.principal)).fetchone()
         if row is None:
             raise DomainError(404, "Project not found.")
-        return {"id": row["id"], "revision": row["revision"], "process": None, "engineering": None, **json.loads(row["state"]), "updated_at": row["updated"]}
+        return {"id": row["id"], "revision": row["revision"], "process": None, "engineering": None, "production_system": None, **json.loads(row["state"]), "updated_at": row["updated"]}
 
     def get(self, project_id):
         with self.connection() as db:
@@ -160,14 +160,14 @@ class Store:
             if op["status"] != "approved" or self.clock() >= op["expires"]:
                 raise DomainError(409, "Approval is expired or has been consumed.")
             self._current(project, op["base_revision"])
-            state = {k: project[k] for k in ("name", "commercial", "asset", "process", "engineering")}
+            state = {k: project[k] for k in ("name", "commercial", "asset", "process", "engineering", "production_system")}
             effects = json.loads(op["effects"])
             domain = effects[0]["field"]
-            if domain in ("process", "engineering"):
+            if domain in ("process", "engineering", "production_system"):
                 state[domain] = effects[0]["after"]
             else:
                 state["commercial"] = state["commercial"] | {e["field"]: e["after"] for e in effects}
-            result = self._advance(db, project, state, {**json.loads(op["source"]), "operation_id": operation_id, "tool": "configure_" + domain if domain in ("process", "engineering") else "update_commercial_requirements"})
+            result = self._advance(db, project, state, {**json.loads(op["source"]), "operation_id": operation_id, "tool": "configure_" + domain if domain in ("process", "engineering", "production_system") else "update_commercial_requirements"})
             db.execute("UPDATE operations SET status='executed', idempotency=?, result=? WHERE id=?", (request.idempotency_key, encoded(result), operation_id))
             return result
 
@@ -181,10 +181,17 @@ class Store:
             self._current(project, request.base_revision)
             if project["revision"] != json.loads(op["result"])["revision"]:
                 raise DomainError(409, "A later edit exists. Undo cannot overwrite intervening changes.")
-            state = {k: project[k] for k in ("name", "commercial", "asset", "process", "engineering")}
+            state = {k: project[k] for k in ("name", "commercial", "asset", "process", "engineering", "production_system")}
             effects = json.loads(op["effects"])
-            if effects[0]["field"] in ("process", "engineering"):
+            if effects[0]["field"] in ("process", "engineering", "production_system"):
                 state[effects[0]["field"]] = effects[0]["before"]
+                if effects[0]['field']=='production_system' and state['production_system']:
+                    import copy
+                    state['production_system']=copy.deepcopy(state['production_system'])
+                    current_scenarios=(project.get('production_system') or {}).get('scenarios',[])
+                    for restored in state['production_system']['scenarios']:
+                        current=next((s for s in current_scenarios if s['id']==restored['id']),None)
+                        if current and (current['configuration']!=restored['configuration'] or current['bindings']!=restored['bindings']):restored['revision']=current['revision']+1
             else:
                 state["commercial"] = state["commercial"] | {e["field"]: e["before"] for e in effects}
             result = self._advance(db, project, state, {"kind": "undo", "operation_id": operation_id})
@@ -215,7 +222,7 @@ class Store:
             asset_id = str(uuid4())
             manifest = {"id": asset_id, "name": request.name, "source_units": request.units, "sha256": hashlib.sha256(content).hexdigest(), "size_bytes": len(content), "kind": "mesh", "source": request.source, "frame": "Original source coordinates retained; display recentred only"}
             db.execute("INSERT INTO assets VALUES(?,?,?,?)", (asset_id, project_id, encoded(manifest), content))
-            state = {k: project[k] for k in ("name", "commercial", "asset", "process", "engineering")} | {"asset": manifest}
+            state = {k: project[k] for k in ("name", "commercial", "asset", "process", "engineering", "production_system")} | {"asset": manifest}
             return self._advance(db, project, state, {"kind": "asset_import", "asset_id": asset_id, "source": request.source})
 
     def asset(self, project_id, asset_id):

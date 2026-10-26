@@ -1,3 +1,5 @@
+> **V2 addition, 26 October 2026:** project MIT text is unchanged. The new system scheduler, fixtures, backup code and modular-F SVG assets are original project work; the engine uses only the Python standard library and existing locked dependencies. No GPL/AGPL solver, STEP kernel, Timestral weights, OEM assets or numerical material catalogue is added. The earlier unpublished mesh/FEM experiment is preserved separately and excluded from the V2 runtime/locks. A free/open-weight model does not waive provider terms or establish engineering accuracy. Existing native/dependency/weight-redistribution review findings below remain open; no new legal clearance is claimed. [Current scope](../product/FABRIVRA_V2.md).
+
 # Legal and licence audit
 
 `AUD-2026-10-17`, baseline commit `0fe5efe3e626edf7c93138efa83be821bfcea8a0`. This is an engineering inventory and decision record, **not a legal opinion or a statement of legal compliance**. Professional review remains necessary for rights, licence compatibility and intended distribution. No licence change, publication or proprietary-software investigation is performed.

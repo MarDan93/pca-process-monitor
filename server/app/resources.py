@@ -48,6 +48,8 @@ class Machine(ResourceBase):
     max_daylight_mm: Positive | None = None
     max_shot_cm3: Positive | None = None
     screw_diameter_mm: Positive | None = None
+    max_injection_rate_cm3_s: Positive | None = None
+    plasticising_capacity_g_s: Positive | None = None
     hourly_cost: Money | None = None
     currency: Literal['EUR', 'USD', 'GBP', 'CHF', 'CAD', 'JPY'] | None = None
 

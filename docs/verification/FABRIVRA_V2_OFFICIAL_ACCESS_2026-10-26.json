@@ -1,0 +1,38 @@
+[
+  {
+    "name": "siwc-overview",
+    "url": "https://developers.openai.com/siwc/token-sharing-open-source",
+    "status": null,
+    "error": "<urlopen error Tunnel connection failed: 403 Forbidden>"
+  },
+  {
+    "name": "siwc-vm",
+    "url": "https://developers.openai.com/siwc/token-sharing-open-source/self-hosted-vms",
+    "status": null,
+    "error": "<urlopen error Tunnel connection failed: 403 Forbidden>"
+  },
+  {
+    "name": "siwc-inference",
+    "url": "https://developers.openai.com/siwc/token-sharing-open-source/models-and-inference",
+    "status": null,
+    "error": "<urlopen error Tunnel connection failed: 403 Forbidden>"
+  },
+  {
+    "name": "siwc-limits",
+    "url": "https://developers.openai.com/siwc/token-sharing-open-source/preview-limitations",
+    "status": null,
+    "error": "<urlopen error Tunnel connection failed: 403 Forbidden>"
+  },
+  {
+    "name": "github-quota",
+    "url": "https://docs.github.com/en/billing/reference/product-usage-included",
+    "status": null,
+    "error": "<urlopen error Tunnel connection failed: 403 Forbidden>"
+  },
+  {
+    "name": "github-rename",
+    "url": "https://docs.github.com/en/repositories/creating-and-managing-repositories/renaming-a-repository",
+    "status": null,
+    "error": "<urlopen error Tunnel connection failed: 403 Forbidden>"
+  }
+]

@@ -1,0 +1,2 @@
+name,manufacturer,source_kind,source_url,notes,family,grade,density_kg_m3,melt_density_kg_m3,specific_heat_j_kg_k,conductivity_w_m_k,melt_min_c,melt_max_c
+Synthetic thermoplastic test material,,synthetic,,"Arbitrary melt density for dimensional conversion only. No measured grade, thermal or rheological properties supplied.",Unspecified thermoplastic,,,750.0,,,,

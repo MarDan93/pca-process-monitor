@@ -1,0 +1,14 @@
+{
+  "schema_version": "fabrivra.benchmark-kit/1",
+  "origin": "synthetic_demo",
+  "source_ref": "FABRIVRA original benchmark / 2026-10-26",
+  "license": "MIT",
+  "files": {
+    "consumer-tray.obj": "512d252f1a4613b25c40089cca36abf8d0c43f3d95e7d3e82b5c48eb77143970",
+    "machines.csv": "412b0ad48d45b5e4516c0c6dfccca7904edb477b0e8577d4ef838fb669863755",
+    "materials.csv": "a6e5cebcafbb0c0da3824bf9c65adf607dc785dd13bd6569c5f39c8b3b9cd927",
+    "scenario-2-cavities.json": "98c3750fab013623146658f5ecf691bdd725efe42866e5ca0605e4f0a8cf0b80",
+    "scenario-4-cavities.json": "49bb7166ee00e7361bd211d44e6291cb162d7e50613bac0779c42e592970b5df",
+    "README.md": "1482c1e3427dba2e65fd8b8f4684c2d478cd83b16d2aa4f7eba86082fe01de3f"
+  }
+}

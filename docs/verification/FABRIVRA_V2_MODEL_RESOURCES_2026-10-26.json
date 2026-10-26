@@ -1,0 +1,8 @@
+{
+  "model": "onnx-community/Qwen2.5-0.5B-Instruct",
+  "revision": "22942cb7d7ba4cc81bb4673549ca4d4614469b5e",
+  "elapsed_s": 9.784641358000044,
+  "child_maxrss_kib": 3010032,
+  "measurement": "Linux wait/rusage of one owned native Node CPU inference, including model load/checksum. Codex runner; not external Codespace.",
+  "native_output": "{\"reply\":\"Proposed container settings.\",\"changes\":{\"container_change_s\":5,\"parts_per_container\":24}}"
+}

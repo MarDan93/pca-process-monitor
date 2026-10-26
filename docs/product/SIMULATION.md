@@ -1,3 +1,5 @@
+> **FABRIVRA V2, 26 October 2026:** the owner-supplied V2 package supersedes earlier product/deployment assumptions. The core is the complete **System Simulation Engine**; Mold CAE, Timestral and Packaging Design are separate modules. [Active contract/roadmap](FABRIVRA_V2.md) · [Current browser trial](../deployment/CODESPACES.md). The dated text below is retained history.
+
 # Simulation specification: granules to conveyor
 
 **Implementation update, 19 October:** the [Codespaces trial](../deployment/CODESPACES.md) now includes a bounded configured L0 scheduler, discrete mass ledger, shared-clock illustrative cell/timeline, persisted runs and approved AI settings. [Executed evidence](../verification/PROCESS_CODESPACES_2026-10-19.md) defines its limits. The detailed specification below remains the target; moisture/thermal/flow fields, real geometric clearances and cost accounting are not implemented.

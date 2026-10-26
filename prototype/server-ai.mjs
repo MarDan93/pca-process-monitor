@@ -32,14 +32,12 @@ if (process.argv.includes('--prepare')) {
   await verify();
   process.stdout.write(JSON.stringify({ ready: true, model: AI_MODEL, revision: AI_MODEL_REVISION }) + '\n');
 } else {
-  let source = '';
-  for await (const chunk of process.stdin) { source += chunk; if (source.length > 131072) throw new Error('Input is too large.'); }
-  const input = JSON.parse(source);
+  async function infer(input){
   let messages;
-  if (input.mode === 'process') {
+  if (input.mode === 'process'||input.mode==='system') {
     messages = [{ role: 'system', content: `Extract explicitly requested settings into JSON with keys reply and changes. Every numeric value MUST be a JSON number, never a quoted string and never a unit suffix. Include ONLY requested fields. Allowed fields: ${JSON.stringify(input.fields)}. Times are seconds, masses grams, distances mm. Keep other fields unchanged. No code, markdown, simulation claims or full scenario. Write a brief reply in ${input.language}.` },
-      { role: 'user', content: 'Set injection_s to 2 seconds and cycles to 4.' },
-      { role: 'assistant', content: '{"reply":"Proposed injection time and cycle count.","changes":{"injection_s":2,"cycles":4}}' },
+      { role: 'user', content: input.mode==='system'?'Set container_change_s to 5 seconds and parts_per_container to 24.':'Set injection_s to 2 seconds and cycles to 4.' },
+      { role: 'assistant', content: input.mode==='system'?'{"reply":"Proposed container settings.","changes":{"container_change_s":5,"parts_per_container":24}}':'{"reply":"Proposed injection time and cycle count.","changes":{"injection_s":2,"cycles":4}}' },
       { role: 'user', content: input.message }];
   } else if (input.mode === 'chat') {
     messages = [{ role: 'system', content: `You route an injection moulding workflow. Return ONLY JSON: {"actions":[...]}. Choose 1 to 4 UNIQUE actions from: demand, geometry, material, machines, layout, simulation, costs. Do not write facts, prices, recommendations, prose or new action names. Demand means annual versus total quantity and duration; geometry means part dimensions/mass; machines means real press specifications; layout means cavity layout; simulation means timing and curves; costs means economic comparison. Project facts: ${JSON.stringify(input.context)}.` },
@@ -49,6 +47,16 @@ if (process.argv.includes('--prepare')) {
   }
   const output = await generator(messages, { max_new_tokens: input.mode === 'chat' ? 90 : 250, do_sample: false, return_full_text: false });
   const text = output[0].generated_text;
-  process.stdout.write(JSON.stringify({ text: Array.isArray(text) ? text.at(-1).content : text, model: AI_MODEL, revision: AI_MODEL_REVISION }) + '\n');
+  return {text:Array.isArray(text)?text.at(-1).content:text,model:AI_MODEL,revision:AI_MODEL_REVISION};
+  }
+  if(process.argv.includes('--evaluate')){
+    const path=process.argv[process.argv.indexOf('--evaluate')+1];
+    const cases=JSON.parse(await readFile(path,'utf8')).cases;const results=[];
+    for(const c of cases){const began=Date.now();results.push({id:c.id,...await infer({mode:'system',message:c.message,language:c.language,fields:{cavities:{type:'number'},cycles:{type:'number'},cooling_s:{type:'number'},robot_pick_s:{type:'number'},robot_transfer_s:{type:'number'},robot_return_s:{type:'number'},eoat_slots:{type:'number'},reindex_s:{type:'number'},capacity_parts:{type:'number'},parts_per_container:{type:'number'},handling_s_per_part:{type:'number'},container_change_s:{type:'number'}}}),latency_ms:Date.now()-began});process.stderr.write(`EVAL ${results.length}/${cases.length} ${c.id}\n`);}
+    process.stdout.write(JSON.stringify({model:AI_MODEL,revision:AI_MODEL_REVISION,results})+'\n');
+  }else{
+    let source='';for await(const chunk of process.stdin){source+=chunk;if(source.length>131072)throw new Error('Input is too large.');}
+    process.stdout.write(JSON.stringify(await infer(JSON.parse(source)))+'\n');
+  }
 }
 await generator.dispose();

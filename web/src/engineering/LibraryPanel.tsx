@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { api } from '../api';
 import type { ResourceKind, ResourceData, Resource } from './types';
 const machineFields = {
-  manufacturer: 'Manufacturer', model: 'Model', injection_unit: 'Injection unit', clamp_force_kn: 'Clamp force (kN)', tiebar_x_mm: 'Tie-bar width (mm)', tiebar_y_mm: 'Tie-bar height (mm)', mould_min_mm: 'Minimum mould height (mm)', mould_max_mm: 'Maximum mould height (mm)', opening_stroke_mm: 'Opening stroke (mm)', max_daylight_mm: 'Daylight (mm)', max_shot_cm3: 'Shot volume (cm³)', screw_diameter_mm: 'Screw diameter (mm)', hourly_cost: 'Hourly cost', currency: 'Currency'
+  manufacturer: 'Manufacturer', model: 'Model', injection_unit: 'Injection unit', clamp_force_kn: 'Clamp force (kN)', tiebar_x_mm: 'Tie-bar width (mm)', tiebar_y_mm: 'Tie-bar height (mm)', mould_min_mm: 'Minimum mould height (mm)', mould_max_mm: 'Maximum mould height (mm)', opening_stroke_mm: 'Opening stroke (mm)', max_daylight_mm: 'Daylight (mm)', max_shot_cm3: 'Shot volume (cm³)', screw_diameter_mm: 'Screw diameter (mm)', max_injection_rate_cm3_s:'Maximum injection rate (cm³/s)',plasticising_capacity_g_s:'Plasticising capacity (g/s)',hourly_cost: 'Hourly cost', currency: 'Currency'
 };
 const materialFields = { manufacturer: 'Manufacturer', family: 'Polymer family', grade: 'Commercial grade', density_kg_m3: 'Density (kg/m³)', melt_density_kg_m3: 'Melt density (kg/m³)', specific_heat_j_kg_k: 'Specific heat (J/kg/K)', conductivity_w_m_k: 'Thermal conductivity (W/m/K)', melt_min_c: 'Minimum melt temperature (°C)', melt_max_c: 'Maximum melt temperature (°C)' };
 export function LibraryPanel({ kind, t, onError }: {kind: ResourceKind; t: (s:string)=>string; onError: (s:string)=>void}) {

@@ -1,0 +1,26 @@
+{
+  "baseline": [
+    {
+      "cavities": 2,
+      "parts": 160,
+      "duration_s": 714.8900000000008,
+      "parts_per_hour": 805.7183622655225,
+      "unit_cost": "0.183540",
+      "input_sha256": "2e1a9aeb2d3a6970120a46fd31c381c2b62ccd3c6fb6aa16f223e34ad5e50c85"
+    },
+    {
+      "cavities": 4,
+      "parts": 160,
+      "duration_s": 765.7566666666679,
+      "parts_per_hour": 752.1971731664094,
+      "unit_cost": "0.199605",
+      "input_sha256": "0e70275f95a6916c4ea3dfa26a1b355c0b493b733878bc44be1f789c1d28f5ce"
+    }
+  ],
+  "improved_packaging": {
+    "parts_per_box": 48,
+    "parts_per_hour": 954.0267326240704
+  },
+  "actual_native_ai": true,
+  "uncaught_exceptions": 0
+}

@@ -1,10 +1,11 @@
 import { robotPosition, mouldOpenness } from './kinematics.js';
 /** @type {Array<{id:string,label:string,unit:string,source:string,interpolation?:string,unavailable?:boolean}>} */
 export const channels = [
- ...['raw','conditioned','hopper','melt','mould','robot','belt','output','runner'].map(id=>({id:`mass_${id}`, label: {raw:'Granules',conditioned:'Conditioned',hopper:'Hopper',melt:'Melt',mould:'Mould',robot:'Robot',belt:'Conveyor',output:'Output',runner:'Runner'}[id] || id, unit:'g', source:'L0 discrete mass balance', interpolation:'step'})),
+ ...['raw','conditioned','hopper','melt','mould','robot','belt','packaging','output','runner'].map(id=>({id:`mass_${id}`, label: {raw:'Granules',conditioned:'Conditioned',hopper:'Hopper',melt:'Melt',mould:'Mould',robot:'Robot',belt:'Conveyor',packaging:'Packaging',output:'Output',runner:'Runner'}[id] || id, unit:'g', source:'L0 discrete mass balance', interpolation:'step'})),
  ...['x','y','z'].map(axis=>({id:`robot_${axis}`,label:`Robot ${axis.toUpperCase()}`,unit:'mm',source:'Illustrative XYZ trajectory',interpolation:'linear'})),
  {id:'mould_open',label:'Mould opening',unit:'%',source:'Configured opening/closing ramp',interpolation:'linear'},
  {id:'output_parts',label:'Output parts',unit:'parts',source:'L0 event count',interpolation:'step'},
+ {id:'buffer_parts',label:'Conveyor buffer occupancy',unit:'parts',source:'L0 finite-buffer event count',interpolation:'step'},
  {id:'cavity_pressure',label:'Cavity pressure',unit:'MPa',source:'Requires measurements or a filling solver',unavailable:true},
  {id:'melt_temperature',label:'Melt temperature',unit:'°C',source:'Requires measurements or a thermal solver',unavailable:true},
  {id:'moisture',label:'Material moisture',unit:'%',source:'Requires measurements or a drying model',unavailable:true},
@@ -14,6 +15,8 @@ export function signalValue(run,id,time){
  if(id.startsWith('mass_')){const k=id.slice(5);let v=k==='raw'?run.scenario.initial_material_g:0;for(const e of run.events)if(e.end_s<=time)v+=e.mass_delta_g[k]||0;return Math.max(0,v);}
  if(id.startsWith('robot_'))return robotPosition(run,time)[{robot_x:0,robot_y:1,robot_z:2}[id]];
  if(id==='mould_open')return mouldOpenness(run,time)*100;
+ if(id==='buffer_parts')return run.part_records?run.part_records.filter(p=>p.deposit_s<=time&&time<p.packaging_start_s).length:0;
+ if(id==='output_parts'&&run.part_records)return run.part_records.filter(p=>p.packaging_end_s<=time).length;
  if(id==='output_parts')return run.cycles.filter(c=>c.exit_s<=time).length*run.scenario.cavities;
  return null;
 }

@@ -1,5 +1,5 @@
 {
-  "name": "Mould Studio — process simulation",
+  "name": "FABRIVRA — production system simulation",
   "image": "mcr.microsoft.com/devcontainers/base:bookworm",
   "features": {
     "ghcr.io/devcontainers/features/python:1": { "version": "3.12" },
@@ -7,7 +7,7 @@
   },
   "forwardPorts": [8000],
   "portsAttributes": {
-    "8000": { "label": "Mould Studio", "onAutoForward": "openBrowser", "protocol": "http" }
+    "8000": { "label": "FABRIVRA", "onAutoForward": "openBrowser", "protocol": "http" }
   },
   "customizations": { "codespaces": { "openFiles": ["docs/deployment/CODESPACES.md"] } },
   "postCreateCommand": "python scripts/setup_codespaces.py --with-ai",

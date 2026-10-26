@@ -6,7 +6,7 @@ const ignoreSelection = () => {};
 export function mountConceptViewer(container, concept, { finish = 'unspecified', dark = false, onSelection = ignoreSelection } = {}) {
   const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false });
   renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
-  renderer.setClearColor(dark ? 0x151f2b : 0xd9e1eb);
+  renderer.setClearColor(dark ? 0x151f2b : 0xFFF8F4);
   renderer.outputColorSpace = THREE.SRGBColorSpace;
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
   const canvas = renderer.domElement;
@@ -34,7 +34,7 @@ export function mountConceptViewer(container, concept, { finish = 'unspecified',
   }
   const group = new THREE.Group();
   scene.add(group);
-  const material = new THREE.MeshPhysicalMaterial({ color: dark ? 0x9cb9d1 : 0xadc2dc, metalness: dark ? 0.32 : 0.12, roughness: finish === 'glossy' ? 0.2 : 0.48, clearcoat: finish === 'glossy' ? 1 : 0, side: concept.model_kind === 'imported_mesh' ? THREE.DoubleSide : THREE.FrontSide });
+  const material = new THREE.MeshPhysicalMaterial({ color: dark ? 0x9cb9d1 : 0xF4A483, metalness: dark ? 0.32 : 0.12, roughness: finish === 'glossy' ? 0.2 : 0.48, clearcoat: finish === 'glossy' ? 1 : 0, side: concept.model_kind === 'imported_mesh' ? THREE.DoubleSide : THREE.FrontSide });
   const edgeMaterial = new THREE.LineBasicMaterial({ color: dark ? 0x233b51 : 0x334b68, transparent: true, opacity: 0.7 });
   const meshes = [];
   for (const component of concept.components) {
@@ -51,13 +51,13 @@ export function mountConceptViewer(container, concept, { finish = 'unspecified',
     group.add(mesh);
     meshes.push(mesh);
   }
-  const grid = new THREE.GridHelper(extent * 5, 40, dark ? 0x3c5267 : 0x9dabbc, dark ? 0x243547 : 0xc1cad5);
+  const grid = new THREE.GridHelper(extent * 5, 40, dark ? 0x3c5267 : 0xd8c7bd, dark ? 0x243547 : 0xefe1d8);
   grid.rotation.x = Math.PI / 2;
   grid.position.z = -extent * 0.16;
   scene.add(grid);
   let disposed = false;
   let selection = null;
-  const selectionBox = new THREE.Box3Helper(new THREE.Box3(), 0x69d5c5);
+  const selectionBox = new THREE.Box3Helper(new THREE.Box3(), 0xC9684E);
   selectionBox.visible = false;
   scene.add(selectionBox);
   function select(name) {

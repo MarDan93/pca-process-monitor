@@ -1,0 +1,20 @@
+import type { ProcessRun, Scenario } from '../simulation/types';
+import type { Asset } from '../api';
+import type { Layout, Resource } from '../engineering/types';
+export type SystemScenario = {
+ schema_version: 'fabrivra.system-scenario/1'; name:string; origin:'synthetic_demo'|'user_declared'; source_ref:string;
+ policy:'exploratory'|'require_known_l0_constraints'; machine_id:string|null;material_id:string|null;
+ recipe:Scenario;
+ mould:{ejection_axis:'x'|'y'|'z';cavity_gap_mm:number;edge_allowance_mm:number;plate_thickness_mm:number;opening_mm:number;projected_area_mm2:number|null;cavity_pressure_mpa:number|null;clamp_safety_factor:number};
+ robot:{eoat_slots:number;allow_multiple_trips:boolean;payload_kg:number|null;eoat_mass_kg:number|null;eoat_pitch_mm:number|null;reindex_s:number;reach_mm:number|null;required_reach_mm:number|null;clearance_mm:number;transfer_distance_mm:number;deposit_height_mm:number};
+ conveyor:{capacity_parts:number;length_mm:number;speed_mm_s:number;minimum_batch_pitch_mm:number};
+ packaging:{enabled:boolean;parts_per_container:number;handling_s_per_part:number;container_change_s:number;supply:'unlimited_configured'|'finite';available_containers:number|null;required_orientation_deg:number};
+ costs:{currency:string;material_per_kg:string|null;robot_per_hour:string|null;packaging_per_hour:string|null;container_each:string|null;tooling_investment:string|null;energy_in_hourly_rates:boolean;additional_energy_per_shot:string|null;operating_hours_per_year:number|null;annual_good_demand:number|null;programme_years:number|null};
+};
+export type FrozenScenario={id:string;revision:number;configuration:SystemScenario;bindings:{asset:Asset|null;machine:Resource|null;material:Resource|null;engineering:Layout|null}};
+export type ProductionSystem={id:string;schema_version:string;scenarios:FrozenScenario[]};
+export type ScenarioStatus={scenario_id:string;revision:number;latest_run_id:string|null;stale_artifacts:string[];geometry_binding_stale:boolean};
+export type SystemState={production_system:ProductionSystem|null;statuses:ScenarioStatus[];project_revision:number};
+export type Economics={currency:string;unit_cost:string|null;total_campaign_cost:string|null;components_total:Record<string,string|null>;missing_costs:string[];annual_capacity_projection:number|null;annual_demand:number|null;demand_met:boolean|null;validity:string};
+export type SystemRun=ProcessRun & {scenario_id:string;scenario_revision:number;scenario_name:string;dependency_hashes:Record<string,string>;economics:Economics;constraints:{code:string;status:string;required?:number;available?:number;unit?:string;formula?:string}[];parameters:{path:string;value:unknown;unit:string;source_ref:string;origin:string;confidence_or_validity:string}[]};
+export type Comparison={runs:SystemRun[];pareto_run_ids:string[];validity:string};

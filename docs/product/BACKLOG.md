@@ -1,3 +1,5 @@
+> **V2 supersedes earlier product/deployment assumptions:** see [the active system-first contract/roadmap](FABRIVRA_V2.md). Dated implementation/audit details below remain historical evidence.
+
 # Implementation backlog and acceptance
 
 Updated 2026-10-17. The [increment plan](../planning/IMPLEMENTATION_PLAN.md) now defines I01a–I08 and the first eleven-step integrated flow; platform criteria remain planned. Platform criteria below are **planned, not passed tests**. P1 is incomplete. A client-side B04 AI experiment and CAD-style demo are implemented; B04 acceptance is pending broader evaluation and platform integration; actual browser inference is verified. Progress is tracked in [implementation status](IMPLEMENTATION_STATUS.md).

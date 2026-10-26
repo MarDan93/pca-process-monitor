@@ -13,6 +13,7 @@ import subprocess
 import sys
 import tempfile
 import time
+import threading
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -30,6 +31,26 @@ def main():
         pid = None
         cookie, token = "", ""
         origin = "https://synthetic-verification-8000.app.github.dev"
+        sampled_rss={'largest_process_kib':0,'aggregate_owned_kib':0,'observed_process_count':0};monitor_stop=threading.Event()
+        def sample_memory():
+            # Follow only this test's owned API PID and descendants; no environment/credential reads.
+            while not monitor_stop.wait(.1):
+                queue=[pid] if pid else [];seen=set();sizes=[]
+                while queue:
+                    current=queue.pop()
+                    if current in seen:continue
+                    seen.add(current)
+                    try:
+                        status=Path(f'/proc/{current}/status').read_text()
+                        sizes.append(int(next(line.split()[1] for line in status.splitlines() if line.startswith('VmRSS:'))))
+                        for task in Path(f'/proc/{current}/task').iterdir():
+                            try:queue.extend(map(int,(task/'children').read_text().split()))
+                            except OSError:pass
+                    except (OSError,StopIteration,ValueError):pass
+                sampled_rss['largest_process_kib']=max(sampled_rss['largest_process_kib'],max(sizes,default=0))
+                sampled_rss['aggregate_owned_kib']=max(sampled_rss['aggregate_owned_kib'],sum(sizes))
+                sampled_rss['observed_process_count']=max(sampled_rss['observed_process_count'],len(sizes))
+        monitor=threading.Thread(target=sample_memory,daemon=True);monitor.start()
         def request(path, body=None, authenticated=True):
             connection = http.client.HTTPConnection("127.0.0.1", 8000, timeout=160)
             headers = {"Host": "synthetic-verification-8000.app.github.dev", "Origin": "http://localhost:8000", "X-Forwarded-Host": "synthetic-verification-8000.app.github.dev", "Sec-Fetch-Site": "same-origin"}
@@ -95,6 +116,17 @@ def main():
             project = apply(answer['process'], answer['source'], 1)
             status, updated, _ = request(path + '/process/runs', {"base_revision": project['revision']})
             assert status == 200 and updated['duration_s'] == 104 and updated['summary']['output_parts'] == 6
+            status, cell, _ = request('/api/system/benchmark',{})
+            assert status==200
+            system_path='/api/projects/'+cell['id']
+            status,comparison,_=request(system_path+'/system/compare',{'base_revision':0,'scenario_ids':[s['id'] for s in cell['production_system']['scenarios']]})
+            assert status==200 and len(comparison['runs'])==2
+            assert all(r['summary']['output_parts']==160 for r in comparison['runs'])
+            assert comparison['runs'][0]['summary']['system_output_per_hour']>comparison['runs'][1]['summary']['system_output_per_hour']
+            exported=request(system_path+'/backup')[1]
+            preview=request('/api/backups/preview',{'backup':exported})[1]
+            status,restored,_=request('/api/backups/restore',{'backup':exported,'approved_sha256':preview['sha256']})
+            assert status==200 and restored['id']!=cell['id'] and restored['asset']['sha256']==cell['asset']['sha256']
             # Exercise the actual safe restart path, preserving credentials/session/data.
             restart_code = "import importlib.util,pathlib,sys; s=importlib.util.spec_from_file_location('launcher'," + repr(str(ROOT / "scripts/start_codespaces.py")) + "); m=importlib.util.module_from_spec(s); s.loader.exec_module(m); m.ROOT=pathlib.Path(" + repr(str(root)) + "); sys.argv=['start_codespaces.py','--restart']; m.main()"
             restarted = subprocess.run([sys.executable, '-c', restart_code], env={**os.environ, 'CODESPACE_NAME': 'synthetic-verification'}, capture_output=True, text=True, timeout=45)
@@ -102,15 +134,18 @@ def main():
             pid = int((root / '.cache/codespaces/workspace.pid').read_text())
             assert request(path + '/process/latest')[1] == updated
             assert request(path)[1]['process']['cycles'] == 3
+            assert request(system_path+'/system/runs/'+comparison['runs'][0]['id'])[1]==comparison['runs'][0]
+            assert request('/api/projects/'+restored['id'])[1]['production_system']['scenarios'][0]['configuration']['recipe']['cavities']==2
             assert request('/api/auth/logout', {})[0] == 200
             assert request('/api/projects')[0] == 401
-            evidence = {"actual_codespace": False, "synthetic_codespaces_environment": True, "launcher": "passed", "rewritten_origin_with_bound_host_and_fetch_metadata": "passed", "authenticated_process_ai_workflow": "passed", "safe_restart_persistence": "passed", "logout_revocation": "passed", "actual_server_cpu_inference_s": round(elapsed, 3), "initial_duration_s": 126, "updated_duration_s": 104, "github_port_forwarding": "owner is now using the external app; this increment is not yet verified in their instance"}
+            evidence = {"actual_codespace": False, "synthetic_codespaces_environment": True, "launcher": "passed", "rewritten_origin_with_bound_host_and_fetch_metadata": "passed", "authenticated_process_ai_workflow": "passed", "safe_restart_persistence": "passed", "complete_system_comparison":"passed", "sampled_peak_rss":sampled_rss, "sample_period_s":.1,"memory_scope":"API RSS observed on this Codex runner; child RSS not observable here when process count is 1. Standalone native-model memory is recorded separately. Not an external Codespace.", "portable_backup_restore":"passed", "logout_revocation": "passed", "actual_server_cpu_inference_s": round(elapsed, 3), "initial_duration_s": 126, "updated_duration_s": 104, "github_port_forwarding": "unverified; no Codespaces instances returned by the authenticated API on 2026-10-26"}
             target = ROOT / '.cache/verification/codespaces-process.json'
             target.parent.mkdir(parents=True, exist_ok=True)
             target.write_text(json.dumps(evidence, indent=2))
-            print('PASS real Codespaces launcher in synthetic environment, owner login, actual server AI, approved process rerun, restart persistence and logout')
+            print('PASS real Codespaces launcher in synthetic environment, owner login, actual server AI, approved process rerun, complete-cell comparison, backup/restore, restart persistence and logout')
         finally:
             stop()
+            monitor_stop.set();monitor.join(timeout=2)
 
 
 if __name__ == '__main__':

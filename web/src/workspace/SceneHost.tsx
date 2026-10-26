@@ -11,7 +11,7 @@ export const SceneHost = forwardRef<SceneControls, { concept: Concept | null; wi
   useEffect(() => {
     if (!element.current) return;
     try {
-      viewer.current = mountConceptViewer(element.current, props.concept ?? { dimensions_mm: { length: 100, width: 100, height: 100 }, components: [] }, { dark: true, onSelection: (name: string | null) => callbacks.current.onSelection(name) });
+      viewer.current = mountConceptViewer(element.current, props.concept ?? { dimensions_mm: { length: 100, width: 100, height: 100 }, components: [] }, { dark: false, onSelection: (name: string | null) => callbacks.current.onSelection(name) });
       setVersion(v => v + 1);
     } catch (error) { callbacks.current.onError((error as Error).message); }
     return () => { viewer.current?.dispose(); viewer.current = null; };

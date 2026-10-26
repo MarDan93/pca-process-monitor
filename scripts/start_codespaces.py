@@ -103,7 +103,7 @@ def main():
                 time.sleep(.25)
         else:
             raise SystemExit("App readiness timed out. See .cache/codespaces/workspace.log.")
-    print(f"Mould Studio is ready. Open this secure address in your browser: {environment['MOULD_PUBLIC_ORIGIN']}")
+    print(f"FABRIVRA is ready. Open this secure address in your browser: {environment['MOULD_PUBLIC_ORIGIN']}")
     print("Keep port 8000 visibility Private. Desktop localhost forwarding is not the hosted sign-in address.")
     print(f"Sign in as owner. Read your private password in {credentials.relative_to(ROOT)}; do not commit or share that file.")
 

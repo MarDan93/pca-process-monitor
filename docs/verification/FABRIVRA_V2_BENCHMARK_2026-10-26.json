@@ -1,0 +1,89 @@
+{
+  "model": {
+    "id": "fabrivra.system-l0",
+    "version": "1.0.0",
+    "fidelity": "L0",
+    "implementation": "implemented",
+    "license": "MIT",
+    "validity": "Deterministic configured resource scheduling; no physical/experimental production validation."
+  },
+  "source": "Original synthetic fixtures in examples/system-benchmark; no OEM/grade validation.",
+  "same_finite_campaign_parts": 160,
+  "results": [
+    {
+      "case": "finite_buffer_12_part_box",
+      "cavities": 2,
+      "origin": "synthetic_demo",
+      "output_parts": 160,
+      "duration_s": 714.8900000000008,
+      "parts_per_hour": 805.7183622655225,
+      "unit_cost": "0.183540",
+      "currency": "EUR",
+      "buffer_blocking_s": 313.19999999999993,
+      "container_change_s": 325.0,
+      "busiest_resource_heuristic": "packaging",
+      "status": "completed",
+      "physical_schedule_sha256": "e64f5df834e5cc165c56c7a03e56bdee06ae6fb7a70b649646aded14ca502063"
+    },
+    {
+      "case": "finite_buffer_12_part_box",
+      "cavities": 4,
+      "origin": "synthetic_demo",
+      "output_parts": 160,
+      "duration_s": 765.7566666666679,
+      "parts_per_hour": 752.1971731664094,
+      "unit_cost": "0.199605",
+      "currency": "EUR",
+      "buffer_blocking_s": 627.5133333333341,
+      "container_change_s": 325.0,
+      "busiest_resource_heuristic": "packaging",
+      "status": "completed",
+      "physical_schedule_sha256": "2faf5201010871e2091c18c35ac7f1ad1a868ac91dd1efe4fa4681a21cb10a5a"
+    },
+    {
+      "case": "48_part_box",
+      "cavities": 4,
+      "origin": "synthetic_demo",
+      "output_parts": 160,
+      "duration_s": 603.7566666666667,
+      "parts_per_hour": 954.0267326240704,
+      "unit_cost": "0.158355",
+      "currency": "EUR",
+      "buffer_blocking_s": 481.7133333333326,
+      "container_change_s": 75.0,
+      "busiest_resource_heuristic": "packaging",
+      "status": "completed",
+      "physical_schedule_sha256": "bf08167f4bcffa930df6c3ddf18166141d5aa242327c0c95fe55b34c7de69ef7"
+    },
+    {
+      "case": "fast_downstream_counterexample",
+      "cavities": 2,
+      "origin": "synthetic_demo",
+      "output_parts": 160,
+      "duration_s": 485.7100000000013,
+      "parts_per_hour": 1185.8928167013207,
+      "unit_cost": "0.151710",
+      "currency": "EUR",
+      "buffer_blocking_s": 0.0,
+      "container_change_s": 0.0,
+      "busiest_resource_heuristic": "press",
+      "status": "completed",
+      "physical_schedule_sha256": "6804820d8c85caf33428410ecab4683b2629a8282501c92eaa17d14450f0f013"
+    },
+    {
+      "case": "fast_downstream_counterexample",
+      "cavities": 4,
+      "origin": "synthetic_demo",
+      "output_parts": 160,
+      "duration_s": 257.37666666666667,
+      "parts_per_hour": 2237.965109502286,
+      "unit_cost": "0.128997",
+      "currency": "EUR",
+      "buffer_blocking_s": 0.0,
+      "container_change_s": 0.0,
+      "busiest_resource_heuristic": "press",
+      "status": "completed",
+      "physical_schedule_sha256": "a7b81c7012f4d62c2b2106cb34c1d0ff7d7fec616ec42698683e06869dc9e187"
+    }
+  ]
+}

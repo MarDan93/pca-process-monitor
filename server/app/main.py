@@ -17,6 +17,10 @@ from .process import ProcessPreviewRequest, RunRequest, example
 from . import assistant
 from .resources import Resources, ResourceRequest, ResourceImport, SOURCE_REGISTER, FAMILIES
 from .engineering import LayoutRequest
+from .system.service import SystemService
+from .system.schemas import ScenarioPreview, ScenarioCompare
+from .system.domain import graph
+from .backup import ProjectBackup, RestoreRequest
 
 ROOT = Path(__file__).resolve().parents[2]
 
@@ -30,6 +34,8 @@ class BodyLimit:
         if scope["type"] != "http":
             return await self.app(scope, receive, send)
         limit = 18 * 1024 * 1024 if scope["path"].endswith("/assets") else 32768
+        if scope["path"].startswith("/api/backups/"):
+            limit = 34 * 1024 * 1024
         if scope["path"] == "/api/library/import":
             limit = 350000
         total = 0
@@ -103,6 +109,8 @@ def create_app(database=None, principal="local-developer", testing=False, settin
 
     store = app.state.store
     library = Resources(store)
+    system = SystemService(store)
+    backup = ProjectBackup(store)
 
     @app.exception_handler(RequestValidationError)
     async def validation_error(request, error):
@@ -116,6 +124,55 @@ def create_app(database=None, principal="local-developer", testing=False, settin
     @app.exception_handler(ValidationError)
     async def nested_validation_error(_request, error):
         return JSONResponse({"detail": [{"loc": list(e["loc"]), "msg": e["msg"]} for e in error.errors()]}, 422)
+
+    @app.get('/api/projects/{project_id}/backup')
+    def export_project(project_id: str):
+        return JSONResponse(backup.export(project_id),headers={'Content-Disposition':'attachment; filename="fabrivra-project-backup.json"'})
+
+    @app.post('/api/backups/preview')
+    def inspect_project_backup(body: RestoreRequest):return backup.inspect(body.backup)
+
+    @app.post('/api/backups/restore')
+    def restore_project_backup(body: RestoreRequest):return backup.restore(body.backup,body.approved_sha256,body.name)
+
+    @app.get('/api/system/manifest')
+    def system_manifest():return graph()
+
+    @app.post('/api/system/benchmark')
+    def create_system_benchmark():return system.create_benchmark()
+
+    @app.get('/api/system/example-kit')
+    def system_example_kit():
+        import io,zipfile
+        from .system.examples import kit_files
+        stream=io.BytesIO()
+        with zipfile.ZipFile(stream,'w',zipfile.ZIP_DEFLATED) as bundle:
+            for name,content in kit_files().items():
+                info=zipfile.ZipInfo('fabrivra-system-benchmark/'+name,date_time=(2026,10,26,0,0,0));info.compress_type=zipfile.ZIP_DEFLATED;bundle.writestr(info,content)
+        return Response(stream.getvalue(),media_type='application/zip',headers={'Content-Disposition':'attachment; filename="fabrivra-system-benchmark.zip"'})
+
+    @app.get('/api/system/template')
+    def system_template():
+        from .system.examples import fixture_configs
+        return fixture_configs()[0]
+
+    @app.get('/api/projects/{project_id}/system')
+    def system_state(project_id: str):return system.state(project_id)
+
+    @app.post('/api/projects/{project_id}/system/preview')
+    def preview_system(project_id: str,body: ScenarioPreview):return system.preview(project_id,body)
+
+    @app.post('/api/projects/{project_id}/system/compare')
+    def compare_system(project_id: str,body: ScenarioCompare):return system.compare(project_id,body)
+
+    @app.get('/api/projects/{project_id}/system/runs')
+    def list_system_runs(project_id: str):return system.list_runs(project_id)
+
+    @app.get('/api/projects/{project_id}/system/runs/{run_id}')
+    def get_system_run(project_id: str,run_id: str):return system.get_run(project_id,run_id)
+
+    @app.get('/api/projects/{project_id}/system/latest/{scenario_id}')
+    def latest_system_run(project_id: str,scenario_id: str):return system.latest(project_id,scenario_id)
 
     @app.get("/api/library/sources")
     def library_sources():

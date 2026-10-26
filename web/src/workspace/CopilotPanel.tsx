@@ -3,11 +3,12 @@ import { LocalAI } from '../../../prototype/ai-client.js';
 import { AI_MODEL, AI_MODEL_REVISION } from '../../../prototype/ai-contract.js';
 import { api, type Commercial, type Project, type Source } from '../api';
 import type { Scenario } from '../simulation/types';
+import type {SystemScenario} from '../system/types';
 import { ServerCopilotPanel } from './ServerCopilotPanel';
 import type { Language } from '../i18n';
 import { Icon } from '../ui/Icon';
 type AIState = { status: string; messages: { role: string; content: string }[]; mode: string; progress: number | null; file: string; error: string; proposal: Record<string, Record<string, unknown>> | null; baseRevision: number | null };
-type Props = { project: Project | null; t: (s: string) => string; language: Language; busy: boolean; onPreview: (patch: Partial<Commercial>, source: Source) => void; onError: (error: string) => void; onProcessPreview: (s: Scenario, source: Source) => void };
+type Props = {onSystemPreview?:(s:SystemScenario,id:string,source:Source)=>void; project: Project | null; t: (s: string) => string; language: Language; busy: boolean; onPreview: (patch: Partial<Commercial>, source: Source) => void; onError: (error: string) => void; onProcessPreview: (s: Scenario, source: Source) => void };
 export function CopilotPanel(props: Props) {
   const [server, setServer] = useState<{ enabled: boolean; ready: boolean; model?: string } | null>(null);
   useEffect(() => { let active = true; api.assistantStatus().then(s => { if (active) setServer(s); }).catch(() => { if (active) setServer({ enabled: false, ready: false }); }); return () => { active = false; }; }, []);

@@ -1,6 +1,7 @@
 import it from '../../prototype/locales/it.json';
 import fr from '../../prototype/locales/fr.json';
 import es from '../../prototype/locales/es.json';
+import {systemEntries} from './system/locales';
 import { engineeringEntries } from './engineering/locales';
 import { processEntries } from './simulation/locales';
 export type Language = 'en' | 'it' | 'fr' | 'es';
@@ -8,6 +9,7 @@ const legacy: Record<string, Record<string, string>> = { en: {}, it, fr, es };
 // Additive catalogue: English remains the repository/source language.
 const entries: Record<string, [string, string, string]> = {
   ...processEntries,
+  ...systemEntries,
   ...engineeringEntries,
   'Open the secure workspace address to sign in.': ['Apri l’indirizzo sicuro dell’app per accedere.', 'Ouvrez l’adresse sécurisée de l’application pour vous connecter.', 'Abre la dirección segura de la aplicación para iniciar sesión.'],
   'Open secure workspace': ['Apri l’app all’indirizzo sicuro', 'Ouvrir l’application sécurisée', 'Abrir la aplicación segura'],

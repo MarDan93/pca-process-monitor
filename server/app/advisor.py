@@ -9,7 +9,7 @@ MESSAGES = {
   'Material: select the commercial grade, supplier and datasheet. PP alone does not define flow, shrinkage, thermal behaviour or melt density.',
   'Machines: add both presses to Machine park. Confirm force units (kN or metric tonnes-force), tie-bar spacing, mould heights, opening, injection unit/shot volume and your hourly costs. Tonnage alone cannot establish compatibility.',
   'Mould: generate a preliminary cavity layout from Product, choose an extraction axis and inspect the press checks. This creates envelopes, not a finished mould design.',
-  'Simulation: configure the recipe, approve it and run. The 3D animation, timeline and signal plots share one clock. L0 timing is user-configured; pressure/temperature fields need a physics solver or measurements.',
+  'System Simulation: configure complete press/mould/EOAT/robot/conveyor/packaging scenarios, approve and compare them. Finite downstream buffers can block the robot and delay the press. 3D, timeline and signals share one clock. L0 uses configured times; pressure/temperature need measurements or separate Mold CAE.',
   'Economics: compare validated output rate, scrap, material and energy costs, tooling investment and machine hourly cost over the programme. Missing inputs prevent a defensible cost recommendation.',
   'No project values have been changed. Save confirmed inputs in the relevant module, or use a proposal mode to review a typed update.'
  ],
@@ -20,7 +20,7 @@ MESSAGES = {
   'Materiale: scegli grado commerciale, fornitore e scheda tecnica. Il solo PP non definisce fluidità, ritiro, comportamento termico o densità del fuso.',
   'Presse: inserisci entrambe nel Parco macchine. Conferma unità della forza (kN o tonnellate-forza metriche), distanza colonne, altezze stampo, apertura, gruppo di iniezione/volume dosabile e costi orari aziendali. Il solo tonnellaggio non stabilisce la compatibilità.',
   'Stampo: genera un layout preliminare delle cavità dal Prodotto, scegli l’asse di estrazione e leggi le verifiche pressa. Si generano ingombri, non uno stampo esecutivo.',
-  'Simulazione: configura e approva la ricetta, poi eseguila. Animazione 3D, timeline e grafici condividono lo stesso tempo. Le durate L0 sono impostate dall’utente; pressione e temperatura richiedono un solutore fisico o misure.',
+  'Simulazione sistema: configura scenari completi di pressa, stampo, pinza, robot, nastro e confezionamento, approvali e confrontali. I buffer a valle possono bloccare il robot e ritardare la pressa. 3D, timeline e segnali condividono il tempo. L0 usa durate configurate; pressione e temperatura richiedono misure o il modulo Mold CAE separato.',
   'Costi: confronta produttività verificata, scarti, materiale, energia, investimento stampo e costo orario pressa sulla durata della commessa. Senza questi dati non è motivabile una raccomandazione economica.',
   'Non ho modificato i valori del progetto. Salva gli input confermati nei moduli, oppure usa una modalità proposta per verificare un aggiornamento strutturato.'
  ],
@@ -31,7 +31,7 @@ MESSAGES = {
   'Matière : choisissez la référence commerciale, le fournisseur et la fiche technique. PP seul ne définit pas les propriétés du grade.',
   'Machines : ajoutez les deux presses au parc. Précisez les unités de force, entraxes, hauteurs de moule, ouverture, unité d’injection/volume et vos coûts horaires.',
   'Moule : générez une implantation préliminaire des empreintes, choisissez un axe et consultez les vérifications presse. Il s’agit d’enveloppes, pas d’un moule de fabrication.',
-  'Simulation : configurez, approuvez et lancez la recette. Animation, chronologie et courbes partagent la même horloge. L0 utilise vos durées ; pression et température exigent un solveur ou des mesures.',
+  'Simulation système : configurez des scénarios complets presse/moule/préhenseur/robot/convoyeur/conditionnement, approuvez puis comparez. Les tampons limités peuvent bloquer le robot et retarder la presse. 3D et signaux partagent une horloge. L0 utilise des durées configurées ; la physique relève des mesures ou du module Mold CAE séparé.',
   'Coûts : comparez cadence validée, rebuts, matière, énergie, investissement et coût horaire sur la durée du programme. Les données manquantes empêchent une recommandation justifiable.',
   'Aucune donnée du projet modifiée. Enregistrez les données confirmées ou utilisez un mode proposition pour vérifier une modification structurée.'
  ],
@@ -42,7 +42,7 @@ MESSAGES = {
   'Material: selecciona grado comercial, proveedor y ficha técnica. PP solo no define las propiedades del grado.',
   'Máquinas: añade ambas prensas al parque. Confirma unidades de fuerza, distancia entre columnas, alturas de molde, apertura, unidad de inyección/volumen y costes horarios propios.',
   'Molde: genera una distribución preliminar de cavidades, elige un eje y revisa las comprobaciones. Son envolventes, no un molde de fabricación.',
-  'Simulación: configura, aprueba y ejecuta la receta. Animación, cronología y gráficas comparten el reloj. L0 usa tiempos introducidos; presión y temperatura requieren un solver o medidas.',
+  'Simulación del sistema: configura escenarios completos de prensa/molde/pinza/robot/cinta/embalaje, aprueba y compara. Los búferes limitados pueden bloquear el robot y retrasar la prensa. 3D y señales comparten reloj. L0 usa tiempos configurados; la física requiere medidas o el módulo Mold CAE separado.',
   'Costes: compara producción validada, rechazo, material, energía, inversión y coste horario durante el programa. Sin estos datos no hay una recomendación económica justificable.',
   'No se han cambiado los datos del proyecto. Guarda los datos confirmados o revisa una actualización en un modo de propuesta.'
  ]}

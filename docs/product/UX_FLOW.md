@@ -1,3 +1,5 @@
+> **V2 supersedes earlier product/deployment assumptions:** see [the active system-first contract/roadmap](FABRIVRA_V2.md). Dated implementation/audit details below remain historical evidence.
+
 # Online platform user experience
 
 Current design authority (2026-10-17): [ORIGINAL_UI_SPEC.md](../design/ORIGINAL_UI_SPEC.md), two independent studies with Process spine selected. Require original dark design, persistent 3D/copilot and collapsible/resizable panels; this document retains earlier workflow context, not an implemented UI claim.

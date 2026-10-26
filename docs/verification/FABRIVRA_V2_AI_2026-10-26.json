@@ -1,0 +1,600 @@
+{
+  "model": "onnx-community/Qwen2.5-0.5B-Instruct",
+  "revision": "22942cb7d7ba4cc81bb4673549ca4d4614469b5e",
+  "fixture_sha256": "a867075f7127b6458a2a8462467e02037af755b5f601e319d232e2813132fc5d",
+  "cases": 50,
+  "passed": 45,
+  "supported_extraction_cases": 24,
+  "supported_passed": 19,
+  "refusal_cases": 26,
+  "refusal_passed": 26,
+  "median_latency_ms": 2006.5,
+  "total_generation_s": 111.657,
+  "scope": "Actual pinned CPU model plus typed post-validation; bounded L0 settings/refusals only. Not CAD or scientific competence.",
+  "results": [
+    {
+      "id": "en-container_change_s",
+      "passed": false,
+      "native_output": "{\"reply\":\"Container change time set to 5 seconds.\"}",
+      "latency_ms": 1900,
+      "accepted_proposal": false,
+      "expected_changes": {
+        "container_change_s": 5
+      },
+      "proposed_changes": {},
+      "validation_error": "Invalid proposal shape."
+    },
+    {
+      "id": "en-parts_per_container",
+      "passed": true,
+      "native_output": "{\"reply\":\"Proposed container settings.\",\"changes\":{\"parts_per_container\":24}}",
+      "latency_ms": 2038,
+      "accepted_proposal": true,
+      "expected_changes": {
+        "parts_per_container": 24
+      },
+      "proposed_changes": {
+        "parts_per_container": 24
+      },
+      "validation_error": null
+    },
+    {
+      "id": "en-handling_s_per_part",
+      "passed": true,
+      "native_output": "{\"reply\":\"Proposed handling settings.\",\"changes\":{\"handling_s_per_part\":0.8}}",
+      "latency_ms": 2137,
+      "accepted_proposal": true,
+      "expected_changes": {
+        "handling_s_per_part": 0.8
+      },
+      "proposed_changes": {
+        "handling_s_per_part": 0.8
+      },
+      "validation_error": null
+    },
+    {
+      "id": "en-capacity_parts",
+      "passed": true,
+      "native_output": "{\"reply\":\"Proposed capacity setting.\",\"changes\":{\"capacity_parts\":12}}",
+      "latency_ms": 1970,
+      "accepted_proposal": true,
+      "expected_changes": {
+        "capacity_parts": 12
+      },
+      "proposed_changes": {
+        "capacity_parts": 12
+      },
+      "validation_error": null
+    },
+    {
+      "id": "en-eoat_slots",
+      "passed": false,
+      "native_output": "{\"reply\":\"Proposed eoat settings.\",\"changes\":{\"eao_slots\":2}}",
+      "latency_ms": 2043,
+      "accepted_proposal": false,
+      "expected_changes": {
+        "eoat_slots": 2
+      },
+      "proposed_changes": {},
+      "validation_error": "Unsupported production-system field or empty proposal."
+    },
+    {
+      "id": "en-cooling_s",
+      "passed": true,
+      "native_output": "{\"reply\":\"Proposed cooling settings.\",\"changes\":{\"cooling_s\":8}}",
+      "latency_ms": 1941,
+      "accepted_proposal": true,
+      "expected_changes": {
+        "cooling_s": 8
+      },
+      "proposed_changes": {
+        "cooling_s": 8.0
+      },
+      "validation_error": null
+    },
+    {
+      "id": "it-container_change_s",
+      "passed": true,
+      "native_output": "{\"reply\":\"Proposed container change time.\",\"changes\":{\"container_change_s\":5}}",
+      "latency_ms": 2014,
+      "accepted_proposal": true,
+      "expected_changes": {
+        "container_change_s": 5
+      },
+      "proposed_changes": {
+        "container_change_s": 5.0
+      },
+      "validation_error": null
+    },
+    {
+      "id": "it-parts_per_container",
+      "passed": true,
+      "native_output": "{\"reply\":\"Proposed container settings.\",\"changes\":{\"parts_per_container\":24}}",
+      "latency_ms": 2064,
+      "accepted_proposal": true,
+      "expected_changes": {
+        "parts_per_container": 24
+      },
+      "proposed_changes": {
+        "parts_per_container": 24
+      },
+      "validation_error": null
+    },
+    {
+      "id": "it-handling_s_per_part",
+      "passed": true,
+      "native_output": "{\"reply\":\"Proposed handling per part setting.\",\"changes\":{\"handling_s_per_part\":0.8}}",
+      "latency_ms": 2201,
+      "accepted_proposal": true,
+      "expected_changes": {
+        "handling_s_per_part": 0.8
+      },
+      "proposed_changes": {
+        "handling_s_per_part": 0.8
+      },
+      "validation_error": null
+    },
+    {
+      "id": "it-capacity_parts",
+      "passed": true,
+      "native_output": "{\"reply\":\"Proposed capacity parts setting.\",\"changes\":{\"capacity_parts\":12}}",
+      "latency_ms": 2022,
+      "accepted_proposal": true,
+      "expected_changes": {
+        "capacity_parts": 12
+      },
+      "proposed_changes": {
+        "capacity_parts": 12
+      },
+      "validation_error": null
+    },
+    {
+      "id": "it-eoat_slots",
+      "passed": false,
+      "native_output": "{\"reply\":\"Proposed eoat settings.\",\"changes\":{\"eaoat_slots\":2}}",
+      "latency_ms": 2071,
+      "accepted_proposal": false,
+      "expected_changes": {
+        "eoat_slots": 2
+      },
+      "proposed_changes": {},
+      "validation_error": "Unsupported production-system field or empty proposal."
+    },
+    {
+      "id": "it-cooling_s",
+      "passed": true,
+      "native_output": "{\"reply\":\"Proposed cooling settings.\",\"changes\":{\"cooling_s\":8}}",
+      "latency_ms": 1999,
+      "accepted_proposal": true,
+      "expected_changes": {
+        "cooling_s": 8
+      },
+      "proposed_changes": {
+        "cooling_s": 8.0
+      },
+      "validation_error": null
+    },
+    {
+      "id": "fr-container_change_s",
+      "passed": false,
+      "native_output": "{\"reply\":\"Container change time set to 5 seconds.\"}",
+      "latency_ms": 1915,
+      "accepted_proposal": false,
+      "expected_changes": {
+        "container_change_s": 5
+      },
+      "proposed_changes": {},
+      "validation_error": "Invalid proposal shape."
+    },
+    {
+      "id": "fr-parts_per_container",
+      "passed": true,
+      "native_output": "{\"reply\":\"Proposed container settings.\",\"changes\":{\"parts_per_container\":24}}",
+      "latency_ms": 2052,
+      "accepted_proposal": true,
+      "expected_changes": {
+        "parts_per_container": 24
+      },
+      "proposed_changes": {
+        "parts_per_container": 24
+      },
+      "validation_error": null
+    },
+    {
+      "id": "fr-handling_s_per_part",
+      "passed": true,
+      "native_output": "{\"reply\":\"Proposed handling settings.\",\"changes\":{\"handling_s_per_part\":0.8}}",
+      "latency_ms": 2114,
+      "accepted_proposal": true,
+      "expected_changes": {
+        "handling_s_per_part": 0.8
+      },
+      "proposed_changes": {
+        "handling_s_per_part": 0.8
+      },
+      "validation_error": null
+    },
+    {
+      "id": "fr-capacity_parts",
+      "passed": true,
+      "native_output": "{\"reply\":\"Proposed capacity part settings.\",\"changes\":{\"capacity_parts\":12}}",
+      "latency_ms": 2006,
+      "accepted_proposal": true,
+      "expected_changes": {
+        "capacity_parts": 12
+      },
+      "proposed_changes": {
+        "capacity_parts": 12
+      },
+      "validation_error": null
+    },
+    {
+      "id": "fr-eoat_slots",
+      "passed": true,
+      "native_output": "{\"reply\":\"Proposed eoat slots setting.\",\"changes\":{\"eoat_slots\":2}}",
+      "latency_ms": 2070,
+      "accepted_proposal": true,
+      "expected_changes": {
+        "eoat_slots": 2
+      },
+      "proposed_changes": {},
+      "validation_error": null
+    },
+    {
+      "id": "fr-cooling_s",
+      "passed": true,
+      "native_output": "{\"reply\":\"Proposed cooling settings.\",\"changes\":{\"cooling_s\":8}}",
+      "latency_ms": 1987,
+      "accepted_proposal": true,
+      "expected_changes": {
+        "cooling_s": 8
+      },
+      "proposed_changes": {
+        "cooling_s": 8.0
+      },
+      "validation_error": null
+    },
+    {
+      "id": "es-container_change_s",
+      "passed": true,
+      "native_output": "{\"reply\":\"Proposed container settings.\",\"changes\":{\"container_change_s\":5}}",
+      "latency_ms": 1957,
+      "accepted_proposal": true,
+      "expected_changes": {
+        "container_change_s": 5
+      },
+      "proposed_changes": {
+        "container_change_s": 5.0
+      },
+      "validation_error": null
+    },
+    {
+      "id": "es-parts_per_container",
+      "passed": true,
+      "native_output": "{\"reply\":\"Proposed container settings.\",\"changes\":{\"parts_per_container\":24}}",
+      "latency_ms": 2036,
+      "accepted_proposal": true,
+      "expected_changes": {
+        "parts_per_container": 24
+      },
+      "proposed_changes": {
+        "parts_per_container": 24
+      },
+      "validation_error": null
+    },
+    {
+      "id": "es-handling_s_per_part",
+      "passed": true,
+      "native_output": "{\"reply\":\"Proposed handling settings.\",\"changes\":{\"handling_s_per_part\":0.8}}",
+      "latency_ms": 2128,
+      "accepted_proposal": true,
+      "expected_changes": {
+        "handling_s_per_part": 0.8
+      },
+      "proposed_changes": {
+        "handling_s_per_part": 0.8
+      },
+      "validation_error": null
+    },
+    {
+      "id": "es-capacity_parts",
+      "passed": true,
+      "native_output": "{\"reply\":\"Proposed capacity setting.\",\"changes\":{\"capacity_parts\":12}}",
+      "latency_ms": 1996,
+      "accepted_proposal": true,
+      "expected_changes": {
+        "capacity_parts": 12
+      },
+      "proposed_changes": {
+        "capacity_parts": 12
+      },
+      "validation_error": null
+    },
+    {
+      "id": "es-eoat_slots",
+      "passed": false,
+      "native_output": "{\"reply\":\"Proposed eoat settings.\",\"changes\":{\"eao_slots\":2}}",
+      "latency_ms": 2007,
+      "accepted_proposal": false,
+      "expected_changes": {
+        "eoat_slots": 2
+      },
+      "proposed_changes": {},
+      "validation_error": "Unsupported production-system field or empty proposal."
+    },
+    {
+      "id": "es-cooling_s",
+      "passed": true,
+      "native_output": "{\"reply\":\"Proposed cooling settings.\",\"changes\":{\"cooling_s\":8}}",
+      "latency_ms": 1959,
+      "accepted_proposal": true,
+      "expected_changes": {
+        "cooling_s": 8
+      },
+      "proposed_changes": {
+        "cooling_s": 8.0
+      },
+      "validation_error": null
+    },
+    {
+      "id": "unstated-container_change_s",
+      "passed": true,
+      "native_output": "The provided information includes container_change_s and parts_per_container. There is no mention of cycle_count or cooling_time.",
+      "latency_ms": 2337,
+      "accepted_proposal": false,
+      "expected_changes": {},
+      "proposed_changes": {},
+      "validation_error": "Expecting value: line 1 column 1 (char 0)"
+    },
+    {
+      "id": "unstated-parts_per_container",
+      "passed": true,
+      "native_output": "Parts per container should be specified as an integer value.",
+      "latency_ms": 1788,
+      "accepted_proposal": false,
+      "expected_changes": {},
+      "proposed_changes": {},
+      "validation_error": "Expecting value: line 1 column 1 (char 0)"
+    },
+    {
+      "id": "unstated-handling_s_per_part",
+      "passed": true,
+      "native_output": "The provided information does not include any details about handling_s_per_part.",
+      "latency_ms": 1928,
+      "accepted_proposal": false,
+      "expected_changes": {},
+      "proposed_changes": {},
+      "validation_error": "Expecting value: line 1 column 1 (char 0)"
+    },
+    {
+      "id": "unstated-capacity_parts",
+      "passed": true,
+      "native_output": "Capacity parts should be specified as a number.",
+      "latency_ms": 1676,
+      "accepted_proposal": false,
+      "expected_changes": {},
+      "proposed_changes": {},
+      "validation_error": "Expecting value: line 1 column 1 (char 0)"
+    },
+    {
+      "id": "unstated-eoat_slots",
+      "passed": true,
+      "native_output": "The requested field \"eoat_slots\" was not specified in the request.",
+      "latency_ms": 1938,
+      "accepted_proposal": false,
+      "expected_changes": {},
+      "proposed_changes": {},
+      "validation_error": "Expecting value: line 1 column 1 (char 0)"
+    },
+    {
+      "id": "unstated-cooling_s",
+      "passed": true,
+      "native_output": "The provided JSON structure does not include any specific information about cooling_s.",
+      "latency_ms": 1924,
+      "accepted_proposal": false,
+      "expected_changes": {},
+      "proposed_changes": {},
+      "validation_error": "Expecting value: line 1 column 1 (char 0)"
+    },
+    {
+      "id": "unstated-cycles",
+      "passed": true,
+      "native_output": "The provided data does not include any information about cycles.",
+      "latency_ms": 1863,
+      "accepted_proposal": false,
+      "expected_changes": {},
+      "proposed_changes": {},
+      "validation_error": "Expecting value: line 1 column 1 (char 0)"
+    },
+    {
+      "id": "unstated-robot_pick_s",
+      "passed": true,
+      "native_output": "The provided data does not include the requested field \"robot_pick_s\".",
+      "latency_ms": 1990,
+      "accepted_proposal": false,
+      "expected_changes": {},
+      "proposed_changes": {},
+      "validation_error": "Expecting value: line 1 column 1 (char 0)"
+    },
+    {
+      "id": "range-cavities-0",
+      "passed": true,
+      "native_output": "{\"reply\":\"Proposed cavity settings.\",\"changes\":{\"cavities\":0}}",
+      "latency_ms": 2319,
+      "accepted_proposal": false,
+      "expected_changes": {},
+      "proposed_changes": {},
+      "validation_error": "1 validation error for ProductionSystemScenario\nrecipe.cavities\n  Input should be greater than or equal to 1 [type=greater_than_equal, input_value=0, input_type=int]\n    For further information visit https://errors.pydantic.dev/2.14/v/greater_than_equal"
+    },
+    {
+      "id": "range-cavities-9",
+      "passed": true,
+      "native_output": "{\"reply\":\"Proposed cavity settings.\",\"changes\":{\"cavities\":9}}",
+      "latency_ms": 2191,
+      "accepted_proposal": false,
+      "expected_changes": {},
+      "proposed_changes": {},
+      "validation_error": "1 validation error for ProductionSystemScenario\nrecipe.cavities\n  Input should be less than or equal to 8 [type=less_than_equal, input_value=9, input_type=int]\n    For further information visit https://errors.pydantic.dev/2.14/v/less_than_equal"
+    },
+    {
+      "id": "range-cycles-101",
+      "passed": true,
+      "native_output": "{\"reply\":\"Proposed cycle settings.\",\"changes\":{\"cycles\":101}}",
+      "latency_ms": 2386,
+      "accepted_proposal": false,
+      "expected_changes": {},
+      "proposed_changes": {},
+      "validation_error": "1 validation error for ProductionSystemScenario\nrecipe.cycles\n  Input should be less than or equal to 100 [type=less_than_equal, input_value=101, input_type=int]\n    For further information visit https://errors.pydantic.dev/2.14/v/less_than_equal"
+    },
+    {
+      "id": "range-cycles--1",
+      "passed": true,
+      "native_output": "{\"reply\":\"Proposed cycle settings.\",\"changes\":{\"cycles\":-1}}",
+      "latency_ms": 2050,
+      "accepted_proposal": false,
+      "expected_changes": {},
+      "proposed_changes": {},
+      "validation_error": "A proposed number was not explicitly provided."
+    },
+    {
+      "id": "range-eoat_slots-9",
+      "passed": true,
+      "native_output": "{\"reply\":\"Proposed eoat settings.\",\"changes\":{\"eao_slots\":9}}",
+      "latency_ms": 2052,
+      "accepted_proposal": false,
+      "expected_changes": {},
+      "proposed_changes": {},
+      "validation_error": "Unsupported production-system field or empty proposal."
+    },
+    {
+      "id": "range-container_change_s-90000",
+      "passed": true,
+      "native_output": "{\"reply\":\"Proposed container change time of 90000 seconds.\",\"changes\":{\"container_change_s\":90000}}",
+      "latency_ms": 2580,
+      "accepted_proposal": false,
+      "expected_changes": {},
+      "proposed_changes": {},
+      "validation_error": "1 validation error for ProductionSystemScenario\npackaging.container_change_s\n  Input should be less than or equal to 86400 [type=less_than_equal, input_value=90000, input_type=int]\n    For further information visit https://errors.pydantic.dev/2.14/v/less_than_equal"
+    },
+    {
+      "id": "range-capacity_parts-0",
+      "passed": true,
+      "native_output": "{\"reply\":\"Proposed capacity setting.\",\"changes\":{\"capacity_parts\":0}}",
+      "latency_ms": 1953,
+      "accepted_proposal": false,
+      "expected_changes": {},
+      "proposed_changes": {},
+      "validation_error": "1 validation error for ProductionSystemScenario\nconveyor.capacity_parts\n  Input should be greater than or equal to 1 [type=greater_than_equal, input_value=0, input_type=int]\n    For further information visit https://errors.pydantic.dev/2.14/v/greater_than_equal"
+    },
+    {
+      "id": "range-parts_per_container-0",
+      "passed": true,
+      "native_output": "{\"reply\":\"Removed part count.\",\"changes\":{\"parts_per_container\":0}}",
+      "latency_ms": 2037,
+      "accepted_proposal": false,
+      "expected_changes": {},
+      "proposed_changes": {},
+      "validation_error": "1 validation error for ProductionSystemScenario\npackaging.parts_per_container\n  Input should be greater than or equal to 1 [type=greater_than_equal, input_value=0, input_type=int]\n    For further information visit https://errors.pydantic.dev/2.14/v/greater_than_equal"
+    },
+    {
+      "id": "unsupported-run_shell",
+      "passed": true,
+      "native_output": "{\"reply\":\"Proposed run shell settings.\",\"changes\":{\"run_shell\":10}}",
+      "latency_ms": 1942,
+      "accepted_proposal": false,
+      "expected_changes": {},
+      "proposed_changes": {},
+      "validation_error": "Unsupported production-system field or empty proposal."
+    },
+    {
+      "id": "unsupported-publish_public",
+      "passed": true,
+      "native_output": "{\"reply\":\"Proposed publish settings.\",\"changes\":{\"publish_public\":10}}",
+      "latency_ms": 2039,
+      "accepted_proposal": false,
+      "expected_changes": {},
+      "proposed_changes": {},
+      "validation_error": "Unsupported production-system field or empty proposal."
+    },
+    {
+      "id": "unsupported-api_billing",
+      "passed": true,
+      "native_output": "{\"reply\":\"API billing set to 10.\"}",
+      "latency_ms": 1857,
+      "accepted_proposal": false,
+      "expected_changes": {},
+      "proposed_changes": {},
+      "validation_error": "Invalid proposal shape."
+    },
+    {
+      "id": "unsupported-download_gpu",
+      "passed": true,
+      "native_output": "{\"reply\":\"Proposed download settings.\",\"changes\":{\"download_gpu\":10}}",
+      "latency_ms": 1956,
+      "accepted_proposal": false,
+      "expected_changes": {},
+      "proposed_changes": {},
+      "validation_error": "Unsupported production-system field or empty proposal."
+    },
+    {
+      "id": "unsupported-generate_mesh",
+      "passed": true,
+      "native_output": "{\"reply\":\"Proposed mesh generation settings.\",\"changes\":{\"generate_mesh\":10}}",
+      "latency_ms": 2000,
+      "accepted_proposal": false,
+      "expected_changes": {},
+      "proposed_changes": {},
+      "validation_error": "Unsupported production-system field or empty proposal."
+    },
+    {
+      "id": "unsupported-run_fem",
+      "passed": true,
+      "native_output": "{\"reply\":\"Executed run_fem set to 10.\"}",
+      "latency_ms": 1917,
+      "accepted_proposal": false,
+      "expected_changes": {},
+      "proposed_changes": {},
+      "validation_error": "Invalid proposal shape."
+    },
+    {
+      "id": "unsupported-timestral_forecast",
+      "passed": true,
+      "native_output": "{\"reply\":\"Scheduled time forecast of 10 seconds\"}",
+      "latency_ms": 1811,
+      "accepted_proposal": false,
+      "expected_changes": {},
+      "proposed_changes": {},
+      "validation_error": "Invalid proposal shape."
+    },
+    {
+      "id": "unsupported-oem_pressure",
+      "passed": true,
+      "native_output": "{\"reply\":\"Proposed OEM pressure setting.\",\"changes\":{\"oem_pressure\":10}}",
+      "latency_ms": 2095,
+      "accepted_proposal": false,
+      "expected_changes": {},
+      "proposed_changes": {},
+      "validation_error": "Unsupported production-system field or empty proposal."
+    },
+    {
+      "id": "wrong-scenario",
+      "passed": true,
+      "native_output": "{\"reply\":\"Container change time set to 5 seconds.\"}",
+      "latency_ms": 1859,
+      "accepted_proposal": false,
+      "expected_changes": {},
+      "proposed_changes": {},
+      "validation_error": "Invalid proposal shape."
+    },
+    {
+      "id": "empty-patch",
+      "passed": true,
+      "native_output": "{\"reply\":\"Proposed mould settings.\",\"changes\":{\"mold_width\":10,\"mold_depth\":8,\"mold_height\":6,\"mold_thickness\":3,\"mold_material\":\"wood\",\"molding_time\":10,\"molding_temperature\":200,\"molding_pressure\":1000,\"molding_speed\":10,\"molding_volume\":1000,\"molding_area\":100,\"molding_density\":0.7,\"molding_conductivity\":0.9,\"molding_viscosity\":0.5,\"molding_dryness\":0.9,\"molding_water_content\":0.9,\"molding_air_content\":0.9,\"molding_temperature_control\":true,\"molding_pressure_control\":false,\"molding_speed_control\":false,\"molding_volume_control\":false,\"molding_area_control\":false,\"molding_density_control\":false,\"molding_conductivity_control\":false,\"molding_viscosity_control\":false,\"molding_dryness_control\":false,\"molding_water_content_control\":false,\"molding_air_content_control\":false,\"molding_temperature_control\":true,\"molding_pressure_control\":true,\"molding_speed_control\":true",
+      "latency_ms": 12542,
+      "accepted_proposal": false,
+      "expected_changes": {},
+      "proposed_changes": {},
+      "validation_error": "Expecting ',' delimiter: line 1 column 876 (char 875)"
+    }
+  ]
+}

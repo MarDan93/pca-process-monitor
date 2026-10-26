@@ -1,3 +1,5 @@
+> **FABRIVRA V2, 26 October 2026:** the owner-supplied V2 package supersedes earlier product/deployment assumptions. The core is the complete **System Simulation Engine**; Mold CAE, Timestral and Packaging Design are separate modules. [Active contract/roadmap](../docs/product/FABRIVRA_V2.md) · [Current browser trial](../docs/deployment/CODESPACES.md). The dated text below is retained history.
+
 # Mould Studio workspace
 
 **Current direction, 19 October: online trials in [Codespaces](../docs/deployment/CODESPACES.md), including process simulation and actual server CPU AI.** The dev-container setup prepares locked dependencies and the pinned model. The owner must create the Codespace; actual external forwarding is not yet verified. Local startup below and the managed hosted configuration remain available alternatives.
